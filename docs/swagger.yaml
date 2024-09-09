@@ -1,3 +1,234 @@
+definitions:
+  github_com_4kpros_go-api_common_types.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  github_com_4kpros_go-api_common_types.Filter:
+    properties:
+      orderBy:
+        type: string
+      search:
+        type: string
+      sort:
+        type: string
+    type: object
+  github_com_4kpros_go-api_common_types.Pagination:
+    properties:
+      count:
+        type: integer
+      currentPage:
+        type: integer
+      limit:
+        type: integer
+      nextPage:
+        type: integer
+      offset:
+        type: integer
+      previousPage:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  github_com_4kpros_go-api_common_types.SuccessPaginatedResponse:
+    properties:
+      data: {}
+      filter:
+        $ref: '#/definitions/github_com_4kpros_go-api_common_types.Filter'
+      pagination:
+        $ref: '#/definitions/github_com_4kpros_go-api_common_types.Pagination'
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.ActivateAccountRequest:
+    properties:
+      code:
+        type: integer
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.ResetPasswordCodeRequest:
+    properties:
+      code:
+        type: integer
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.ResetPasswordEmailInitRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.ResetPasswordNewPasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.ResetPasswordPhoneNumberInitRequest:
+    properties:
+      phoneNumber:
+        type: integer
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.SignInEmailRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      stayConnected:
+        type: boolean
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.SignInPhoneNumberRequest:
+    properties:
+      password:
+        type: string
+      phoneNumber:
+        type: integer
+      stayConnected:
+        type: boolean
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.SignInWithProviderRequest:
+    properties:
+      provider:
+        type: string
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.SignUpEmailRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_request.SignUpPhoneNumberRequest:
+    properties:
+      password:
+        type: string
+      phoneNumber:
+        type: integer
+    type: object
+  github_com_4kpros_go-api_services_auth_data_response.ActivateAccountResponse:
+    properties:
+      activatedAt:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_response.ResetPasswordInitResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_response.ResetPasswordNewPasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_response.SignInResponse:
+    properties:
+      accessToken:
+        type: string
+      expires:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_auth_data_response.SignUpResponse:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_user_data_request.CreateWithEmailRequest:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_user_data_request.CreateWithPhoneNumberRequest:
+    properties:
+      phoneNumber:
+        type: integer
+      role:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_user_data_response.CreateWithEmailResponse:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_user_data_response.CreateWithPhoneNumberResponse:
+    properties:
+      password:
+        type: string
+      phoneNumber:
+        type: integer
+      role:
+        type: string
+    type: object
+  github_com_4kpros_go-api_services_user_model.User:
+    properties:
+      _:
+        type: integer
+      activatedAt:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: integer
+      isActivated:
+        type: boolean
+      password:
+        type: string
+      phoneNumber:
+        type: integer
+      provider:
+        type: string
+      providerUserId:
+        type: string
+      role:
+        type: string
+      updatedAt:
+        type: string
+      userInfo:
+        $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.UserInfo'
+    type: object
+  github_com_4kpros_go-api_services_user_model.UserInfo:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      firstName:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      lastName:
+        type: string
+      updatedAt:
+        type: string
+      userName:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
 info:
   contact:
     email: prosper.abouar@gmail.com
@@ -8,7 +239,579 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: API Documentation
   version: "1.0"
-paths: {}
+paths:
+  /auth/activate:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.ActivateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.ActivateAccountResponse'
+        "400":
+          description: Invalid token!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: User account is already activated!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Activate new user account
+      tags:
+      - Activate account
+  /auth/reset/code:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.ResetPasswordCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.ResetPasswordInitResponse'
+        "400":
+          description: Invalid token!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Reset password set code
+      tags:
+      - Reset password
+  /auth/reset/init-email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.ResetPasswordEmailInitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.ResetPasswordInitResponse'
+        "400":
+          description: Invalid email input!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User with email not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Reset password  with email init
+      tags:
+      - Reset password
+  /auth/reset/init-phone:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.ResetPasswordPhoneNumberInitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.ResetPasswordInitResponse'
+        "400":
+          description: Invalid phone number input!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User with phone number not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Reset password with phone number init
+      tags:
+      - Reset password
+  /auth/reset/new-password:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.ResetPasswordNewPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.ResetPasswordNewPasswordResponse'
+        "400":
+          description: Invalid token or password input!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Reset password set new password
+      tags:
+      - Reset password
+  /auth/signin-email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.SignInEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignInResponse'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Account not activated!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: Invalid email or password!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Sign in user with email
+      tags:
+      - Sign in
+  /auth/signin-phone:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.SignInPhoneNumberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignInResponse'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Account not activated!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: Invalid phone number or password!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Sign in user with phone number
+      tags:
+      - Sign in
+  /auth/signin-provider:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.SignInWithProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignInResponse'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: Invalid token!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Sign in user with provider
+      tags:
+      - Sign in
+  /auth/signup-email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.SignUpEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignUpResponse'
+        "302":
+          description: User with this email already exists!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Sign up user with email
+      tags:
+      - Sign up
+  /auth/signup-phone:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_request.SignUpPhoneNumberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignUpResponse'
+        "302":
+          description: User with this phone number already exists!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey: []
+      summary: Sign up user with phone number
+      tags:
+      - Sign up
+  /users/:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search keyword
+        in: query
+        name: search
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Page limit
+        in: query
+        name: limit
+        type: integer
+      - description: Filter order by
+        in: query
+        name: orderBy
+        type: string
+      - description: Sort asc, desc
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.SuccessPaginatedResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Get all users
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Update user info
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.User'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Get user info
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.User'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Update user
+      tags:
+      - Users
+  /users/email:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_user_data_request.CreateWithEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_data_response.CreateWithEmailResponse'
+        "302":
+          description: User with this email already exists!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "400":
+          description: Invalid email or role!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Create new user with email - [super-admin]
+      tags:
+      - Users
+  /users/info/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User info model
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.UserInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.UserInfo'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Update user info
+      tags:
+      - Users
+  /users/phone:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Enter your information
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_4kpros_go-api_services_user_data_request.CreateWithPhoneNumberRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_data_response.CreateWithPhoneNumberResponse'
+        "302":
+          description: User with this phone number already exists!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "400":
+          description: Invalid phone number or role!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Create new user with phone number - [super-admin]
+      tags:
+      - Users
 securityDefinitions:
   Bearer:
     description: Enter Bearer with space and your token

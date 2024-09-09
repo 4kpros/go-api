@@ -296,7 +296,7 @@ func (service *AuthServiceImpl) ActivateAccount(reqData *request.ActivateAccount
 	activatedAt = userFound.ActivatedAt
 
 	// Invalidate token
-	config.DeleteMemcacheVal(utils.GetCachedKey(jwt))
+	config.DeleteRedisVal(utils.GetCachedKey(jwt))
 
 	// Send welcome message
 	// TODO
@@ -400,7 +400,7 @@ func (service *AuthServiceImpl) ResetPasswordCode(reqData *request.ResetPassword
 	}
 
 	// Invalidate token
-	config.DeleteMemcacheVal(utils.GetCachedKey(jwt))
+	config.DeleteRedisVal(utils.GetCachedKey(jwt))
 
 	// Generate new token
 	var expires = utils.NewExpiresDateDefault()
@@ -457,7 +457,7 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(reqData *request.ResetP
 	}
 
 	// Invalidate token
-	config.DeleteMemcacheVal(utils.GetCachedKey(jwt))
+	config.DeleteRedisVal(utils.GetCachedKey(jwt))
 
 	return
 }

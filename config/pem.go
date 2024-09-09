@@ -15,7 +15,7 @@ var AppPem = &Pem{}
 func LoadPem() (err error) {
 	var err1, err2 error
 	// JWT private key
-	AppPem.JwtPrivateKey, err1 = helpers.ReadFileContentToString("jwt_private.pem")
+	AppPem.JwtPrivateKey, err1 = helpers.ReadFileContentToString("build/pem/jwt_private.pem")
 	if err1 != nil {
 		helpers.Logger.Warn(
 			"Failed to load jwt_private.pem",
@@ -29,7 +29,7 @@ func LoadPem() (err error) {
 	}
 
 	// JWT public key
-	AppPem.JwtPublicKey, err2 = helpers.ReadFileContentToString("jwt_public.pem")
+	AppPem.JwtPublicKey, err2 = helpers.ReadFileContentToString("build/pem/jwt_public.pem")
 	if err2 != nil {
 		helpers.Logger.Warn(
 			"Failed to load jwt_public.pem",

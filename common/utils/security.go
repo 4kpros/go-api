@@ -51,7 +51,7 @@ func IsSameCachedKey(jwtToken1 *types.JwtToken, jwtToken2 *types.JwtToken) bool 
 func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached bool) (newJwt *types.JwtToken, tokenStr string, err error) {
 	// Check if there is some cached token
 	if loadCached {
-		tokenStr, err = config.GetMemcacheVal(GetCachedKey(jwtToken))
+		tokenStr, err = config.GetRedisVal(GetCachedKey(jwtToken))
 		if err == nil && len(tokenStr) > 0 {
 			jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, config.AppPem.JwtPublicKey)
 			if errDecrypted == nil && IsSameCachedKey(jwtToken, jwtDecrypted) {
@@ -81,7 +81,7 @@ func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached boo
 	}
 
 	// Cache new token
-	config.SetMemcacheVal(GetCachedKey(jwtToken), tokenStr)
+	config.SetRedisVal(GetCachedKey(jwtToken), tokenStr)
 	newJwt = jwtToken
 	return
 }
@@ -136,7 +136,7 @@ func VerifyJWTToken(tokenStr string, publicKey string) bool {
 	}
 
 	// Check if the token is cached
-	tokenStrCached, errCached := config.GetMemcacheVal(GetCachedKey(jwtDecrypted))
+	tokenStrCached, errCached := config.GetRedisVal(GetCachedKey(jwtDecrypted))
 	if errCached != nil || len(tokenStrCached) <= 0 {
 		return false
 	}

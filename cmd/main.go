@@ -52,19 +52,6 @@ func init() {
 		)
 	}
 
-	// Connect to memcache
-	errMemcache := config.ConnectToMemcache()
-	if errMemcache != nil {
-		helpers.Logger.Warn(
-			"Failed to connect to Memcache!",
-			zap.String("Error", errMemcache.Error()),
-		)
-	} else {
-		helpers.Logger.Info(
-			"Connected to Memcache!",
-		)
-	}
-
 	// Connect to redis
 	errRedis := config.ConnectToRedis()
 	if errRedis != nil {

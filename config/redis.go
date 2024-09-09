@@ -27,7 +27,12 @@ func SetRedisVal(key string, val string) (err error) {
 	return
 }
 
-func GetRegisVal(key string) (val string, err error) {
+func GetRedisVal(key string) (val string, err error) {
 	val, err = RedisClient.Get(ctx, key).Result()
+	return
+}
+
+func DeleteRedisVal(key string) (val int64, err error) {
+	val, err = RedisClient.Del(ctx, key).Result()
 	return
 }
