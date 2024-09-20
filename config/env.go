@@ -31,12 +31,7 @@ type Env struct {
 	RedisPort     int    `mapstructure:"REDIS_PORT"`
 	RedisUserName string `mapstructure:"REDIS_USERNAME"`
 	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisDatabase int    `mapstructure:"REDIS_DATABASE"`
-
-	// Memcache for fast key-value database
-	MemcacheServersCount int    `mapstructure:"MEMCACHE_SERVERS_COUNT"`
-	MemcacheHostRange    string `mapstructure:"MEMCACHE_HOST_RANGE"`
-	MemcacheInitialPort  int    `mapstructure:"MEMCACHE_INITIAL_PORT"`
+	RedisDatabase int    `mapstructure:"REDIS_DB"`
 
 	// Crypto Argon2id for passwords
 	ArgonMemoryLeft  int `mapstructure:"ARGON_PARAM_MEMORY_L"`

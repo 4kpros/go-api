@@ -29,8 +29,6 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ```Install Redis and start the server```
 
-```Install Memcache and start the server```
-
 ```Install Postgres, start the server and create a database ```
 
 Others informations such configurations are on```app.env```

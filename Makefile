@@ -1,32 +1,32 @@
 # ------------------ Golang commands ------------------
-.PHONY: go-install go-swagger go-test go-build go-run
-go-install:
+.PHONY: install swagger test build run
+install:
 	@go mod download
 	@go install github.com/swaggo/swag/cmd/swag@latest
-go-swagger:
+swagger:
 	@swag init --generalInfo ./cmd/main.go --output ./docs --parseDependency ./docs
-go-test:
+test:
 	@go test -v ./tests/...
-go-build:
+build:
 	@cd cmd/ ;\
-	go build -o ./bin/main ;\
+	go build -o ../bin/main ;\
 	cd ../
-go-run:
+run:
 	@./bin/main
 
 
 # ------------------ Docker commands ------------------
 .PHONY: docker-vault docker-redis docker-postgres docker-api docker-nginx
 docker-vault:
-	@docker-compose --env-file ./docker/.env up --build --no-deps -d vault
+	@docker-compose --env-file app.env up --build --no-deps -d vault
 docker-redis:
-	@docker-compose --env-file ./docker/.env up --build --no-deps -d redis
+	@docker-compose --env-file app.env up --build --no-deps -d redis
 docker-postgres:
-	@docker-compose --env-file ./docker/.env up --build --no-deps -d postgres
+	@docker-compose --env-file app.env up --build --no-deps -d postgres
 docker-api:
-	@docker-compose --env-file ./docker/.env up --build --no-deps -d api
+	@docker-compose --env-file app.env up --build --no-deps -d api
 docker-nginx:
-	@docker-compose --env-file ./docker/.env up --build --no-deps -d nginx
+	@docker-compose --env-file app.env up --build --no-deps -d nginx
 
 .PHONY: docker-ghcr-login
 docker-ghcr-login:
@@ -42,7 +42,7 @@ docker-ghcr-push-specific:
 	@echo "" ;\
 	echo "Tag - GitHub Docker Registry" ;\
 	gCorp="4kpros" ;\
-	gRepo="go-api" ;\
+	gRepo="api" ;\
 	read -p "Enter your package name(vault, redis, memcached, postgres, api): " gPackage; gTag=$${gPackage:-"api"} ;\
 	read -p "Enter your tag(default is 0.0.1): " gTag; gTag=$${gTag:-"0.0.1"} ;\
 	docker tag snip-backend-$$gPackage ghcr.io/$$gCorp/$$gRepo/$$gPackage:$$gTag ;\
