@@ -27,7 +27,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 1. Requirements
 
-```Make installed for shortcuts`
+```Make installed for shortcuts```
 
 ```Install Redis and start the server or just use the command ``` `make docker-redis`
 
