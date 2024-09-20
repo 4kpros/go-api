@@ -27,9 +27,15 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 1. Requirements
 
-```Install Redis and start the server```
+```Make installed for shortcuts`
 
-```Install Postgres, start the server and create a database ```
+```Install Redis and start the server or just use the command ``` `make docker-redis`
+
+```Install Postgres, start the server and create a database or just use the command ``` `make docker-redis`
+
+```Rename app.example.env to ``` `app.env`
+
+```JWT pems files:``` `keys/jwt_private.pem` `keys/jwt_public.pem`
 
 Others informations such configurations are on```app.env```
 
