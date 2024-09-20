@@ -35,7 +35,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ```Rename app.example.env to ``` `app.env`
 
-```JWT pems files:``` `keys/jwt_private.pem` `keys/jwt_public.pem`
+```JWT pems files with EC(ES512) algorithm:``` `keys/jwt_private.pem` `keys/jwt_public.pem`
 
 Others informations such configurations are on```app.env```
 
