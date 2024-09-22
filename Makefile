@@ -9,10 +9,10 @@ test:
 	@go test -v ./tests/...
 build:
 	@cd cmd/ ;\
-	go build -o ../bin/main ;\
+	go build -o ../.build/main ;\
 	cd ../
 run:
-	@./bin/main
+	@./.build/main
 
 
 # ------------------ Docker commands ------------------

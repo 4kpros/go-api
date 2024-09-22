@@ -169,7 +169,7 @@ func (controller *UserController) Delete(c *gin.Context) {
 }
 
 // @Tags Users
-// @Summary Get user info
+// @Summary Get basic user info
 // @Accept  json
 // @Produce  json
 // @Param   id path string true "User id"
@@ -186,6 +186,33 @@ func (controller *UserController) FindById(c *gin.Context) {
 
 	// Execute the service
 	user, errCode, err := controller.Service.FindById(id)
+	if err != nil {
+		c.AbortWithError(errCode, err)
+		return
+	}
+
+	// Return the response
+	c.JSON(http.StatusOK, user)
+}
+
+// @Tags Users
+// @Summary Get detailed user info
+// @Accept  json
+// @Produce  json
+// @Param   id path string true "UserInfo id"
+// @Success 200 {object} model.UserInfo "OK"
+// @Failure 400 {object} types.ErrorResponse "Invalid inputs!"
+// @Failure 401 {object} types.ErrorResponse "Invalid user session!"
+// @Failure 403 {object} types.ErrorResponse "Not permitted!"
+// @Failure 404 {object} types.ErrorResponse "UserInfo not found!"
+// @Security ApiKey && Bearer
+// @Router /users/{id} [get]
+func (controller *UserController) FindUserInfoById(c *gin.Context) {
+	// Get data of req header
+	id := c.Param("id")
+
+	// Execute the service
+	user, errCode, err := controller.Service.FindUserInfoById(id)
 	if err != nil {
 		c.AbortWithError(errCode, err)
 		return

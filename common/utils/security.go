@@ -33,7 +33,7 @@ func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 }
 
 func GetCachedKey(jwtToken *types.JwtToken) string {
-	return fmt.Sprintf("%d%s%s", jwtToken.UserId, jwtToken.Issuer, jwtToken.Device)
+	return fmt.Sprintf("%d%s%s%d", jwtToken.UserId, jwtToken.Issuer, jwtToken.Device, jwtToken.Code)
 }
 
 func IsSameCachedKey(jwtToken1 *types.JwtToken, jwtToken2 *types.JwtToken) bool {
@@ -61,7 +61,7 @@ func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached boo
 		}
 	}
 
-	// Otherwise generate new one
+	// Otherwise generate new one. Also only add string on MapClaims, others types are not regonised
 	token := jwt.NewWithClaims(jwt.SigningMethodES512, jwt.MapClaims{
 		"iss":    jwtToken.Issuer,
 		"userId": fmt.Sprintf("%d", jwtToken.UserId),
@@ -69,6 +69,7 @@ func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached boo
 		"device": jwtToken.Device,
 		"exp":    jwt.NewNumericDate(jwtToken.Expires),
 		"iat":    jwt.NewNumericDate(time.Now()),
+		"code":   fmt.Sprintf("%d", jwtToken.Code),
 	})
 	var signedKey *ecdsa.PrivateKey
 	signedKey, err = jwt.ParseECPrivateKeyFromPEM([]byte(privateKey))
@@ -128,22 +129,22 @@ func DecryptJWTToken(tokenStr string, publicKey string) (*types.JwtToken, error)
 }
 
 // Verify JWT
-func VerifyJWTToken(tokenStr string, publicKey string) bool {
+func VerifyJWTToken(tokenStr string, publicKey string) (*types.JwtToken, bool) {
 	// Decrypt the token
 	jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, publicKey)
 	if errDecrypted != nil || jwtDecrypted == nil {
-		return false
+		return nil, false
 	}
 
 	// Check if the token is cached
 	tokenStrCached, errCached := config.GetRedisVal(GetCachedKey(jwtDecrypted))
 	if errCached != nil || len(tokenStrCached) <= 0 {
-		return false
+		return nil, false
 	}
 	if tokenStr != tokenStrCached {
-		return false
+		return nil, false
 	}
-	return true
+	return jwtDecrypted, true
 }
 
 // Encrypt jwtToken using Argon2id
@@ -155,13 +156,19 @@ func EncryptWithArgon2id(jwtToken string) (hash string, err error) {
 		SaltLength:  uint32(config.AppEnv.ArgonSaltLength),
 		KeyLength:   uint32(config.AppEnv.ArgonKeyLength),
 	}
-	hash, err = argon2id.CreateHash(jwtToken, params)
+	tempHash, tempErr := argon2id.CreateHash(jwtToken, params)
+	err = tempErr
+	if err != nil {
+		return
+	}
+	// Encode to base64
+	hash = EncodeBase64(tempHash)
 	return
 }
 
-// Verify if Argon2id jwtToken matches string
-func CompareToArgon2id(jwtToken string, encrypted string) (match bool, err error) {
-	fmt.Printf("COMPARE ARGON2ID\n Value: %s \n Encrypted: %s", jwtToken, encrypted)
-	match, err = argon2id.ComparePasswordAndHash(jwtToken, encrypted)
+// Verify if Argon2id password matches string
+func CompareToArgon2id(password string, hashedPassword string) (match bool, err error) {
+	initialHashedPassword, _ := DecodeBase64(hashedPassword)
+	match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
 	return
 }

@@ -18,7 +18,7 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
-func GenerateRandomCode(cacheKey string, length int) (code int, err error) {
+func GenerateRandomCode(length int) (code int, err error) {
 	code, err = strconv.Atoi(GenerateRandomValue(letterBytesCode, length))
 	return
 }

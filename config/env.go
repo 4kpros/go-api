@@ -39,6 +39,13 @@ type Env struct {
 	ArgonIterations  int `mapstructure:"ARGON_PARAM_ITERATIONS"`
 	ArgonSaltLength  int `mapstructure:"ARGON_PARAM_SALT_LENGTH"`
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
+
+	// SMTP
+	SmtpHost     string `mapstructure:"SMTP_HOST"`
+	SmtpPort     int    `mapstructure:"SMTP_PORT"`
+	SmtpUsername string `mapstructure:"SMTP_USERNAME"`
+	SmtpPassword string `mapstructure:"SMTP_PASSWORD"`
+	SmtpSender   string `mapstructure:"SMTP_SENDER"`
 }
 
 var AppEnv = &Env{}

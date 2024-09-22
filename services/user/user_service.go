@@ -16,6 +16,7 @@ type UserService interface {
 	UpdateUserInfo(userInfo *model.UserInfo) (errCode int, err error)
 	Delete(id string) (affectedRows int64, errCode int, err error)
 	FindById(id string) (user *model.User, errCode int, err error)
+	FindUserInfoById(id string) (user *model.UserInfo, errCode int, err error)
 	FindAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error)
 }
 
@@ -113,15 +114,6 @@ func (service *UserServiceImpl) Delete(id string) (affectedRows int64, errCode i
 	return
 }
 
-// FindAll implements UserService.
-func (service *UserServiceImpl) FindAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error) {
-	users, err = service.Repository.FindAll(filter, pagination)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-	}
-	return
-}
-
 // FindById implements UserService.
 func (service *UserServiceImpl) FindById(id string) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.FindById(id)
@@ -133,6 +125,30 @@ func (service *UserServiceImpl) FindById(id string) (user *model.User, errCode i
 		errCode = http.StatusNotFound
 		message := "User not found! Please enter valid id."
 		err = fmt.Errorf("%s", message)
+	}
+	return
+}
+
+// FindUserInfoById implements UserService.
+func (service *UserServiceImpl) FindUserInfoById(id string) (user *model.UserInfo, errCode int, err error) {
+	user, err = service.Repository.FindUserInfoById(id)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		return
+	}
+	if user == nil {
+		errCode = http.StatusNotFound
+		message := "User information not found! Please enter valid id."
+		err = fmt.Errorf("%s", message)
+	}
+	return
+}
+
+// FindAll implements UserService.
+func (service *UserServiceImpl) FindAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error) {
+	users, err = service.Repository.FindAll(filter, pagination)
+	if err != nil {
+		errCode = http.StatusInternalServerError
 	}
 	return
 }

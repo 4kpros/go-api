@@ -17,7 +17,7 @@ type AuthController struct {
 
 func NewAuthController(service AuthService) *AuthController {
 	// --- VERY IMPORTANT ---
-	var _ = &types.ErrorResponse{} // Don't remove this line. It very important for swagger docs generation.
+	var _ = &types.ErrorResponse{} // Don't remove this line. It very important for swagger docs generation. It's used to import type.
 	// --- VERY IMPORTANT ---
 
 	return &AuthController{Service: service}
@@ -30,14 +30,14 @@ func NewAuthController(service AuthService) *AuthController {
 // @Param   payload body request.SignInEmailRequest true "Enter your information"
 // @Success 200 {object} response.SignInResponse "OK"
 // @Failure 400 {object} types.ErrorResponse "Invalid inputs!"
-// @Failure 403 {object} types.ErrorResponse "Account not activated!"
+// @Failure 403 {object} types.ErrorResponse "Account is not activated!"
 // @Failure 404 {object} types.ErrorResponse "Invalid email or password!"
 // @Security ApiKey
 // @Router /auth/signin-email [post]
 func (controller *AuthController) SignInWithEmail(c *gin.Context) {
 	// Get data of req body
 	var reqData = &request.SignInRequest{}
-	var deviceName string
+	var deviceName string = c.GetHeader("User-Agent")
 	c.Bind(reqData)
 	isEmailValid := utils.IsEmailValid(reqData.Email)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(reqData.Password)
@@ -63,13 +63,8 @@ func (controller *AuthController) SignInWithEmail(c *gin.Context) {
 		if errCode == http.StatusForbidden || len(validateAccountToken) > 0 {
 			c.JSON(http.StatusForbidden, response.SignUpResponse{
 				Token:   validateAccountToken,
-				Message: "Account not activated! Please activate your account to start using your services.",
+				Message: "Account is not activated! Please activate your account to start using your services.",
 			})
-			return
-		}
-		if errCode == http.StatusNotFound {
-			tmpMessage := "User account not found! Please check your information."
-			c.AbortWithError(errCode, fmt.Errorf("%s", tmpMessage))
 			return
 		}
 		c.AbortWithError(errCode, err)
@@ -90,14 +85,14 @@ func (controller *AuthController) SignInWithEmail(c *gin.Context) {
 // @Param   payload body request.SignInPhoneNumberRequest true "Enter your information"
 // @Success 200 {object} response.SignInResponse "OK"
 // @Failure 400 {object} types.ErrorResponse "Invalid inputs!"
-// @Failure 403 {object} types.ErrorResponse "Account not activated!"
+// @Failure 403 {object} types.ErrorResponse "Account is not activated!"
 // @Failure 404 {object} types.ErrorResponse "Invalid phone number or password!"
 // @Security ApiKey
 // @Router /auth/signin-phone [post]
 func (controller *AuthController) SignInWithPhoneNumber(c *gin.Context) {
 	// Get data of req body
 	var reqData = &request.SignInRequest{}
-	var deviceName string
+	var deviceName string = c.GetHeader("User-Agent")
 	c.Bind(reqData)
 	isPhoneNumberValid := utils.IsPhoneNumberValid(reqData.PhoneNumber)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(reqData.Password)
@@ -123,13 +118,8 @@ func (controller *AuthController) SignInWithPhoneNumber(c *gin.Context) {
 		if errCode == http.StatusForbidden || len(validateAccountToken) > 0 {
 			c.JSON(http.StatusForbidden, response.SignUpResponse{
 				Token:   validateAccountToken,
-				Message: "Account not activated! Please activate your account to start using your services.",
+				Message: "Account is not activated! Please activate your account to start using your services.",
 			})
-			return
-		}
-		if errCode == http.StatusNotFound {
-			tmpMessage := "User account not found! Please check your information."
-			c.AbortWithError(errCode, fmt.Errorf("%s", tmpMessage))
 			return
 		}
 		c.AbortWithError(errCode, err)
@@ -156,7 +146,7 @@ func (controller *AuthController) SignInWithPhoneNumber(c *gin.Context) {
 func (controller *AuthController) SignInWithProvider(c *gin.Context) {
 	// Get data of req body
 	var reqData = &request.SignInWithProviderRequest{}
-	var deviceName string
+	var deviceName string = c.GetHeader("User-Agent")
 	c.Bind(reqData)
 
 	// Execute the service
@@ -425,5 +415,27 @@ func (controller *AuthController) ResetPasswordNewPassword(c *gin.Context) {
 	// Return the response
 	c.JSON(http.StatusOK, response.ResetPasswordNewPasswordResponse{
 		Message: "Password successful changed! Please sign in to start using our services.",
+	})
+}
+
+// @Tags SignOut
+// @Summary SignOut
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} response.SignOutResponse "OK"
+// @Failure 404 {object} types.ErrorResponse "User not found!"
+// @Security ApiKey
+// @Router /auth/reset/new-password [post]
+func (controller *AuthController) SignOut(c *gin.Context) {
+	// Execute the service
+	errCode, err := controller.Service.SignOut(utils.ExtractBearerTokenHeader(c))
+	if err != nil {
+		c.AbortWithError(errCode, err)
+		return
+	}
+
+	// Return the response
+	c.JSON(http.StatusOK, response.ResetPasswordNewPasswordResponse{
+		Message: "Successful signed out! See you soon bye.",
 	})
 }

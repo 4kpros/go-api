@@ -7,9 +7,8 @@ import (
 
 func RateLimit(enabled bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Next()
 		if !enabled {
-			return
+			c.Next()
 		}
 
 		for _, err := range c.Errors {

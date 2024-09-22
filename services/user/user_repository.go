@@ -13,6 +13,7 @@ type UserRepository interface {
 	UpdateUserInfo(userInfo *model.UserInfo) error
 	Delete(id string) (int64, error)
 	FindById(id string) (*model.User, error)
+	FindUserInfoById(id string) (*model.UserInfo, error)
 	FindByEmail(email string) (*model.User, error)
 	FindByPhoneNumber(phoneNumber int) (*model.User, error)
 	FindByProvider(provider string, providerUserId string) (*model.User, error)
@@ -49,6 +50,12 @@ func (repository *UserRepositoryImpl) FindById(id string) (*model.User, error) {
 	var user = &model.User{}
 	result := repository.Db.Where("id = ?", id).Limit(1).Find(user)
 	return user, result.Error
+}
+
+func (repository *UserRepositoryImpl) FindUserInfoById(id string) (*model.UserInfo, error) {
+	var userInfo = &model.UserInfo{}
+	result := repository.Db.Where("id = ?", id).Limit(1).Find(userInfo)
+	return userInfo, result.Error
 }
 
 func (repository *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {

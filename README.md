@@ -33,7 +33,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ```Install Postgres, start the server and create a database or just use the command ``` `make docker-redis`
 
-```Rename app.example.env to ``` `app.env`
+```Rename .env.example to ``` `app.env`
 
 ```JWT pems files with EC(ES512) algorithm:``` `keys/jwt_private.pem` `keys/jwt_public.pem`
 
@@ -54,16 +54,10 @@ The entry point of the project is `cmd/` folder. In this folder the is a `main.g
 ### 3. Install dependencies
 
 ```go
-go mod download
+make install
 ```
 
-### 4. Run migrations
-
-```go
-make migrate
-```
-
-### 3. Generate swagger docs
+### 4. Generate swagger docs
 
 ```go
 make swagger
@@ -80,12 +74,6 @@ make run
 ```
 
 Let's GOOOOOOO 🚀🚀🚀🚀
-
-If you want the all-in-one command user this one
-
-```go
-make serve
-```
 
 API docs(with swagger) is on 
 ```go

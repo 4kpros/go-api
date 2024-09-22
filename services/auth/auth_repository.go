@@ -71,18 +71,18 @@ func (repository *AuthRepositoryImpl) FindById(id string) (*model.User, error) {
 
 func (repository *AuthRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var user = &model.User{}
-	result := repository.Db.Where("email = ? AND (provider is null OR provider = '')", email).Limit(1).Find(user)
+	result := repository.Db.Where(model.User{Email: email}).Where(model.User{Provider: ""}).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *AuthRepositoryImpl) FindByPhoneNumber(phoneNumber int) (*model.User, error) {
 	var user = &model.User{}
-	result := repository.Db.Where("phoneNumber = ? AND (provider is null OR provider = '')", phoneNumber).Limit(1).Find(user)
+	result := repository.Db.Where(model.User{PhoneNumber: phoneNumber}).Where(model.User{Provider: ""}).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *AuthRepositoryImpl) FindByProvider(provider string, providerUserId string) (*model.User, error) {
 	var user = &model.User{}
-	result := repository.Db.Where("provider = ? AND providerUserId = ?", provider, providerUserId).Limit(1).Find(user)
+	result := repository.Db.Where(model.User{Provider: provider}).Where(model.User{ProviderUserId: providerUserId}).Limit(1).Find(user)
 	return user, result.Error
 }
