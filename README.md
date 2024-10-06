@@ -29,7 +29,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 Make installed for shortcuts
 
-Docker installed if you want to start new postgres and redis containers
+Docker installed if you want to build and start postgres and redis containers
 
 Build and start Redis container with the command ```make docker-redis```
 
@@ -37,7 +37,7 @@ Build and start postgres container with the command ```make docker-redis```
 
 Rename .env.example to ```app.env```
 
-JWT pems files with EC(ES512) algorithm: ```keys/jwt_private.pem``` ```keys/jwt_public.pem```
+JWT pems files with EC(ES512) algorithm: ```keys/jwt_private.pem``` ```keys/jwt_public.pem``` 
 
 Others informations such configurations are on ```app.env```
 
