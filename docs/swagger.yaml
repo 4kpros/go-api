@@ -130,6 +130,11 @@ definitions:
       expires:
         type: string
     type: object
+  github_com_4kpros_go-api_services_auth_data_response.SignOutResponse:
+    properties:
+      message:
+        type: string
+    type: object
   github_com_4kpros_go-api_services_auth_data_response.SignUpResponse:
     properties:
       message:
@@ -422,7 +427,7 @@ paths:
           schema:
             $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
         "403":
-          description: Account not activated!
+          description: Account is not activated!
           schema:
             $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
         "404":
@@ -457,7 +462,7 @@ paths:
           schema:
             $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
         "403":
-          description: Account not activated!
+          description: Account is not activated!
           schema:
             $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
         "404":
@@ -500,6 +505,30 @@ paths:
       summary: Sign in user with provider
       tags:
       - Sign in
+  /auth/signout:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignOutResponse'
+        "403":
+          description: Invalid or expired token!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: User not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Sign out user
+      tags:
+      - SignOut
   /auth/signup-email:
     post:
       consumes:
@@ -671,7 +700,7 @@ paths:
             $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
       security:
       - ApiKey && Bearer: []
-      summary: Get user info
+      summary: Get basic user info
       tags:
       - Users
     put:
@@ -744,6 +773,43 @@ paths:
       tags:
       - Users
   /users/info/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: UserInfo id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_services_user_model.UserInfo'
+        "400":
+          description: Invalid inputs!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "401":
+          description: Invalid user session!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "403":
+          description: Not permitted!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+        "404":
+          description: UserInfo not found!
+          schema:
+            $ref: '#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse'
+      security:
+      - ApiKey && Bearer: []
+      summary: Get detailed user info
+      tags:
+      - Users
     put:
       consumes:
       - application/json
@@ -821,6 +887,6 @@ securityDefinitions:
   X-API-Key:
     description: Enter the API key to have access
     in: header
-    name: ApiKey
+    name: X-API-Key
     type: apiKey
 swagger: "2.0"

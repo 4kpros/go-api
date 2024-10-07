@@ -14,6 +14,6 @@ var AllRoles = []string{
 	ROLE_DEFAULT,
 }
 
-func IsValidRole(role string) bool {
+func IsRoleValid(role string) bool {
 	return slices.Contains(AllRoles, role)
 }

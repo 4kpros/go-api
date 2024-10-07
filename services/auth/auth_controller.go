@@ -419,13 +419,14 @@ func (controller *AuthController) ResetPasswordNewPassword(c *gin.Context) {
 }
 
 // @Tags SignOut
-// @Summary SignOut
+// @Summary Sign out user
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} response.SignOutResponse "OK"
+// @Failure 403 {object} types.ErrorResponse "Invalid or expired token!"
 // @Failure 404 {object} types.ErrorResponse "User not found!"
-// @Security ApiKey
-// @Router /auth/reset/new-password [post]
+// @Security ApiKey && Bearer
+// @Router /auth/signout [post]
 func (controller *AuthController) SignOut(c *gin.Context) {
 	// Execute the service
 	errCode, err := controller.Service.SignOut(utils.ExtractBearerTokenHeader(c))
@@ -435,7 +436,7 @@ func (controller *AuthController) SignOut(c *gin.Context) {
 	}
 
 	// Return the response
-	c.JSON(http.StatusOK, response.ResetPasswordNewPasswordResponse{
+	c.JSON(http.StatusOK, response.SignOutResponse{
 		Message: "Successful signed out! See you soon bye.",
 	})
 }

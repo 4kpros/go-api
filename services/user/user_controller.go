@@ -206,7 +206,7 @@ func (controller *UserController) FindById(c *gin.Context) {
 // @Failure 403 {object} types.ErrorResponse "Not permitted!"
 // @Failure 404 {object} types.ErrorResponse "UserInfo not found!"
 // @Security ApiKey && Bearer
-// @Router /users/{id} [get]
+// @Router /users/info/{id} [get]
 func (controller *UserController) FindUserInfoById(c *gin.Context) {
 	// Get data of req header
 	id := c.Param("id")

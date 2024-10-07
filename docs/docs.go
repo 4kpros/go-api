@@ -320,7 +320,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "Account not activated!",
+                        "description": "Account is not activated!",
                         "schema": {
                             "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
                         }
@@ -376,7 +376,7 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "Account not activated!",
+                        "description": "Account is not activated!",
                         "schema": {
                             "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
                         }
@@ -433,6 +433,45 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Invalid token!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/signout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKey \u0026\u0026 Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SignOut"
+                ],
+                "summary": "Sign out user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_services_auth_data_response.SignOutResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Invalid or expired token!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found!",
                         "schema": {
                             "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
                         }
@@ -650,6 +689,64 @@ const docTemplate = `{
             }
         },
         "/users/info/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKey \u0026\u0026 Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get detailed user info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UserInfo id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_services_user_model.UserInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid inputs!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid user session!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Not permitted!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "UserInfo not found!",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_4kpros_go-api_common_types.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -776,7 +873,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get user info",
+                "summary": "Get basic user info",
                 "parameters": [
                     {
                         "type": "string",
@@ -1145,6 +1242,14 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_4kpros_go-api_services_auth_data_response.SignOutResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_4kpros_go-api_services_auth_data_response.SignUpResponse": {
             "type": "object",
             "properties": {
@@ -1308,7 +1413,7 @@ const docTemplate = `{
         "X-API-Key": {
             "description": "Enter the API key to have access",
             "type": "apiKey",
-            "name": "ApiKey",
+            "name": "X-API-Key",
             "in": "header"
         }
     }

@@ -10,7 +10,7 @@ func SetupEndpoints(routerGroup *gin.RouterGroup, controller *UserController) {
 
 	group := routerGroup.Group("/users")
 	const requireAuth = true
-	allowedRoles := []string{constants.ROLE_ADMIN, "customer"}
+	allowedRoles := []string{constants.ROLE_ADMIN}
 
 	// Create new user
 	router.POST(group, "/email", controller.CreateWithEmail, requireAuth, allowedRoles)

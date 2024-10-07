@@ -10,25 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @title API Documentation
-// @version 1.0
-// @description This is the API documentation
-
-// @contact.name Prosper Abouar
-// @contact.email prosper.abouar@gmail.com
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @securityDefinitions.apikey X-API-Key
-// @in header
-// @name ApiKey
-// @description Enter the API key to have access
-
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Bearer
-// @description Enter Bearer with space and your token
 func Start() {
 	// Setup gin for your API
 	gin.SetMode(config.AppEnv.GinMode)

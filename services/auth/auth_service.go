@@ -130,8 +130,8 @@ func (service *AuthServiceImpl) SignIn(deviceName string, reqData *request.SignI
 func (service *AuthServiceImpl) SignInWithProvider(deviceName string, reqData *request.SignInWithProviderRequest) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Validate provider token and update user
 	var errMessage string
-	if !types.AuthProviders[reqData.Provider] {
-		errMessage = "Invalid provider! Please enter valid information."
+	if !constants.IsAuthProviderValid(reqData.Provider) {
+		errMessage = "Invalid or empty provider! Please enter valid information."
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s", errMessage)
 		return

@@ -6,14 +6,6 @@ import (
 	"unicode"
 )
 
-func IsRoleValid(role string) bool {
-	return true
-}
-
-func IsProviderValid(provider string, token string) bool {
-	return true
-}
-
 func IsPhoneNumberValid(phoneNumber int) bool {
 	return phoneNumber > 100000
 }
