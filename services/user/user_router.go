@@ -1,30 +1,28 @@
 package user
 
 import (
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/router"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 )
 
-func SetupEndpoints(routerGroup *gin.RouterGroup, controller *UserController) {
-
-	group := routerGroup.Group("/users")
+func SetupEndpoints(
+	humaApi *huma.API,
+	controller *UserController,
+) {
 	const requireAuth = true
-	allowedRoles := []string{constants.ROLE_ADMIN}
 
-	// Create new user
-	router.POST(group, "/email", controller.CreateWithEmail, requireAuth, allowedRoles)
-	router.POST(group, "/phone", controller.CreateWithPhoneNumber, requireAuth, allowedRoles)
+	// Create
+	// router.Post(humaApi, "Create user by email", "/email", requireAuth, controller.CreateWithEmail)
+	// router.Post(humaApi, "Create user by phone number", "/phone", requireAuth, controller.CreateWithPhoneNumber)
 
-	// Update user and user info
-	router.PUT(group, "/:id", controller.UpdateUser, requireAuth, allowedRoles)
-	router.PUT(group, "/info/:id", controller.UpdateUserInfo, requireAuth, allowedRoles)
+	// // Update
+	// router.Put(humaApi, "Update user", "/:id", requireAuth, controller.UpdateUser)
+	// router.Put(humaApi, "Update user info", "/info/:id", requireAuth, controller.UpdateUserInfo)
 
-	// Delete user
-	router.DELETE(group, "/:id", controller.Delete, requireAuth, allowedRoles)
+	// // Get
+	// router.Get(humaApi, "Get user", "/:id", requireAuth, controller.FindById)
+	// router.Get(humaApi, "Get user info", "/info/:id", requireAuth, controller.FindUserInfoById)
+	// router.Get(humaApi, "Get all users", "/", requireAuth, controller.FindAll)
 
-	// Get user and user info
-	router.GET(group, "/:id", controller.FindById, requireAuth, allowedRoles)
-	router.GET(group, "/info/:id", controller.FindUserInfoById, requireAuth, allowedRoles)
-	router.GET(group, "/", controller.FindAll, requireAuth, allowedRoles)
+	// // Delete
+	// router.Delete(humaApi, "Delete user", "/:id", requireAuth, controller.Delete)
 }

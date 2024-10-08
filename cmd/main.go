@@ -84,27 +84,22 @@ func init() {
 			"All pem files loaded!",
 		)
 	}
+
+	// Load templates
+	errTemplate := config.LoadTemplates()
+	if errTemplate != nil {
+		initError = errTemplate
+		helpers.Logger.Warn(
+			"Failed to load all template files!",
+			zap.String("Error", errRedis.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"All template files loaded!",
+		)
+	}
 }
 
-// @title API Documentation
-// @version 1.0
-// @description This is the API documentation
-
-// @contact.name Prosper Abouar
-// @contact.email prosper.abouar@gmail.com
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @securityDefinitions.apikey X-API-Key
-// @in header
-// @name X-API-Key
-// @description Enter the API key to have access
-
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Bearer
-// @description Enter Bearer with space and your token
 func main() {
 	if initError != nil {
 		helpers.Logger.Warn(

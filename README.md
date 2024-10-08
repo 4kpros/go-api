@@ -59,13 +59,7 @@ The entry point of the project is `cmd/` folder. In this folder the is a `main.g
 make install
 ```
 
-### 4. Generate swagger docs
-
-```go
-make swagger
-```
-
-### 5. Run the API
+### 4. Run the API
 
 ```go
 make build
@@ -82,7 +76,7 @@ API docs(with swagger) is on
 /api/v1/docs
 ```
 
-# Next features
+# Features
 
 - [x] Auth:
   - Login (📩Email, 📲Phone number, ☁️Provider['Google', 'Facebook']),
@@ -93,8 +87,11 @@ API docs(with swagger) is on
     
   - Reset password.
 
+- [x] Roles
+  - CRUD operations
+
 - [x] Users
-  - Basic CRUD operations
+  - CRUD operations
 
 
 # Contributing

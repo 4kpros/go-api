@@ -2,12 +2,10 @@ package request
 
 type CreateWithEmailRequest struct {
 	Email string
-	Role  string
+	Role  int
 }
-
-// Enums(super-admin, admin, manager, manager-assist, deliver, customer, customer-service)
 
 type CreateWithPhoneNumberRequest struct {
 	PhoneNumber int
-	Role        string
+	Role        int
 }

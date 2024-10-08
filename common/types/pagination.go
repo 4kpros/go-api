@@ -1,11 +1,8 @@
 package types
 
 type PaginationRequest struct {
-	Search  string `json:"search"`
-	Page    int    `json:"page"`
-	Limit   int    `json:"limit"`
-	OrderBy string `json:"orderBy"`
-	Sort    string `json:"sort"`
+	Page  int `json:"page" query:"page" doc:"Current page" example:"1"`
+	Limit int `json:"limit" query:"limit" doc:"Max items per page" example:"10"`
 }
 
 type Pagination struct {

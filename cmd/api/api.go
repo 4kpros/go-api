@@ -3,9 +3,11 @@ package api
 import (
 	"fmt"
 
-	"github.com/4kpros/go-api/common/middleware"
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/config"
 	"github.com/4kpros/go-api/di"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,22 +20,38 @@ func Start() {
 	engine.HandleMethodNotAllowed = true
 	engine.ForwardedByClientIP = true
 	engine.SetTrustedProxies([]string{"127.0.0.1"})
-	engine.Use(middleware.ErrorsHandler())
-	apiGroup := engine.Group(config.AppEnv.ApiGroup)
+	ginGroup := engine.Group(config.AppEnv.ApiGroup)
+
+	// OpenAPI documentation
+	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
+	humaConfig.DocsPath = ""
+	humaConfig.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
+		"bearer": {
+			Type:         "http",
+			Scheme:       "bearer",
+			BearerFormat: "JWT",
+		},
+	}
+	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
+	humaApi := humagin.NewWithGroup(nil, ginGroup, humaConfig)
+	// humaApi.UseMiddleware(middleware.ErrorsMiddleware, middleware.SecureApiMiddleware)
+	ginGroup.GET("/docs", func(ctx *gin.Context) {
+		ctx.Data(200, "text/html", []byte(config.AppTemplate.Scalar))
+	})
 
 	// Inject Dependencies
-	authRepo, userRepo :=
+	roleRepo, authRepo, userRepo :=
 		di.InitRepositories() // Repositories
-	authSer, userSer :=
+	roleSvc, authSvc, userSvc :=
 		di.InitServices(
-			authRepo, userRepo,
+			roleRepo, authRepo, userRepo,
 		) // Services
-	authContr, userContr :=
+	roleCtrl, authCtrl, userCtrl :=
 		di.InitControllers(
-			authSer, userSer,
+			roleSvc, authSvc, userSvc,
 		) // Controllers
 	di.InitRouters(
-		apiGroup, authContr, userContr,
+		&humaApi, roleCtrl, authCtrl, userCtrl,
 	) // Routers
 
 	// Run gin

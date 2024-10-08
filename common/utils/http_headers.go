@@ -3,13 +3,13 @@ package utils
 import (
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 )
 
-func ExtractBearerTokenHeader(c *gin.Context) string {
-	return strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
+func ExtractBearerTokenHeader(ctx *huma.Context) string {
+	return strings.TrimPrefix((*ctx).Header("Authorization"), "Bearer ")
 }
 
-func ExtractApiKeyHeader(c *gin.Context) string {
-	return c.GetHeader("X-API-Key")
+func ExtractApiKeyHeader(ctx *huma.Context) string {
+	return (*ctx).Header("X-API-Key")
 }

@@ -150,7 +150,6 @@ func (service *AuthServiceImpl) SignInWithProvider(deviceName string, reqData *r
 			Provider:       reqData.Provider,
 			ProviderUserId: providerUserId,
 		}
-		user.Role = constants.ROLE_DEFAULT
 		err = service.Repository.Create(user)
 		if err != nil {
 			errCode = http.StatusInternalServerError
@@ -208,7 +207,6 @@ func (service *AuthServiceImpl) SignUp(reqData *request.SignUpRequest) (token st
 	userFound.Email = reqData.Email
 	userFound.PhoneNumber = reqData.PhoneNumber
 	userFound.Password = reqData.Password
-	userFound.Role = constants.ROLE_DEFAULT
 	err = service.Repository.Create(userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError

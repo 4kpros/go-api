@@ -4,7 +4,7 @@ import "time"
 
 type JwtToken struct {
 	UserId  uint
-	Role    string
+	Role    int
 	Expires time.Time
 	Code    int
 	Device  string
