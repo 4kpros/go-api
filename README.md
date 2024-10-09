@@ -86,7 +86,8 @@ Amazing API documentation(default is based on Scalar and you can choose between 
 ![OpenAPI-Stoplight](https://github.com/user-attachments/assets/fa0595e6-46f2-48aa-a379-af19a854bc06)
 
 <ins>Swagger template screenshot</ins>
-![OpenAPI-Swagger](https://github.com/user-attachments/assets/111ee115-e82e-4050-b696-0a43ea26a283)
+![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
+
 
 # Features
 
