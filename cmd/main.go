@@ -1,134 +1,113 @@
 package main
 
 import (
-	"fmt"
-
+	"github.com/4kpros/go-api/cmd/api"
+	"github.com/4kpros/go-api/cmd/migrate"
 	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/middleware"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/config"
-	"github.com/4kpros/go-api/di"
-
-	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
+
+var errInit error = nil
 
 func init() {
 	// Setup logger
 	helpers.SetupLogger()
 
-	// Load env variables
-	errAppEnv := config.LoadAppEnv(".")
-	if errAppEnv != nil {
-		helpers.Logger.Warn(
-			"Failed to load app ENV vars!",
-			zap.String("Error", errAppEnv.Error()),
+	// Load env
+	errEnv := config.LoadEnv(".")
+	if errEnv != nil {
+		errInit = errEnv
+		helpers.Logger.Error(
+			"Failed to load env!",
+			zap.String("Error", errEnv.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"Env loaded!",
 		)
 	}
-	helpers.Logger.Warn(
-		"App ENV variables loaded!",
-	)
 
-	// Setup argon params for crypto
-	_, errArgonCryptoParamsUtils := utils.EncryptWithArgon2id("")
-	if errArgonCryptoParamsUtils != nil {
-		helpers.Logger.Warn(
-			"Failed to setup argon2id params!",
-			zap.String("Error", errArgonCryptoParamsUtils.Error()),
+	// Test argon2id with empty password
+	_, errArgon2id := utils.EncryptWithArgon2id("")
+	if errArgon2id != nil {
+		errInit = errArgon2id
+		helpers.Logger.Error(
+			"Failed to setup argon2id!",
+			zap.String("Error", errArgon2id.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"Argon2id setup ok!",
 		)
 	}
-	helpers.Logger.Warn(
-		"Argon2id crypto set ok!",
-	)
 
-	// Connect to postgres database
-	errPostgresDB := config.ConnectToPostgresDB()
-	if errPostgresDB != nil {
-		helpers.Logger.Warn(
-			"Failed to connect to Postgres database!",
-			zap.String("Error", errPostgresDB.Error()),
+	// Connect database
+	errDB := config.ConnectDatabase()
+	if errDB != nil {
+		errInit = errDB
+		helpers.Logger.Error(
+			"Failed to connect to database!",
+			zap.String("Error", errDB.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"Connected to database!",
 		)
 	}
-	helpers.Logger.Info(
-		"Connected to Postgres!",
-	)
 
-	// Connect to memcache
-	errMemcache := config.ConnectToMemcache()
-	if errMemcache != nil {
-		helpers.Logger.Warn(
-			"Failed to connect to Memcache!",
-			zap.String("Error", errMemcache.Error()),
-		)
-	}
-	helpers.Logger.Info(
-		"Connected to Memcache!",
-	)
-
-	// Connect to redis
-	errRedis := config.ConnectToRedis()
+	// Connect redis
+	errRedis := config.ConnectRedis()
 	if errRedis != nil {
-		helpers.Logger.Warn(
+		errInit = errRedis
+		helpers.Logger.Error(
 			"Failed to connect to Redis!",
 			zap.String("Error", errRedis.Error()),
 		)
-	}
-	helpers.Logger.Info(
-		"Connected to Redis!",
-	)
-
-	// Load pem
-	errPem := config.LoadPem()
-	if errPem != nil {
-		helpers.Logger.Warn(
-			"Failed to load all pem files!",
-			zap.String("Error", errRedis.Error()),
+	} else {
+		helpers.Logger.Info(
+			"Connected to Redis!",
 		)
 	}
-	helpers.Logger.Info(
-		"All pem files loaded!",
-	)
+
+	// Load keys
+	errKeys := config.LoadKeys()
+	if errKeys != nil {
+		errInit = errKeys
+		helpers.Logger.Error(
+			"Failed to load all keys!",
+			zap.String("Error", errRedis.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"All keys loaded!",
+		)
+	}
+
+	// Load OpenAPI templates
+	errOpenAPITemplates := config.LoadOpenAPITemplates()
+	if errOpenAPITemplates != nil {
+		errInit = errOpenAPITemplates
+		helpers.Logger.Error(
+			"Failed to load OpenAPI templates!",
+			zap.String("Error", errRedis.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"All OpenAPI templates loaded!",
+		)
+	}
 }
 
-// @title SAGO - API Documentation
-// @version 1.0
-// @description This is the documentation of SAGO API
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name Prosper Abouar
-// @contact.url https://www.github.com/4kpros
-// @contact.email prosper.abouar@gmail.com
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
-	// Setup gin for your API
-	gin.SetMode(config.AppEnv.GinMode)
-	gin.ForceConsoleColor()
-	engine := gin.Default()
-	engine.HandleMethodNotAllowed = true
-	engine.ForwardedByClientIP = true
-	engine.SetTrustedProxies([]string{"127.0.0.1"})
-	engine.Use(middleware.ErrorsHandler())
-
-	apiGroup := engine.Group(config.AppEnv.ApiGroup)
-
-	// Inject Dependencies
-	authRepo, userRepo :=
-		di.InitRepositories() // Repositories
-	authSer, userSer :=
-		di.InitServices(
-			authRepo, userRepo,
-		) // Services
-	authContr, userContr :=
-		di.InitControllers(
-			authSer, userSer,
-		) // Controllers
-	di.InitRouters(
-		apiGroup, authContr, userContr,
-	) // Routers
-
-	// Run gin
-	formattedPort := fmt.Sprintf(":%d", config.AppEnv.ApiPort)
-	engine.Run(formattedPort)
+	if errInit != nil {
+		helpers.Logger.Warn(
+			"There are some errors when initializing app!",
+			zap.String("Error", "Please fix previous errors before."),
+		)
+		return
+	}
+	migrate.Start()
+	api.Start()
 }

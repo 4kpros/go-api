@@ -4,13 +4,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Env struct {
+type Environment struct {
 	// API config
-	ApiPort         int    `mapstructure:"API_PORT"`
-	ApiKey          string `mapstructure:"API_KEY"`
-	ApiGroup        string `mapstructure:"API_GROUP"`
-	GinMode         string `mapstructure:"GIN_MODE"`
-	AllowedHostsStr string `mapstructure:"ALLOWED_HOSTS"`
+	ApiPort      int    `mapstructure:"API_PORT"`
+	ApiKey       string `mapstructure:"API_KEY"`
+	ApiGroup     string `mapstructure:"API_GROUP"`
+	GinMode      string `mapstructure:"GIN_MODE"`
+	AllowedHosts string `mapstructure:"ALLOWED_HOSTS"`
 
 	// Postgres database
 	PostGresHost     string `mapstructure:"POSTGRES_HOST"`
@@ -22,21 +22,16 @@ type Env struct {
 	PostGresTimeZone string `mapstructure:"POSTGRES_TIME_ZONE"`
 
 	// JWT
-	JwtExpires              int `mapstructure:"JWT_EXPIRES"`
-	JwtExpiresStayConnected int `mapstructure:"JWT_EXPIRES_STAY_CONNECTED"`
-	JwtExpiresOthers        int `mapstructure:"JWT_EXPIRES_OTHERS"`
+	JwtExpiresSignIn              int `mapstructure:"JWT_EXPIRES_SIGN_IN"`
+	JwtExpiresSignInStayConnected int `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
+	JwtExpiresDefault             int `mapstructure:"JWT_EXPIRES_DEFAULT"`
 
 	// Redis for fast key-value database
 	RedisHost     string `mapstructure:"REDIS_HOST"`
 	RedisPort     int    `mapstructure:"REDIS_PORT"`
 	RedisUserName string `mapstructure:"REDIS_USERNAME"`
 	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisDatabase int    `mapstructure:"REDIS_DATABASE"`
-
-	// Memcache for fast key-value database
-	MemcacheServersCount int    `mapstructure:"MEMCACHE_SERVERS_COUNT"`
-	MemcacheHostRange    string `mapstructure:"MEMCACHE_HOST_RANGE"`
-	MemcacheInitialPort  int    `mapstructure:"MEMCACHE_INITIAL_PORT"`
+	RedisDatabase int    `mapstructure:"REDIS_DB"`
 
 	// Crypto Argon2id for passwords
 	ArgonMemoryLeft  int `mapstructure:"ARGON_PARAM_MEMORY_L"`
@@ -44,11 +39,18 @@ type Env struct {
 	ArgonIterations  int `mapstructure:"ARGON_PARAM_ITERATIONS"`
 	ArgonSaltLength  int `mapstructure:"ARGON_PARAM_SALT_LENGTH"`
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
+
+	// SMTP
+	SmtpHost     string `mapstructure:"SMTP_HOST"`
+	SmtpPort     int    `mapstructure:"SMTP_PORT"`
+	SmtpUsername string `mapstructure:"SMTP_USERNAME"`
+	SmtpPassword string `mapstructure:"SMTP_PASSWORD"`
+	SmtpSender   string `mapstructure:"SMTP_SENDER"`
 }
 
-var AppEnv = &Env{}
+var Env = &Environment{}
 
-func LoadAppEnv(path string) (err error) {
+func LoadEnv(path string) (err error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
@@ -57,7 +59,7 @@ func LoadAppEnv(path string) (err error) {
 
 	err = viper.ReadInConfig()
 	if err == nil {
-		err = viper.Unmarshal(AppEnv)
+		err = viper.Unmarshal(Env)
 	}
 	return
 }

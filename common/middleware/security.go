@@ -2,64 +2,72 @@ package middleware
 
 import (
 	"fmt"
-	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/config"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 )
 
-func IsOriginKnown(host string) (trust bool) {
-	if strings.EqualFold(host, "localhost:3100") || strings.EqualFold(host, "127.0.0.1:3100") {
-		trust = true
+var defaultMiddleware *huma.Middlewares = &huma.Middlewares{}
+var authRequiredMiddleware *huma.Middlewares = &huma.Middlewares{JWTMiddleware}
+
+func GenerateMiddlewares(requireAuth bool) *huma.Middlewares {
+	if requireAuth {
+		return authRequiredMiddleware
+	}
+	return defaultMiddleware
+}
+
+func IsOriginKnown(host string) bool {
+	hosts := strings.Split(config.Env.AllowedHosts, ",")
+	return slices.Contains(hosts, host)
+}
+
+func SecureApiMiddleware(ctx huma.Context, next func(huma.Context)) {
+	// Add headers for more security
+	ctx.SetHeader("Content-Type", "application/json")
+	ctx.SetHeader("X-Frame-Options", "DENY")
+	ctx.SetHeader("X-Content-Type-Options", "nosniff")
+	ctx.SetHeader("X-Xss-Protection", "1; mode=block")
+	ctx.SetHeader("Content-Security-Policy", "default-src 'self'")
+	ctx.SetHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+	ctx.SetHeader("X-Download-Options", "noopen")
+	ctx.SetHeader("Strict-Transport-Security", fmt.Sprintf("max-age=%d; %s", 31536000, "includeSubDomains"))
+
+	// Check allowed hosts
+	if !IsOriginKnown(ctx.Host()) {
+		message := "Our system detected your request as malicious! Please fix that before."
+		huma.Error403Forbidden(message, fmt.Errorf("%s", message))
 		return
 	}
-	trust = false
-	return
-}
 
-func SecureAPIHandler(handler gin.HandlerFunc, requiredAuth bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Header("Content-Type", "application/json")
-		c.Header("X-Frame-Options", "DENY")
-		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-Xss-Protection", "1; mode=block")
-		c.Header("Content-Security-Policy", "default-src 'self'")
-		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
-		c.Header("X-Download-Options", "noopen")
-		c.Header("Strict-Transport-Security", fmt.Sprintf("max-age=%d; %s", 31536000, "includeSubDomains"))
-		c.Next()
-		if !IsOriginKnown(c.Request.Host) {
-			message := "Our system detected your request as malicious! Please fix that before."
-			c.AbortWithError(http.StatusForbidden, fmt.Errorf("%s", message))
-			return
-		}
-		apiKey := c.GetHeader("X-API-Key")
-		if apiKey != config.AppEnv.ApiKey {
-			message := "Invalid API key! Please enter valid API key and try again."
-			c.AbortWithError(http.StatusForbidden, fmt.Errorf("%s", message))
-		} else {
-			if requiredAuth {
-				JWTHandler(c, handler)
-			} else {
-				handler(c)
-			}
-		}
+	// Check api key
+	apiKey := utils.ExtractApiKeyHeader(&ctx)
+	if apiKey != config.Env.ApiKey {
+		message := "Invalid API key! Please enter valid API key and try again."
+		huma.Error403Forbidden(message, fmt.Errorf("%s", message))
+		return
 	}
+
+	next(ctx)
 }
 
-func JWTHandler(c *gin.Context, handler gin.HandlerFunc) {
-	bearerToken := c.GetHeader("Authorization")
+func JWTMiddleware(ctx huma.Context, next func(huma.Context)) {
+	// Check if the token is valid
+	bearerToken := utils.ExtractBearerTokenHeader(&ctx)
 	if len(bearerToken) <= 0 {
-		message := "Missing authorization header! Please enter authorization header and try again."
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("%s", message))
+		message := "Missing or bad authorization header! Please enter authorization header and try again."
+		huma.Error401Unauthorized(message, fmt.Errorf("%s", message))
 		return
 	}
-	if !utils.VerifyJWTToken(strings.TrimPrefix(bearerToken, "Bearer "), config.AppPem.JwtPublicKey) {
-		message := "Invalid authorization header! Please enter valid authorization header and try again."
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("%s", message))
+	jwtDecrypted, jwtValid := utils.VerifyJWTToken(bearerToken, config.Keys.JwtPublicKey)
+	if !jwtValid || jwtDecrypted == nil {
+		message := "Invalid or expired authorization header! Please enter valid authorization header and try again."
+		huma.Error401Unauthorized(message, fmt.Errorf("%s", message))
 		return
 	}
-	handler(c)
+
+	next(ctx)
 }

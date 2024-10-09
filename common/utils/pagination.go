@@ -1,11 +1,9 @@
 package utils
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/4kpros/go-api/common/types"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -18,12 +16,14 @@ func PaginationScope(model interface{}, pagination *types.Pagination, filters *t
 	}
 }
 
-func GetPaginationFiltersFromQuery(c *gin.Context) (*types.Pagination, *types.Filter) {
-	search := c.Query("search")
-	orderBy := c.Query("orderBy")
-	sort := c.Query("sort")
-	page, _ := strconv.Atoi(c.Query("page"))
-	limit, _ := strconv.Atoi(c.Query("limit"))
+func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.PaginationRequest) (*types.Pagination, *types.Filter) {
+	page := pagination.Page
+	limit := pagination.Limit
+
+	search := filter.Search
+	orderBy := filter.OrderBy
+	sort := filter.Sort
+
 	if page <= 0 {
 		page = 1
 	}

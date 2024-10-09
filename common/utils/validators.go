@@ -1,17 +1,16 @@
 package utils
 
 import (
+	"fmt"
 	"net/mail"
-	"strconv"
+	"slices"
 	"unicode"
+
+	"github.com/4kpros/go-api/common/constants"
 )
 
-func IsRoleValid(role string) bool {
-	return true
-}
-
-func IsProviderValid(provider string, token string) bool {
-	return true
+func IsAuthProviderValid(provider string) bool {
+	return slices.Contains(constants.AllAuthProviders, provider)
 }
 
 func IsPhoneNumberValid(phoneNumber int) bool {
@@ -53,7 +52,7 @@ func IsPasswordValid(password string) (bool, string) {
 	isValid := hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
 
 	if !isValid {
-		missing = "[hasMinLen: " + strconv.FormatBool(hasMinLen) + ", hasUpper: " + strconv.FormatBool(hasUpper) + ", hasLower: " + strconv.FormatBool(hasLower) + ", hasNumber: " + strconv.FormatBool(hasNumber) + ", hasSpecial: " + strconv.FormatBool(hasSpecial) + "]"
+		missing = fmt.Sprintf("[hasMinLen: %t, hasUpper: %t, hasLower: %t, hasNumber: %t, hasSpecial: %t]", hasMinLen, hasUpper, hasLower, hasMinLen, hasSpecial)
 	}
 
 	return isValid, missing

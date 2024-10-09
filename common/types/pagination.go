@@ -1,13 +1,18 @@
 package types
 
+type PaginationRequest struct {
+	Page  int `json:"page" query:"page" required:"false" doc:"Current page" example:"1"`
+	Limit int `json:"limit" query:"limit" required:"false" doc:"Max items per page" example:"10"`
+}
+
 type Pagination struct {
-	CurrentPage  int   `json:"currentPage"`
-	NextPage     int   `json:"nextPage"`
-	PreviousPage int   `json:"previousPage"`
-	TotalPages   int64 `json:"totalPages"`
-	Count        int64 `json:"count"`
-	Limit        int   `json:"limit"`
-	Offset       int   `json:"offset"`
+	CurrentPage  int   `json:"currentPage" required:"false"`
+	NextPage     int   `json:"nextPage" required:"false"`
+	PreviousPage int   `json:"previousPage" required:"false"`
+	TotalPages   int64 `json:"totalPages" required:"false"`
+	Count        int64 `json:"count" required:"false"`
+	Limit        int   `json:"limit" required:"false"`
+	Offset       int   `json:"offset" required:"false"`
 }
 
 func (p *Pagination) UpdateFields(count *int64) {
@@ -30,8 +35,9 @@ func (p *Pagination) UpdateFields(count *int64) {
 	}
 }
 
-func DivUp(n *int64, d *int, r *int64) {
-	*r = 1 + (*n-1)/int64(*d)
+// This function round up(ceil) A/B but extremely faster
+func DivUp(numerator *int64, denominator *int, result *int64) {
+	*result = 1 + (*numerator-1)/int64(*denominator)
 }
 
 func NextPage(page *int, totalPages *int64) {

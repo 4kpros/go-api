@@ -27,13 +27,19 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 1. Requirements
 
-```Install Redis and start the server```
+Make installed for shortcuts
 
-```Install Memcache and start the server```
+Docker installed if you want to build and start postgres and redis containers
 
-```Install Postgres, start the server and create a database ```
+Build and start Redis container with the command ```make docker-redis```
 
-Others informations such configurations are on```app.env``` and```crypto.env``` file
+Build and start postgres container with the command ```make docker-postgres```
+
+Rename .env.example to ```app.env```
+
+JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
+
+Others information such configurations are on ```app.env```
 
 ### 2. Clone the repository
 
@@ -50,20 +56,10 @@ The entry point of the project is `cmd/` folder. In this folder the is a `main.g
 ### 3. Install dependencies
 
 ```go
-go mod download
+make install
 ```
 
-### 4. Run migrations
-
-```go
-make build-migrate
-```
-
-```go
-make run-migrate
-```
-
-### 5. Run the API
+### 4. Run the API
 
 ```go
 make build
@@ -73,16 +69,38 @@ make build
 make run
 ```
 
-Let's GOOOOOOO 🚀🚀🚀🚀
-
-API docs(with swagger) is on 
+API docs with openAPI v3.1(latest) is on 
 ```go
-http://localhost:3000/api/v1/docs
+/api/v1/docs
 ```
 
-# Next features
+Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, Stoplight, Swagger). 
 
-- [ ] 🖋️ Auth:
+<ins>Scalar(default) template screenshot</ins>
+![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
+
+<ins>Redocly template screenshot</ins>
+![OpenAPI-Redocly](https://github.com/user-attachments/assets/1e1708aa-f355-446d-aa19-9f2ab16e08fa)
+
+<ins>Stoplight template screenshot</ins>
+![OpenAPI-Stoplight](https://github.com/user-attachments/assets/fa0595e6-46f2-48aa-a379-af19a854bc06)
+
+<ins>Swagger template screenshot</ins>
+![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
+
+
+# Features
+
+- [x] History
+  - Get history with search, filter and pagination
+
+- [x] Role
+  - CRUD operations
+
+- [x] Role-permission
+  - Create and Get all with search, filter and pagination
+
+- [x] Auth
   - Login (📩Email, 📲Phone number, ☁️Provider['Google', 'Facebook']),
   
   - Register (📩Email, 📲Phone number),
@@ -91,24 +109,9 @@ http://localhost:3000/api/v1/docs
     
   - Reset password.
 
-- [ ] Users
-  - Basic CRUD operations for roles `super_admin`   `admin`   `manager`   `manager_assistant`   `driver`   `driver_assistant`   `customer`   `customer_service`
+- [x] Users
+  - CRUD operations
 
-- [ ] Shops
-
-- [ ] Products
-
-- [ ] Cart
-
-- [ ] Delivery
-
-- [ ] Geo-reference
-
-- [ ] Payments
-
-- [ ] Support
-
-- [ ] Advertising
 
 # Contributing
 

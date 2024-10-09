@@ -1,18 +1,19 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+
+	"github.com/danielgtaylor/huma/v2"
 )
 
-func ErrorsHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Next()
-		for _, err := range c.Errors {
-			if err.Err.Error() != "EOF" {
-				c.AbortWithStatusJSON(c.Writer.Status(), gin.H{
-					"message": err.Err.Error(),
-				})
-			}
+func ErrorsMiddleware(ctx huma.Context, next func(huma.Context)) {
+	for err := range ctx.Operation().Errors {
+		if err >= 400 {
+			// huma.WriteErr(api, ctx, err, ctx.Context().Err().Error())
+			fmt.Printf("API ERROR %s", ctx.Context().Err().Error())
+			return
 		}
 	}
+
+	next(ctx)
 }

@@ -2,11 +2,13 @@ package utils
 
 import (
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-=_+"
+const letterBytesCode = "1234567890"
 
 var src = rand.NewSource(time.Now().UnixNano())
 
@@ -16,7 +18,16 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
+func GenerateRandomCode(length int) (code int, err error) {
+	code, err = strconv.Atoi(GenerateRandomValue(letterBytesCode, length))
+	return
+}
+
 func GenerateRandomPassword(length int) string {
+	return GenerateRandomValue(letterBytes, length)
+}
+
+func GenerateRandomValue(letters string, length int) string {
 	sb := strings.Builder{}
 	sb.Grow(length)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
@@ -24,8 +35,8 @@ func GenerateRandomPassword(length int) string {
 		if remain == 0 {
 			cache, remain = src.Int63(), letterIdxMax
 		}
-		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-			sb.WriteByte(letterBytes[idx])
+		if idx := int(cache & letterIdxMask); idx < len(letters) {
+			sb.WriteByte(letters[idx])
 			i--
 		}
 		cache >>= letterIdxBits
