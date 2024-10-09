@@ -25,6 +25,9 @@ func Start() {
 	// OpenAPI documentation
 	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
 	humaConfig.DocsPath = ""
+	humaConfig.Servers = []*huma.Server{
+		{URL: config.Env.ApiGroup},
+	}
 	humaConfig.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
 		"bearer": {
 			Type:         "http",
@@ -33,7 +36,7 @@ func Start() {
 		},
 	}
 	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
-	humaApi := humagin.NewWithGroup(nil, ginGroup, humaConfig)
+	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
