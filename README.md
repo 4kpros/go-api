@@ -76,9 +76,17 @@ API docs with openAPI v3.1(latest) is on
 
 Amazing API documentation(default is based on Scalar and you can choose between 4 templates: Redoc, Scalar, Stoplight, Swagger). 
 
-<ins>Default template(Scalar) screenshot</ins>
-![OpenAPI](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
+<ins>Scalar(default) template screenshot</ins>
+![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
 
+<ins>Redoc template screenshot</ins>
+![OpenAPI-Redoc](https://github.com/user-attachments/assets/9b6b244e-a62f-4e3e-8399-d28ab15fe318)
+
+<ins>Stoplight template screenshot</ins>
+![OpenAPI-Stoplight](https://github.com/user-attachments/assets/fa0595e6-46f2-48aa-a379-af19a854bc06)
+
+<ins>Swagger template screenshot</ins>
+![OpenAPI-Swagger](https://github.com/user-attachments/assets/111ee115-e82e-4050-b696-0a43ea26a283)
 
 # Features
 
