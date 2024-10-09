@@ -6,7 +6,7 @@ import (
 )
 
 type OpenAPITemplate struct {
-	Redoc     string
+	Redocly   string
 	Scalar    string
 	Stoplight string
 	Swagger   string
@@ -15,11 +15,11 @@ type OpenAPITemplate struct {
 var OpenAPITemplates = &OpenAPITemplate{}
 
 func LoadOpenAPITemplates() (err error) {
-	// Redoc
-	OpenAPITemplates.Redoc, err = helpers.ReadFileContentToString("templates/openapi/redoc.html")
+	// Redocly
+	OpenAPITemplates.Redocly, err = helpers.ReadFileContentToString("templates/openapi/redocly.html")
 	if err != nil {
 		helpers.Logger.Warn(
-			"Failed to load OpenAPI Redoc template",
+			"Failed to load OpenAPI Redocly template",
 			zap.String("Error", err.Error()),
 		)
 		return

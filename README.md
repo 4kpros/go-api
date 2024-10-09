@@ -74,13 +74,13 @@ API docs with openAPI v3.1(latest) is on
 /api/v1/docs
 ```
 
-Amazing API documentation(you can choose between 4 templates: Redoc, Scalar, Stoplight, Swagger). 
+Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, Stoplight, Swagger). 
 
 <ins>Scalar(default) template screenshot</ins>
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
 
-<ins>Redoc template screenshot</ins>
-![OpenAPI-Redoc](https://github.com/user-attachments/assets/1e1708aa-f355-446d-aa19-9f2ab16e08fa)
+<ins>Redocly template screenshot</ins>
+![OpenAPI-Redocly](https://github.com/user-attachments/assets/1e1708aa-f355-446d-aa19-9f2ab16e08fa)
 
 <ins>Stoplight template screenshot</ins>
 ![OpenAPI-Stoplight](https://github.com/user-attachments/assets/fa0595e6-46f2-48aa-a379-af19a854bc06)
