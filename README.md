@@ -75,8 +75,7 @@ API docs with openAPI v3.1(latest) is on
 ```
 
 Amazing API documentation. Screenshot below
-![Screenshot 2024-10-09 215941](https://github.com/user-attachments/assets/04f5666b-d376-491d-8698-8df8357c0d17)
-
+![OpenAPI](https://github.com/user-attachments/assets/2f7a11a4-7f62-4676-93f5-840434d0be99)
 
 # Features
 
