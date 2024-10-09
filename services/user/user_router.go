@@ -45,7 +45,7 @@ func SetupEndpoints(
 				Body data.UserWithEmailRequest
 			},
 		) (*struct{ Body model.User }, error) {
-			result, errCode, err := controller.CreateWithEmail(&input.Body)
+			var result, errCode, err = controller.CreateWithEmail(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -73,7 +73,7 @@ func SetupEndpoints(
 				Body data.UserWithPhoneNumberRequest
 			},
 		) (*struct{ Body model.User }, error) {
-			result, errCode, err := controller.CreateWithPhoneNumber(&input.Body)
+			var result, errCode, err = controller.CreateWithPhoneNumber(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -109,7 +109,7 @@ func SetupEndpoints(
 				Role:        input.Body.Role,
 			}
 			inputFormatted.ID = uint(input.UserId.Id)
-			result, errCode, err := controller.UpdateUser(inputFormatted)
+			var result, errCode, err = controller.UpdateUser(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -145,7 +145,7 @@ func SetupEndpoints(
 				Address:   input.Body.Address,
 			}
 			inputFormatted.ID = uint(input.UserId.Id)
-			result, errCode, err := controller.UpdateUserInfo(inputFormatted)
+			var result, errCode, err = controller.UpdateUserInfo(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -173,7 +173,7 @@ func SetupEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body types.DeleteResponse }, error) {
-			result, errCode, err := controller.Delete(&input.UserId)
+			var result, errCode, err = controller.Delete(&input.UserId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -181,12 +181,12 @@ func SetupEndpoints(
 		},
 	)
 
-	// Find user by id
+	// Get user by id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "find-user-id",
-			Summary:       "Find user by id",
+			OperationID:   "get-user-id",
+			Summary:       "Get user by id",
 			Description:   "Return one user with matching id",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
@@ -201,7 +201,7 @@ func SetupEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body model.User }, error) {
-			result, errCode, err := controller.FindById(&input.UserId)
+			var result, errCode, err = controller.GetById(&input.UserId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -209,13 +209,13 @@ func SetupEndpoints(
 		},
 	)
 
-	// Find all users
+	// Get all users
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "find-users",
-			Summary:       "Find all users",
-			Description:   "Find all users with support for search, filter and pagination",
+			OperationID:   "get-users",
+			Summary:       "Get all users",
+			Description:   "Get all users with support for search, filter and pagination",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
 			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
@@ -232,7 +232,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.UsersResponse
 		}, error) {
-			result, errCode, err := controller.FindAll(&input.Filter, &input.PaginationRequest)
+			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

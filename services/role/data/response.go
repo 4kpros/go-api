@@ -7,5 +7,5 @@ import (
 
 type RolesResponse struct {
 	types.PaginatedResponse
-	Data []model.Role `json:"data" doc:"Array of roles" example:"[]"`
+	Data []model.Role `json:"data" required:"false" doc:"Array of roles" example:"[]"`
 }

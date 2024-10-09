@@ -44,7 +44,7 @@ func SetupEndpoints(
 				Body data.SignInWithEmailRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithEmail(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithEmail(input.DeviceName, &input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -73,7 +73,7 @@ func SetupEndpoints(
 				Body data.SignInWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithPhoneNumber(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithPhoneNumber(input.DeviceName, &input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -102,7 +102,7 @@ func SetupEndpoints(
 				Body data.SignInWithProviderRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithProvider(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithProvider(input.DeviceName, &input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -130,7 +130,7 @@ func SetupEndpoints(
 				Body data.SignUpWithEmailRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithEmail(&input.Body)
+			var result, errCode, err = controller.SignUpWithEmail(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -158,7 +158,7 @@ func SetupEndpoints(
 				Body data.SignUpWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithPhoneNumber(&input.Body)
+			var result, errCode, err = controller.SignUpWithPhoneNumber(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -186,7 +186,7 @@ func SetupEndpoints(
 				Body data.ActivateAccountRequest
 			},
 		) (*struct{ Body data.ActivateAccountResponse }, error) {
-			result, errCode, err := controller.ActivateAccount(&input.Body)
+			var result, errCode, err = controller.ActivateAccount(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -198,8 +198,8 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password-init-email",
-			Summary:       "Reset password step 1(email)",
+			OperationID:   "reset-init-email",
+			Summary:       "Reset step 1 - email",
 			Description:   "Reset user password, step 1 with email.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/email", endpointConfig.Group),
@@ -216,7 +216,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.ResetPasswordInitResponse
 		}, error) {
-			result, errCode, err := controller.ResetPasswordEmailInit(
+			var result, errCode, err = controller.ResetPasswordEmailInit(
 				&data.ResetPasswordInitRequest{
 					Email: input.Body.Email,
 				},
@@ -234,8 +234,8 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password-init-phone",
-			Summary:       "Reset password step 1(phone)",
+			OperationID:   "reset-init-phone",
+			Summary:       "Reset step 1 - phone",
 			Description:   "Reset user password, step 1 with phone number.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/phone", endpointConfig.Group),
@@ -252,7 +252,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.ResetPasswordInitResponse
 		}, error) {
-			result, errCode, err := controller.ResetPasswordPhoneNumberInit(
+			var result, errCode, err = controller.ResetPasswordPhoneNumberInit(
 				&data.ResetPasswordInitRequest{
 					PhoneNumber: input.Body.PhoneNumber,
 				},
@@ -270,8 +270,8 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password-code",
-			Summary:       "Reset password step 2",
+			OperationID:   "reset-code",
+			Summary:       "Reset step 2",
 			Description:   "Reset user password, step 2 need your code received from step 1.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/code", endpointConfig.Group),
@@ -288,7 +288,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.ResetPasswordCodeResponse
 		}, error) {
-			result, errCode, err := controller.ResetPasswordCode(&input.Body)
+			var result, errCode, err = controller.ResetPasswordCode(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -302,8 +302,8 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password-password",
-			Summary:       "Reset password step 3",
+			OperationID:   "reset-password",
+			Summary:       "Reset step 3",
 			Description:   "Reset user password, step 3 to set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/password", endpointConfig.Group),
@@ -320,7 +320,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.ResetPasswordNewPasswordResponse
 		}, error) {
-			result, errCode, err := controller.ResetPasswordNewPassword(&input.Body)
+			var result, errCode, err = controller.ResetPasswordNewPassword(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -350,7 +350,7 @@ func SetupEndpoints(
 				data.SignOutRequest
 			},
 		) (*struct{ Body data.SignOutResponse }, error) {
-			result, errCode, err := controller.SignOut(input.Token)
+			var result, errCode, err = controller.SignOut(input.Token)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

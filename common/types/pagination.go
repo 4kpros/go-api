@@ -1,18 +1,18 @@
 package types
 
 type PaginationRequest struct {
-	Page  int `json:"page" query:"page" doc:"Current page" example:"1"`
-	Limit int `json:"limit" query:"limit" doc:"Max items per page" example:"10"`
+	Page  int `json:"page" query:"page" required:"false" doc:"Current page" example:"1"`
+	Limit int `json:"limit" query:"limit" required:"false" doc:"Max items per page" example:"10"`
 }
 
 type Pagination struct {
-	CurrentPage  int   `json:"currentPage"`
-	NextPage     int   `json:"nextPage"`
-	PreviousPage int   `json:"previousPage"`
-	TotalPages   int64 `json:"totalPages"`
-	Count        int64 `json:"count"`
-	Limit        int   `json:"limit"`
-	Offset       int   `json:"offset"`
+	CurrentPage  int   `json:"currentPage" required:"false"`
+	NextPage     int   `json:"nextPage" required:"false"`
+	PreviousPage int   `json:"previousPage" required:"false"`
+	TotalPages   int64 `json:"totalPages" required:"false"`
+	Count        int64 `json:"count" required:"false"`
+	Limit        int   `json:"limit" required:"false"`
+	Offset       int   `json:"offset" required:"false"`
 }
 
 func (p *Pagination) UpdateFields(count *int64) {

@@ -34,24 +34,23 @@ func Start() {
 	}
 	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
 	humaApi := humagin.NewWithGroup(nil, ginGroup, humaConfig)
-	// humaApi.UseMiddleware(middleware.ErrorsMiddleware, middleware.SecureApiMiddleware)
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
 
 	// Inject Dependencies
-	roleRepo, authRepo, userRepo :=
+	historyRepo, roleRepo, authRepo, userRepo :=
 		di.InitRepositories() // Repositories
-	roleSvc, authSvc, userSvc :=
+	historySvc, roleSvc, authSvc, userSvc :=
 		di.InitServices(
-			roleRepo, authRepo, userRepo,
+			historyRepo, roleRepo, authRepo, userRepo,
 		) // Services
-	roleCtrl, authCtrl, userCtrl :=
+	historyCtrl, roleCtrl, authCtrl, userCtrl :=
 		di.InitControllers(
-			roleSvc, authSvc, userSvc,
+			historySvc, roleSvc, authSvc, userSvc,
 		) // Controllers
 	di.InitRouters(
-		&humaApi, roleCtrl, authCtrl, userCtrl,
+		&humaApi, historyCtrl, roleCtrl, authCtrl, userCtrl,
 	) // Routers
 
 	// Run gin

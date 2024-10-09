@@ -18,82 +18,69 @@ func NewUserController(service UserService) *UserController {
 }
 
 func (controller *UserController) CreateWithEmail(input *data.UserWithEmailRequest) (result *model.User, errCode int, err error) {
-	// Extract inputs
-	var user = &model.User{}
-	user.Email = input.Email
-	user.Role = input.Role
-
+	var user = &model.User{
+		Email: input.Email,
+		Role:  input.Role,
+	}
 	result, errCode, err = controller.Service.Create(user)
-
 	return
 }
 
 func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
-	// Extract inputs
-	var user = &model.User{}
-	user.PhoneNumber = input.PhoneNumber
-	user.Role = input.Role
-
+	var user = &model.User{
+		PhoneNumber: input.PhoneNumber,
+		Role:        input.Role,
+	}
 	result, errCode, err = controller.Service.Create(user)
-
 	return
 }
 
 func (controller *UserController) UpdateUser(input *model.User) (result *model.User, errCode int, err error) {
-	// Extract inputs
 	var user = *input
-
 	errCode, err = controller.Service.UpdateUser(&user)
 	if err != nil {
 		return
 	}
 	result = &user
-
 	return
 }
 
 func (controller *UserController) UpdateUserInfo(input *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
-	// Extract inputs
 	var userInfo = *input
-
 	errCode, err = controller.Service.UpdateUserInfo(&userInfo)
 	if err != nil {
 		return
 	}
 	result = &userInfo
-
 	return
 }
 
 func (controller *UserController) Delete(input *data.UserId) (result int64, errCode int, err error) {
 	result, errCode, err = controller.Service.Delete(strconv.Itoa(input.Id))
-
 	return
 }
 
-func (controller *UserController) FindById(input *data.UserId) (result *model.User, errCode int, err error) {
-	role, errCode, err := controller.Service.FindById(strconv.Itoa(input.Id))
+func (controller *UserController) GetById(input *data.UserId) (result *model.User, errCode int, err error) {
+	var user *model.User
+	user, errCode, err = controller.Service.GetById(strconv.Itoa(input.Id))
 	if err != nil {
 		return
 	}
-	result = role
-
+	result = user
 	return
 }
 
-func (controller *UserController) FindAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UsersResponse, errCode int, err error) {
-	// Calculate pagination
-	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
-
-	roles, errCode, err := controller.Service.FindAll(NewFilter, newPagination)
+func (controller *UserController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UsersResponse, errCode int, err error) {
+	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
+	var users []model.User
+	users, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}
 	result = &data.UsersResponse{
-		Data: roles,
+		Data: users,
 	}
 	result.Filter = NewFilter
 	result.Pagination = newPagination
-
 	return
 }

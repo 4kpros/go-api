@@ -10,8 +10,8 @@ import (
 
 type User struct {
 	types.BaseGormModel
-	Email          string     `json:"email" doc:"Email" minLength:"2" maxLength:"20" example:"example@domain.com"`
-	PhoneNumber    int        `json:"phoneNumber" doc:"Phone number" minLength:"8" maxLength:"15" example:"690909090"`
+	Email          string     `json:"email" doc:"Email" minLength:"3" maxLength:"20" example:"example@domain.com"`
+	PhoneNumber    int        `json:"phoneNumber" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
 	Provider       string     `json:"provider" doc:"Provider" example:"google"`
 	ProviderUserId string     `json:"providerUserId" doc:"User id from provider"  example:"121"`
 	IsActivated    bool       `json:"isActivated" doc:"Is user account activated ?"  example:"false"`

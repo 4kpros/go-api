@@ -3,70 +3,84 @@ package di
 import (
 	"github.com/4kpros/go-api/config"
 	"github.com/4kpros/go-api/services/auth"
+	"github.com/4kpros/go-api/services/history"
 	"github.com/4kpros/go-api/services/role"
 	"github.com/4kpros/go-api/services/user"
 	"github.com/danielgtaylor/huma/v2"
 )
 
 func InitRepositories() (
+	historyRepo *history.HistoryRepository,
 	roleRepo *role.RoleRepository,
 	authRepo *auth.AuthRepository,
 	userRepo *user.UserRepository,
 ) {
+	tmpHistory := history.NewHistoryRepositoryImpl(config.DB)
+	historyRepo = &tmpHistory
+
 	tmpRole := role.NewRoleRepositoryImpl(config.DB)
-	tmpAuth := auth.NewAuthRepositoryImpl(config.DB)
-	tmpUser := user.NewUserRepositoryImpl(config.DB)
 	roleRepo = &tmpRole
+
+	tmpAuth := auth.NewAuthRepositoryImpl(config.DB)
 	authRepo = &tmpAuth
+
+	tmpUser := user.NewUserRepositoryImpl(config.DB)
 	userRepo = &tmpUser
 	return
 }
 
 func InitServices(
+	historyRepo *history.HistoryRepository,
 	roleRepo *role.RoleRepository,
 	authRepo *auth.AuthRepository,
 	userRepo *user.UserRepository,
 ) (
-	roleSer *role.RoleService,
-	authSer *auth.AuthService,
-	userSer *user.UserService,
+	historySvc *history.HistoryService,
+	roleSvc *role.RoleService,
+	authSvc *auth.AuthService,
+	userSvc *user.UserService,
 ) {
+	tmpHistory := history.NewHistoryServiceImpl(*historyRepo)
+	historySvc = &tmpHistory
+
 	tmpRole := role.NewRoleServiceImpl(*roleRepo)
+	roleSvc = &tmpRole
+
 	tmpAuth := auth.NewAuthServiceImpl(*authRepo)
+	authSvc = &tmpAuth
+
 	tmpUser := user.NewUserServiceImpl(*userRepo)
-	roleSer = &tmpRole
-	authSer = &tmpAuth
-	userSer = &tmpUser
+	userSvc = &tmpUser
 	return
 }
 
 func InitControllers(
-	roleSer *role.RoleService,
-	authSer *auth.AuthService,
-	userSer *user.UserService,
+	historySvc *history.HistoryService,
+	roleSvc *role.RoleService,
+	authSvc *auth.AuthService,
+	userSvc *user.UserService,
 ) (
-	roleContr *role.RoleController,
-	authContr *auth.AuthController,
-	userContr *user.UserController,
+	historyCtrl *history.HistoryController,
+	roleCtrl *role.RoleController,
+	authCtrl *auth.AuthController,
+	userCtrl *user.UserController,
 ) {
-	tmpRole := *role.NewRoleController(*roleSer)
-	tmpAuth := *auth.NewAuthController(*authSer)
-	tmpUser := *user.NewUserController(*userSer)
-	roleContr = &tmpRole
-	authContr = &tmpAuth
-	userContr = &tmpUser
+	historyCtrl = history.NewHistoryController(*historySvc)
+	roleCtrl = role.NewRoleController(*roleSvc)
+	authCtrl = auth.NewAuthController(*authSvc)
+	userCtrl = user.NewUserController(*userSvc)
 	return
 }
 
 func InitRouters(
 	humaApi *huma.API,
-	//
-	roleContr *role.RoleController,
-	authContr *auth.AuthController,
-	userContr *user.UserController,
+	historyCtrl *history.HistoryController,
+	roleCtrl *role.RoleController,
+	authCtrl *auth.AuthController,
+	userCtrl *user.UserController,
 ) {
-	role.SetupEndpoints(humaApi, roleContr)
-	auth.SetupEndpoints(humaApi, authContr)
-	user.SetupEndpoints(humaApi, userContr)
-	return
+	history.SetupEndpoints(humaApi, historyCtrl)
+	role.SetupEndpoints(humaApi, roleCtrl)
+	auth.SetupEndpoints(humaApi, authCtrl)
+	user.SetupEndpoints(humaApi, userCtrl)
 }

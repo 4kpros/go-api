@@ -7,6 +7,6 @@ import (
 )
 
 func Migrate() {
-	err := config.DB.AutoMigrate(&model.User{}, &model.UserInfo{})
+	var err = config.DB.AutoMigrate(&model.User{}, &model.UserInfo{})
 	helpers.PrintMigrationLogs(err, "User")
 }

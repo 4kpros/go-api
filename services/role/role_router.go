@@ -45,7 +45,7 @@ func SetupEndpoints(
 				Body data.RoleRequest
 			},
 		) (*struct{ Body model.Role }, error) {
-			result, errCode, err := controller.Create(&input.Body)
+			var result, errCode, err = controller.Create(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -79,7 +79,7 @@ func SetupEndpoints(
 				Description: input.Body.Name,
 			}
 			inputFormatted.ID = uint(input.RoleId.Id)
-			result, errCode, err := controller.Update(inputFormatted)
+			var result, errCode, err = controller.Update(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -107,7 +107,7 @@ func SetupEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body types.DeleteResponse }, error) {
-			result, errCode, err := controller.Delete(&input.RoleId)
+			var result, errCode, err = controller.Delete(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -115,12 +115,12 @@ func SetupEndpoints(
 		},
 	)
 
-	// Find role by id
+	// Get role by id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "find-role-id",
-			Summary:       "Find role by id",
+			OperationID:   "get-role-id",
+			Summary:       "Get role by id",
 			Description:   "Return one role with matching id",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
@@ -135,7 +135,7 @@ func SetupEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body model.Role }, error) {
-			result, errCode, err := controller.FindById(&input.RoleId)
+			var result, errCode, err = controller.GetById(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -143,13 +143,13 @@ func SetupEndpoints(
 		},
 	)
 
-	// Find all roles
+	// Get all roles
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "find-roles",
-			Summary:       "Find all roles",
-			Description:   "Find all roles with support for search, filter and pagination",
+			OperationID:   "get-roles",
+			Summary:       "Get all roles",
+			Description:   "Get all roles with support for search, filter and pagination",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
 			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
@@ -166,7 +166,7 @@ func SetupEndpoints(
 		) (*struct {
 			Body data.RolesResponse
 		}, error) {
-			result, errCode, err := controller.FindAll(&input.Filter, &input.PaginationRequest)
+			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
