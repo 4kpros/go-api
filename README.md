@@ -33,13 +33,13 @@ Docker installed if you want to build and start postgres and redis containers
 
 Build and start Redis container with the command ```make docker-redis```
 
-Build and start postgres container with the command ```make docker-redis```
+Build and start postgres container with the command ```make docker-postgres```
 
 Rename .env.example to ```app.env```
 
-JWT pems files with EC(ES512) algorithm: ```keys/jwt_private.pem``` ```keys/jwt_public.pem``` 
+JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
 
-Others informations such configurations are on ```app.env```
+Others information such configurations are on ```app.env```
 
 ### 2. Clone the repository
 
@@ -69,7 +69,7 @@ make build
 make run
 ```
 
-Let's GOOOOOOO 🚀🚀🚀🚀
+Let's GO 🚀🚀🚀🚀
 
 API docs(with swagger) is on 
 ```go
@@ -78,7 +78,16 @@ API docs(with swagger) is on
 
 # Features
 
-- [x] Auth:
+- [x] History
+  - Get history with search, filter and pagination
+
+- [x] Role
+  - CRUD operations
+
+- [x] Role-permission
+  - Create and Get all with search, filter and pagination
+
+- [x] Auth
   - Login (📩Email, 📲Phone number, ☁️Provider['Google', 'Facebook']),
   
   - Register (📩Email, 📲Phone number),
@@ -86,9 +95,6 @@ API docs(with swagger) is on
   - Activate account,
     
   - Reset password.
-
-- [x] Roles
-  - CRUD operations
 
 - [x] Users
   - CRUD operations
