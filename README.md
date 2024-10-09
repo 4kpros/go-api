@@ -71,7 +71,7 @@ make run
 
 Let's GO 🚀🚀🚀🚀
 
-API docs(with swagger) is on 
+API docs with openAPI v3.1(latest) is on 
 ```go
 /api/v1/docs
 ```
