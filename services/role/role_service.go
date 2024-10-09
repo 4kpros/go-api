@@ -25,7 +25,7 @@ func NewRoleServiceImpl(repository RoleRepository) RoleService {
 }
 
 func (service *RoleServiceImpl) Create(role *model.Role) (errCode int, err error) {
-	// Check if role exists
+	// Check if role already exists
 	foundRole, errFound := service.Repository.FindByName(role.Name)
 	if errFound != nil {
 		errCode = http.StatusInternalServerError

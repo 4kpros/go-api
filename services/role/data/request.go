@@ -1,6 +1,6 @@
 package data
 
-type Id struct {
+type RoleId struct {
 	Id int `json:"id" path:"id" doc:"Role id" example:"29"`
 }
 

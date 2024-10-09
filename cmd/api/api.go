@@ -14,13 +14,13 @@ import (
 
 func Start() {
 	// Setup gin for your API
-	gin.SetMode(config.AppEnv.GinMode)
+	gin.SetMode(config.Env.GinMode)
 	gin.ForceConsoleColor()
 	engine := gin.Default()
 	engine.HandleMethodNotAllowed = true
 	engine.ForwardedByClientIP = true
 	engine.SetTrustedProxies([]string{"127.0.0.1"})
-	ginGroup := engine.Group(config.AppEnv.ApiGroup)
+	ginGroup := engine.Group(config.Env.ApiGroup)
 
 	// OpenAPI documentation
 	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
@@ -36,7 +36,7 @@ func Start() {
 	humaApi := humagin.NewWithGroup(nil, ginGroup, humaConfig)
 	// humaApi.UseMiddleware(middleware.ErrorsMiddleware, middleware.SecureApiMiddleware)
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
-		ctx.Data(200, "text/html", []byte(config.AppTemplate.Scalar))
+		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
 
 	// Inject Dependencies
@@ -55,6 +55,6 @@ func Start() {
 	) // Routers
 
 	// Run gin
-	formattedPort := fmt.Sprintf(":%d", config.AppEnv.ApiPort)
+	formattedPort := fmt.Sprintf(":%d", config.Env.ApiPort)
 	engine.Run(formattedPort)
 }

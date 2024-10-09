@@ -9,59 +9,59 @@ import (
 	"go.uber.org/zap"
 )
 
-var initError error = nil
+var errInit error = nil
 
 func init() {
 	// Setup logger
 	helpers.SetupLogger()
 
-	// Load env variables
-	errAppEnv := config.LoadAppEnv(".")
-	if errAppEnv != nil {
-		initError = errAppEnv
-		helpers.Logger.Warn(
-			"Failed to load app ENV vars!",
-			zap.String("Error", errAppEnv.Error()),
-		)
-	} else {
-		helpers.Logger.Warn(
-			"App ENV variables loaded!",
-		)
-	}
-
-	// Setup argon2id params for crypto
-	_, errArgonCryptoParamsUtils := utils.EncryptWithArgon2id("")
-	if errArgonCryptoParamsUtils != nil {
-		initError = errArgonCryptoParamsUtils
-		helpers.Logger.Warn(
-			"Failed to setup argon2id params!",
-			zap.String("Error", errArgonCryptoParamsUtils.Error()),
-		)
-	} else {
-		helpers.Logger.Warn(
-			"Argon2id crypto set ok!",
-		)
-	}
-
-	// Connect to postgres database
-	errPostgresDB := config.ConnectToPostgresDB()
-	if errPostgresDB != nil {
-		initError = errPostgresDB
-		helpers.Logger.Warn(
-			"Failed to connect to Postgres database!",
-			zap.String("Error", errPostgresDB.Error()),
+	// Load env
+	errEnv := config.LoadEnv(".")
+	if errEnv != nil {
+		errInit = errEnv
+		helpers.Logger.Error(
+			"Failed to load env!",
+			zap.String("Error", errEnv.Error()),
 		)
 	} else {
 		helpers.Logger.Info(
-			"Connected to Postgres database!",
+			"Env loaded!",
 		)
 	}
 
-	// Connect to redis
-	errRedis := config.ConnectToRedis()
+	// Test argon2id with empty password
+	_, errArgon2id := utils.EncryptWithArgon2id("")
+	if errArgon2id != nil {
+		errInit = errArgon2id
+		helpers.Logger.Error(
+			"Failed to setup argon2id!",
+			zap.String("Error", errArgon2id.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"Argon2id setup ok!",
+		)
+	}
+
+	// Connect database
+	errDB := config.ConnectDatabase()
+	if errDB != nil {
+		errInit = errDB
+		helpers.Logger.Error(
+			"Failed to connect to database!",
+			zap.String("Error", errDB.Error()),
+		)
+	} else {
+		helpers.Logger.Info(
+			"Connected to database!",
+		)
+	}
+
+	// Connect redis
+	errRedis := config.ConnectRedis()
 	if errRedis != nil {
-		initError = errRedis
-		helpers.Logger.Warn(
+		errInit = errRedis
+		helpers.Logger.Error(
 			"Failed to connect to Redis!",
 			zap.String("Error", errRedis.Error()),
 		)
@@ -71,37 +71,37 @@ func init() {
 		)
 	}
 
-	// Load pem
-	errPem := config.LoadPem()
-	if errPem != nil {
-		initError = errPem
-		helpers.Logger.Warn(
-			"Failed to load all pem files!",
+	// Load keys
+	errKeys := config.LoadKeys()
+	if errKeys != nil {
+		errInit = errKeys
+		helpers.Logger.Error(
+			"Failed to load all keys!",
 			zap.String("Error", errRedis.Error()),
 		)
 	} else {
 		helpers.Logger.Info(
-			"All pem files loaded!",
+			"All keys loaded!",
 		)
 	}
 
-	// Load templates
-	errTemplate := config.LoadTemplates()
-	if errTemplate != nil {
-		initError = errTemplate
-		helpers.Logger.Warn(
-			"Failed to load all template files!",
+	// Load OpenAPI templates
+	errOpenAPITemplates := config.LoadOpenAPITemplates()
+	if errOpenAPITemplates != nil {
+		errInit = errOpenAPITemplates
+		helpers.Logger.Error(
+			"Failed to load OpenAPI templates!",
 			zap.String("Error", errRedis.Error()),
 		)
 	} else {
 		helpers.Logger.Info(
-			"All template files loaded!",
+			"All OpenAPI templates loaded!",
 		)
 	}
 }
 
 func main() {
-	if initError != nil {
+	if errInit != nil {
 		helpers.Logger.Warn(
 			"There are some errors when initializing app!",
 			zap.String("Error", "Please fix previous errors before."),

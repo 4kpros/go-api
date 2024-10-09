@@ -17,7 +17,7 @@ func PrintMigrationLogs(err error, modelName string) {
 	var message string
 	if err != nil {
 		message = fmt.Sprintf("Failed to migrate << %s >> table !", modelName)
-		Logger.Warn(
+		Logger.Error(
 			message,
 			zap.String("Error", err.Error()),
 		)

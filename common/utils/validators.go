@@ -3,8 +3,15 @@ package utils
 import (
 	"fmt"
 	"net/mail"
+	"slices"
 	"unicode"
+
+	"github.com/4kpros/go-api/common/constants"
 )
+
+func IsAuthProviderValid(provider string) bool {
+	return slices.Contains(constants.AllAuthProviders, provider)
+}
 
 func IsPhoneNumberValid(phoneNumber int) bool {
 	return phoneNumber > 100000

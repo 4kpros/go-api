@@ -8,31 +8,31 @@ import (
 )
 
 var RedisClient *redis.Client
-var ctx = context.Background()
+var RedisContext = context.Background()
 
-func ConnectToRedis() (err error) {
-	addr := fmt.Sprintf("%s:%d", AppEnv.RedisHost, AppEnv.RedisPort)
+func ConnectRedis() (err error) {
+	addr := fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Username: AppEnv.RedisUserName,
-		Password: AppEnv.RedisPassword,
-		DB:       AppEnv.RedisDatabase,
+		Username: Env.RedisUserName,
+		Password: Env.RedisPassword,
+		DB:       Env.RedisDatabase,
 	})
 
 	return
 }
 
 func SetRedisVal(key string, val string) (err error) {
-	err = RedisClient.Set(ctx, key, val, 0).Err()
+	err = RedisClient.Set(RedisContext, key, val, 0).Err()
 	return
 }
 
 func GetRedisVal(key string) (val string, err error) {
-	val, err = RedisClient.Get(ctx, key).Result()
+	val, err = RedisClient.Get(RedisContext, key).Result()
 	return
 }
 
 func DeleteRedisVal(key string) (val int64, err error) {
-	val, err = RedisClient.Del(ctx, key).Result()
+	val, err = RedisClient.Del(RedisContext, key).Result()
 	return
 }

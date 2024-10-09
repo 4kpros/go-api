@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Env struct {
+type Environment struct {
 	// API config
 	ApiPort      int    `mapstructure:"API_PORT"`
 	ApiKey       string `mapstructure:"API_KEY"`
@@ -48,9 +48,9 @@ type Env struct {
 	SmtpSender   string `mapstructure:"SMTP_SENDER"`
 }
 
-var AppEnv = &Env{}
+var Env = &Environment{}
 
-func LoadAppEnv(path string) (err error) {
+func LoadEnv(path string) (err error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
@@ -59,7 +59,7 @@ func LoadAppEnv(path string) (err error) {
 
 	err = viper.ReadInConfig()
 	if err == nil {
-		err = viper.Unmarshal(AppEnv)
+		err = viper.Unmarshal(Env)
 	}
 	return
 }

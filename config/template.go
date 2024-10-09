@@ -5,18 +5,18 @@ import (
 	"go.uber.org/zap"
 )
 
-type Template struct {
+type OpenAPITemplate struct {
 	Redoc     string
 	Scalar    string
 	Stoplight string
 	Swagger   string
 }
 
-var AppTemplate = &Template{}
+var OpenAPITemplates = &OpenAPITemplate{}
 
-func LoadTemplates() (err error) {
+func LoadOpenAPITemplates() (err error) {
 	// Redoc
-	AppTemplate.Redoc, err = helpers.ReadFileContentToString("templates/openapi/redoc.html")
+	OpenAPITemplates.Redoc, err = helpers.ReadFileContentToString("templates/openapi/redoc.html")
 	if err != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Redoc template",
@@ -26,7 +26,7 @@ func LoadTemplates() (err error) {
 	}
 
 	// Scalar
-	AppTemplate.Scalar, err = helpers.ReadFileContentToString("templates/openapi/scalar.html")
+	OpenAPITemplates.Scalar, err = helpers.ReadFileContentToString("templates/openapi/scalar.html")
 	if err != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Scalar template",
@@ -36,7 +36,7 @@ func LoadTemplates() (err error) {
 	}
 
 	// Stoplight
-	AppTemplate.Stoplight, err = helpers.ReadFileContentToString("templates/openapi/stoplight.html")
+	OpenAPITemplates.Stoplight, err = helpers.ReadFileContentToString("templates/openapi/stoplight.html")
 	if err != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Stoplight template",
@@ -46,7 +46,7 @@ func LoadTemplates() (err error) {
 	}
 
 	// Swagger
-	AppTemplate.Swagger, err = helpers.ReadFileContentToString("templates/openapi/swagger.html")
+	OpenAPITemplates.Swagger, err = helpers.ReadFileContentToString("templates/openapi/swagger.html")
 	if err != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Swagger template",
@@ -54,5 +54,6 @@ func LoadTemplates() (err error) {
 		)
 		return
 	}
+
 	return
 }

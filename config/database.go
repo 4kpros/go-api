@@ -9,16 +9,16 @@ import (
 
 var DB *gorm.DB
 
-func ConnectToPostgresDB() (err error) {
+func ConnectDatabase() (err error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
-		AppEnv.PostGresHost,
-		AppEnv.PostGresUserName,
-		AppEnv.PostGresPassword,
-		AppEnv.PostGresDatabase,
-		AppEnv.PostGresPort,
-		AppEnv.PostGresSslMode,
-		AppEnv.PostGresTimeZone,
+		Env.PostGresHost,
+		Env.PostGresUserName,
+		Env.PostGresPassword,
+		Env.PostGresDatabase,
+		Env.PostGresPort,
+		Env.PostGresSslMode,
+		Env.PostGresTimeZone,
 	)
 	DB, err = gorm.Open(
 		postgres.New(postgres.Config{

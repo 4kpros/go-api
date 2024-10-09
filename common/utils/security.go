@@ -19,16 +19,16 @@ var JwtIssuerResetCode = "resetCode"
 var JwtIssuerResetNewPassword = "resetNewPassword"
 
 func NewExpiresDateDefault() *time.Time {
-	tempDate := time.Now().Add(time.Minute * time.Duration(config.AppEnv.JwtExpiresDefault))
+	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresDefault))
 	return &tempDate
 }
 
 func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	if stayConnected {
-		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.AppEnv.JwtExpiresSignInStayConnected))
+		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresSignInStayConnected))
 		return &tempDate
 	}
-	tempDate := time.Now().Add(time.Minute * time.Duration(config.AppEnv.JwtExpiresSignIn))
+	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresSignIn))
 	return &tempDate
 }
 
@@ -53,7 +53,7 @@ func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached boo
 	if loadCached {
 		tokenStr, err = config.GetRedisVal(GetCachedKey(jwtToken))
 		if err == nil && len(tokenStr) > 0 {
-			jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, config.AppPem.JwtPublicKey)
+			jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, config.Keys.JwtPublicKey)
 			if errDecrypted == nil && IsSameCachedKey(jwtToken, jwtDecrypted) {
 				newJwt = jwtDecrypted
 				return
@@ -149,15 +149,15 @@ func VerifyJWTToken(tokenStr string, publicKey string) (*types.JwtToken, bool) {
 }
 
 // Encrypt jwtToken using Argon2id
-func EncryptWithArgon2id(jwtToken string) (hash string, err error) {
+func EncryptWithArgon2id(password string) (hash string, err error) {
 	params := &argon2id.Params{
-		Memory:      uint32(config.AppEnv.ArgonMemoryLeft * config.AppEnv.ArgonMemoryRight),
-		Iterations:  uint32(config.AppEnv.ArgonIterations),
+		Memory:      uint32(config.Env.ArgonMemoryLeft * config.Env.ArgonMemoryRight),
+		Iterations:  uint32(config.Env.ArgonIterations),
 		Parallelism: uint8(runtime.NumCPU()),
-		SaltLength:  uint32(config.AppEnv.ArgonSaltLength),
-		KeyLength:   uint32(config.AppEnv.ArgonKeyLength),
+		SaltLength:  uint32(config.Env.ArgonSaltLength),
+		KeyLength:   uint32(config.Env.ArgonKeyLength),
 	}
-	tempHash, tempErr := argon2id.CreateHash(jwtToken, params)
+	tempHash, tempErr := argon2id.CreateHash(password, params)
 	err = tempErr
 	if err != nil {
 		return

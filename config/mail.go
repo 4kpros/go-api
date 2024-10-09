@@ -6,19 +6,19 @@ import (
 	"net/smtp"
 )
 
-type loginAuth struct {
+type MailAuth struct {
 	username, password string
 }
 
-func LoginAuth(username, password string) smtp.Auth {
-	return &loginAuth{username, password}
+func LoginMailAuth(username, password string) smtp.Auth {
+	return &MailAuth{username, password}
 }
 
-func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+func (a *MailAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
 	return "LOGIN", []byte{}, nil
 }
 
-func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+func (a *MailAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 	if more {
 		switch string(fromServer) {
 		case "Username:":
@@ -39,7 +39,7 @@ func SendMail(subject string, message string, receiver string) (err error) {
 
 func SendWithGmail(subject string, message string, receiver string) (err error) {
 	// Choose auth method and set it up
-	auth := LoginAuth(AppEnv.SmtpUsername, AppEnv.SmtpPassword)
+	auth := LoginMailAuth(Env.SmtpUsername, Env.SmtpPassword)
 
 	// Here we do it all: connect to our server, set up a message and send it
 	to := []string{receiver}
@@ -53,9 +53,9 @@ func SendWithGmail(subject string, message string, receiver string) (err error) 
 		),
 	)
 	err = smtp.SendMail(
-		fmt.Sprintf("%s:%d", AppEnv.SmtpHost, AppEnv.SmtpPort),
+		fmt.Sprintf("%s:%d", Env.SmtpHost, Env.SmtpPort),
 		auth,
-		AppEnv.SmtpSender,
+		Env.SmtpSender,
 		to,
 		msg,
 	)

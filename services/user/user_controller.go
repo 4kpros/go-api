@@ -1,5 +1,14 @@
 package user
 
+import (
+	"strconv"
+
+	"github.com/4kpros/go-api/common/types"
+	"github.com/4kpros/go-api/common/utils"
+	"github.com/4kpros/go-api/services/user/data"
+	"github.com/4kpros/go-api/services/user/model"
+)
+
 type UserController struct {
 	Service UserService
 }
@@ -8,140 +17,83 @@ func NewUserController(service UserService) *UserController {
 	return &UserController{Service: service}
 }
 
-// func (controller *UserController) CreateWithEmail(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req body
-// 	var user = &model.User{}
-// 	user.Email = input.Email
-// 	user.Role = input.Role
+func (controller *UserController) CreateWithEmail(input *data.UserWithEmailRequest) (result *model.User, errCode int, err error) {
+	// Extract inputs
+	var user = &model.User{}
+	user.Email = input.Email
+	user.Role = input.Role
 
-// 	// Execute the service
-// 	password, _, err := controller.Service.CreateWithEmail(user)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	result, errCode, err = controller.Service.Create(user)
 
-// 	return &response.CreateWithEmailResponse{
-// 		Email:    user.Email,
-// 		Role:     user.Role,
-// 		Password: password,
-// 	}, nil
-// }
+	return
+}
 
-// func (controller *UserController) CreateWithPhoneNumber(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req body
-// 	var reqData = &request.CreateWithPhoneNumberRequest{}
-// 	ctx.Bind(reqData)
-// 	var user = &model.User{}
-// 	user.PhoneNumber = reqData.PhoneNumber
-// 	user.Role = reqData.Role
+func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
+	// Extract inputs
+	var user = &model.User{}
+	user.PhoneNumber = input.PhoneNumber
+	user.Role = input.Role
 
-// 	// Execute the service
-// 	password, errCode, err := controller.Service.CreateWithPhoneNumber(user)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
+	result, errCode, err = controller.Service.Create(user)
 
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, response.CreateWithPhoneNumberResponse{
-// 		PhoneNumber: reqData.PhoneNumber,
-// 		Role:        reqData.Role,
-// 		Password:    password,
-// 	})
-// }
+	return
+}
 
-// func (controller *UserController) UpdateUser(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req body
-// 	var user = &model.User{}
-// 	ctx.Bind(user)
+func (controller *UserController) UpdateUser(input *model.User) (result *model.User, errCode int, err error) {
+	// Extract inputs
+	var user = *input
 
-// 	// Execute the service
-// 	errCode, err := controller.Service.UpdateUser(user)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
+	errCode, err = controller.Service.UpdateUser(&user)
+	if err != nil {
+		return
+	}
+	result = &user
 
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, user)
-// }
+	return
+}
 
-// func (controller *UserController) UpdateUserInfo(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req body
-// 	var userInfo = &model.UserInfo{}
-// 	ctx.Bind(userInfo)
+func (controller *UserController) UpdateUserInfo(input *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
+	// Extract inputs
+	var userInfo = *input
 
-// 	// Execute the service
-// 	errCode, err := controller.Service.UpdateUserInfo(userInfo)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
+	errCode, err = controller.Service.UpdateUserInfo(&userInfo)
+	if err != nil {
+		return
+	}
+	result = &userInfo
 
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, userInfo)
-// }
+	return
+}
 
-// func (controller *UserController) Delete(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req header
-// 	id := ctx.Param("id")
+func (controller *UserController) Delete(input *data.UserId) (result int64, errCode int, err error) {
+	result, errCode, err = controller.Service.Delete(strconv.Itoa(input.Id))
 
-// 	// Execute the service
-// 	user, errCode, err := controller.Service.Delete(id)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
+	return
+}
 
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, user)
-// }
+func (controller *UserController) FindById(input *data.UserId) (result *model.User, errCode int, err error) {
+	role, errCode, err := controller.Service.FindById(strconv.Itoa(input.Id))
+	if err != nil {
+		return
+	}
+	result = role
 
-// func (controller *UserController) FindById(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req header
-// 	id := ctx.Param("id")
+	return
+}
 
-// 	// Execute the service
-// 	user, errCode, err := controller.Service.FindById(id)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
+func (controller *UserController) FindAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UsersResponse, errCode int, err error) {
+	// Calculate pagination
+	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
 
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, user)
-// }
+	roles, errCode, err := controller.Service.FindAll(NewFilter, newPagination)
+	if err != nil {
+		return
+	}
+	result = &data.UsersResponse{
+		Data: roles,
+	}
+	result.Filter = NewFilter
+	result.Pagination = newPagination
 
-// func (controller *UserController) FindUserInfoById(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req header
-// 	id := ctx.Param("id")
-
-// 	// Execute the service
-// 	user, errCode, err := controller.Service.FindUserInfoById(id)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
-
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, user)
-// }
-
-// func (controller *UserController) FindAll(ctx huma.Context, next func(huma.Context)) {
-// 	// Get data of req body
-// 	pagination, filter := utils.GetPaginationFiltersFromQuery(c)
-
-// 	// Execute the service
-// 	users, errCode, err := controller.Service.FindAll(filter, pagination)
-// 	if err != nil {
-// 		ctx.AbortWithError(errCode, err)
-// 		return
-// 	}
-
-// 	// Return the response
-// 	ctx.JSON(http.StatusOK, types.SuccessPaginatedResponse{
-// 		Data:       users,
-// 		Filter:     filter,
-// 		Pagination: pagination,
-// 	})
-// }
+	return
+}

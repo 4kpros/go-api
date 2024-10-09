@@ -70,7 +70,7 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.Id
+				data.RoleId
 				Body data.RoleRequest
 			},
 		) (*struct{ Body model.Role }, error) {
@@ -78,7 +78,7 @@ func SetupEndpoints(
 				Name:        input.Body.Name,
 				Description: input.Body.Name,
 			}
-			inputFormatted.ID = uint(input.Id.Id)
+			inputFormatted.ID = uint(input.RoleId.Id)
 			result, errCode, err := controller.Update(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
@@ -104,14 +104,14 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.Id
+				data.RoleId
 			},
-		) (*struct{ Body data.DeleteResponse }, error) {
-			result, errCode, err := controller.Delete(&input.Id)
+		) (*struct{ Body types.DeleteResponse }, error) {
+			result, errCode, err := controller.Delete(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.DeleteResponse }{Body: data.DeleteResponse{AffectedRows: result}}, nil
+			return &struct{ Body types.DeleteResponse }{Body: types.DeleteResponse{AffectedRows: result}}, nil
 		},
 	)
 
@@ -132,10 +132,10 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.Id
+				data.RoleId
 			},
 		) (*struct{ Body model.Role }, error) {
-			result, errCode, err := controller.FindById(&input.Id)
+			result, errCode, err := controller.FindById(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -164,14 +164,14 @@ func SetupEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.GetAllResponse
+			Body data.RolesResponse
 		}, error) {
 			result, errCode, err := controller.FindAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.GetAllResponse
+				Body data.RolesResponse
 			}{Body: *result}, nil
 		},
 	)

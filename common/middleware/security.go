@@ -21,7 +21,7 @@ func GenerateMiddlewares(requireAuth bool) *huma.Middlewares {
 }
 
 func IsOriginKnown(host string) bool {
-	hosts := strings.Split(config.AppEnv.AllowedHosts, ",")
+	hosts := strings.Split(config.Env.AllowedHosts, ",")
 	return slices.Contains(hosts, host)
 }
 
@@ -45,7 +45,7 @@ func SecureApiMiddleware(ctx huma.Context, next func(huma.Context)) {
 
 	// Check api key
 	apiKey := utils.ExtractApiKeyHeader(&ctx)
-	if apiKey != config.AppEnv.ApiKey {
+	if apiKey != config.Env.ApiKey {
 		message := "Invalid API key! Please enter valid API key and try again."
 		huma.Error403Forbidden(message, fmt.Errorf("%s", message))
 		return
@@ -62,7 +62,7 @@ func JWTMiddleware(ctx huma.Context, next func(huma.Context)) {
 		huma.Error401Unauthorized(message, fmt.Errorf("%s", message))
 		return
 	}
-	jwtDecrypted, jwtValid := utils.VerifyJWTToken(bearerToken, config.AppPem.JwtPublicKey)
+	jwtDecrypted, jwtValid := utils.VerifyJWTToken(bearerToken, config.Keys.JwtPublicKey)
 	if !jwtValid || jwtDecrypted == nil {
 		message := "Invalid or expired authorization header! Please enter valid authorization header and try again."
 		huma.Error401Unauthorized(message, fmt.Errorf("%s", message))

@@ -10,14 +10,13 @@ import (
 )
 
 type UserService interface {
-	CreateWithEmail(user *model.User) (password string, errCode int, err error)
-	CreateWithPhoneNumber(user *model.User) (password string, errCode int, err error)
+	Create(user *model.User) (result *model.User, errCode int, err error)
 	UpdateUser(user *model.User) (errCode int, err error)
 	UpdateUserInfo(userInfo *model.UserInfo) (errCode int, err error)
-	Delete(id string) (affectedRows int64, errCode int, err error)
-	FindById(id string) (user *model.User, errCode int, err error)
-	FindUserInfoById(id string) (user *model.UserInfo, errCode int, err error)
-	FindAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error)
+	Delete(id string) (result int64, errCode int, err error)
+	FindById(id string) (result *model.User, errCode int, err error)
+	FindUserInfoById(id string) (result *model.UserInfo, errCode int, err error)
+	FindAll(filter *types.Filter, pagination *types.Pagination) (result []model.User, errCode int, err error)
 }
 
 type UserServiceImpl struct {
@@ -28,16 +27,24 @@ func NewUserServiceImpl(repository UserRepository) UserService {
 	return &UserServiceImpl{Repository: repository}
 }
 
-func (service *UserServiceImpl) CreateWithEmail(user *model.User) (password string, errCode int, err error) {
+func (service *UserServiceImpl) Create(user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
-	foundUser, errFound := service.Repository.FindByEmail(user.Email)
+	var foundUser *model.User = nil
+	var errFound error = nil
+	var message string = ""
+	if utils.IsEmailValid(user.Email) {
+		message = "User with this email already exists! Please use another email."
+		foundUser, errFound = service.Repository.FindByEmail(user.Email)
+	} else {
+		message = "User with this phone number already exists! Please use another phone number."
+		foundUser, errFound = service.Repository.FindByPhoneNumber(user.PhoneNumber)
+	}
 	if errFound != nil {
 		errCode = http.StatusInternalServerError
 		err = errFound
 		return
 	}
 	if foundUser != nil && foundUser.Email == user.Email {
-		message := "User with this email already exists! Please use another email."
 		errCode = http.StatusFound
 		err = fmt.Errorf("%s", message)
 		return
@@ -45,42 +52,18 @@ func (service *UserServiceImpl) CreateWithEmail(user *model.User) (password stri
 
 	// Create new user
 	var randomPassword = utils.GenerateRandomPassword(8)
-	foundUser.Email = user.Email
-	foundUser.Password = randomPassword
-	err = service.Repository.Create(user)
+	var newUser = &model.User{
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		Password:    randomPassword,
+		Role:        user.Role,
+	}
+	err = service.Repository.Create(newUser)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		return
 	}
-	password = randomPassword
-	return
-}
-
-func (service *UserServiceImpl) CreateWithPhoneNumber(user *model.User) (password string, errCode int, err error) {
-	// Check if user exists
-	foundUser, errFound := service.Repository.FindByPhoneNumber(user.PhoneNumber)
-	if errFound != nil {
-		errCode = http.StatusInternalServerError
-		err = errFound
-		return
-	}
-	if foundUser != nil && foundUser.PhoneNumber == user.PhoneNumber {
-		message := "User with this phone number already exists! Please use another phone number."
-		errCode = http.StatusFound
-		err = fmt.Errorf("%s", message)
-		return
-	}
-
-	// Create new user
-	var randomPassword = utils.GenerateRandomPassword(8)
-	foundUser.PhoneNumber = user.PhoneNumber
-	foundUser.Password = randomPassword
-	err = service.Repository.Create(user)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		return
-	}
-	password = randomPassword
+	result = newUser
 	return
 }
 
@@ -114,7 +97,6 @@ func (service *UserServiceImpl) Delete(id string) (affectedRows int64, errCode i
 	return
 }
 
-// FindById implements UserService.
 func (service *UserServiceImpl) FindById(id string) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.FindById(id)
 	if err != nil {
@@ -129,7 +111,6 @@ func (service *UserServiceImpl) FindById(id string) (user *model.User, errCode i
 	return
 }
 
-// FindUserInfoById implements UserService.
 func (service *UserServiceImpl) FindUserInfoById(id string) (user *model.UserInfo, errCode int, err error) {
 	user, err = service.Repository.FindUserInfoById(id)
 	if err != nil {
@@ -144,7 +125,6 @@ func (service *UserServiceImpl) FindUserInfoById(id string) (user *model.UserInf
 	return
 }
 
-// FindAll implements UserService.
 func (service *UserServiceImpl) FindAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error) {
 	users, err = service.Repository.FindAll(filter, pagination)
 	if err != nil {
