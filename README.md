@@ -80,7 +80,7 @@ Amazing API documentation(default is based on Scalar and you can choose between 
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
 
 <ins>Redoc template screenshot</ins>
-![OpenAPI-Redoc](https://github.com/user-attachments/assets/9b6b244e-a62f-4e3e-8399-d28ab15fe318)
+![OpenAPI-Redoc](https://github.com/user-attachments/assets/1e1708aa-f355-446d-aa19-9f2ab16e08fa)
 
 <ins>Stoplight template screenshot</ins>
 ![OpenAPI-Stoplight](https://github.com/user-attachments/assets/fa0595e6-46f2-48aa-a379-af19a854bc06)
