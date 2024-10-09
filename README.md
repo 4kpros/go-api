@@ -75,7 +75,7 @@ API docs with openAPI v3.1(latest) is on
 ```
 
 Amazing API documentation(default is based on Scalar. Screenshot below
-![OpenAPI](https://github.com/user-attachments/assets/6c31e667-b228-4801-ba22-7014b60378cf)
+![OpenAPI](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
 
 
 # Features
