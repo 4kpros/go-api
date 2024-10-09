@@ -69,12 +69,12 @@ make build
 make run
 ```
 
-Let's GO 🚀🚀🚀🚀
-
 API docs with openAPI v3.1(latest) is on 
 ```go
 /api/v1/docs
 ```
+
+Amazing API documentation. Screenshot below
 ![Capture d'écran 2024-10-09 215941](https://github.com/user-attachments/assets/04f5666b-d376-491d-8698-8df8357c0d17)
 
 
