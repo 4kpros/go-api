@@ -38,7 +38,7 @@ func Start() {
 	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
 	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
-		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Redocly))
+		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
 
 	// Inject Dependencies
