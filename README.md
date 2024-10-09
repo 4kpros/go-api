@@ -74,8 +74,9 @@ API docs with openAPI v3.1(latest) is on
 /api/v1/docs
 ```
 
-Amazing API documentation. Screenshot below
-![OpenAPI](https://github.com/user-attachments/assets/2f7a11a4-7f62-4676-93f5-840434d0be99)
+Amazing API documentation(default is based on Scalar. Screenshot below
+![OpenAPI](https://github.com/user-attachments/assets/6c31e667-b228-4801-ba22-7014b60378cf)
+
 
 # Features
 
