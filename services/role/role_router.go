@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/role/data"
 	"github.com/4kpros/go-api/services/role/model"
@@ -34,7 +33,6 @@ func SetupEndpoints(
 			Description:   "Create new role by providing name and description and return created object. The name role should be unique.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
@@ -62,7 +60,6 @@ func SetupEndpoints(
 			Description:   "Update existing role with matching id and return the new role object.",
 			Method:        http.MethodPut,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -96,7 +93,6 @@ func SetupEndpoints(
 			Description:   "Delete existing role with matching id and return affected rows in database.",
 			Method:        http.MethodDelete,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -124,7 +120,6 @@ func SetupEndpoints(
 			Description:   "Return one role with matching id",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -152,7 +147,6 @@ func SetupEndpoints(
 			Description:   "Get all roles with support for search, filter and pagination",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},

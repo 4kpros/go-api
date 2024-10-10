@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
 	"github.com/4kpros/go-api/services/auth/data"
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -32,7 +31,6 @@ func SetupEndpoints(
 			Description:   "Login user with email and password. Account need to be activated to retrieve OK response.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -44,7 +42,7 @@ func SetupEndpoints(
 				Body data.SignInWithEmailRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithEmail(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithEmail(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -61,7 +59,6 @@ func SetupEndpoints(
 			Description:   "Login user with phone number and password. Account need to be activated to retrieve OK response.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -73,7 +70,7 @@ func SetupEndpoints(
 				Body data.SignInWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithPhoneNumber(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithPhoneNumber(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -90,7 +87,6 @@ func SetupEndpoints(
 			Description:   "Login user with provider and and token.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/provider", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -102,7 +98,7 @@ func SetupEndpoints(
 				Body data.SignInWithProviderRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithProvider(input.DeviceName, &input.Body)
+			var result, errCode, err = controller.SignInWithProvider(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -119,7 +115,6 @@ func SetupEndpoints(
 			Description:   "Register new user with email and password.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -147,7 +142,6 @@ func SetupEndpoints(
 			Description:   "Register new user with phone number and password.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -175,7 +169,6 @@ func SetupEndpoints(
 			Description:   "Activate user account.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/activate", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -203,7 +196,6 @@ func SetupEndpoints(
 			Description:   "Reset user password, step 1 with email.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -239,7 +231,6 @@ func SetupEndpoints(
 			Description:   "Reset user password, step 1 with phone number.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -275,7 +266,6 @@ func SetupEndpoints(
 			Description:   "Reset user password, step 2 need your code received from step 1.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/code", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -307,7 +297,6 @@ func SetupEndpoints(
 			Description:   "Reset user password, step 3 to set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/password", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
@@ -339,7 +328,6 @@ func SetupEndpoints(
 			Description:   "Logout user with provided token.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/logout", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},

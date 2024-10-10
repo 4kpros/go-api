@@ -19,8 +19,8 @@ func NewUserController(service UserService) *UserController {
 
 func (controller *UserController) CreateWithEmail(input *data.UserWithEmailRequest) (result *model.User, errCode int, err error) {
 	var user = &model.User{
-		Email: input.Email,
-		Role:  input.Role,
+		Email:  input.Email,
+		RoleId: input.RoleId,
 	}
 	result, errCode, err = controller.Service.Create(user)
 	return
@@ -29,7 +29,7 @@ func (controller *UserController) CreateWithEmail(input *data.UserWithEmailReque
 func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
 	var user = &model.User{
 		PhoneNumber: input.PhoneNumber,
-		Role:        input.Role,
+		RoleId:      input.RoleId,
 	}
 	result, errCode, err = controller.Service.Create(user)
 	return

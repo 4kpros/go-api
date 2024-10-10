@@ -10,7 +10,7 @@ import (
 )
 
 func IsAuthProviderValid(provider string) bool {
-	return slices.Contains(constants.AllAuthProviders, provider)
+	return slices.Contains(constants.AUTH_PROVIDERS, provider)
 }
 
 func IsPhoneNumberValid(phoneNumber int) bool {

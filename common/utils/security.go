@@ -1,10 +1,8 @@
 package utils
 
 import (
-	"crypto/ecdsa"
 	"fmt"
 	"runtime"
-	"strconv"
 	"time"
 
 	"github.com/4kpros/go-api/common/types"
@@ -13,16 +11,19 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var JwtIssuerSession = "session"
-var JwtIssuerActivate = "activate"
-var JwtIssuerResetCode = "resetCode"
-var JwtIssuerResetNewPassword = "resetNewPassword"
+const JWT_ISSUER_SESSION = "JWT_ISSUER_SESSION"
+const JWT_ISSUER_SESSION_GENERATED = "JWT_ISSUER_SESSION_GENERATED"
+const JWT_ISSUER_ACTIVATE = "JWT_ISSUER_ACTIVATE"
+const JWT_ISSUER_RESET_CODE = "JWT_ISSUER_RESET_CODE"
+const JWT_ISSUER_RESET_PASSWORD = "JWT_ISSUER_RESET_PASSWORD"
 
+// Return default time for JWT expires
 func NewExpiresDateDefault() *time.Time {
 	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresDefault))
 	return &tempDate
 }
 
+// Return time for JWT expires when user try to login
 func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	if stayConnected {
 		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresSignInStayConnected))
@@ -32,124 +33,73 @@ func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	return &tempDate
 }
 
-func GetCachedKey(jwtToken *types.JwtToken) string {
-	return fmt.Sprintf("%d%s%s%d", jwtToken.UserId, jwtToken.Issuer, jwtToken.Device, jwtToken.Code)
+// Return the key of Redis entry(combining userId and Issuer)
+func GetJWTCachedKey(jwtToken *types.JwtToken) (key string) {
+	if jwtToken != nil {
+		return fmt.Sprintf("%d%s", jwtToken.UserId, jwtToken.Issuer)
+	}
+	return ""
 }
 
-func IsSameCachedKey(jwtToken1 *types.JwtToken, jwtToken2 *types.JwtToken) bool {
-	if jwtToken1 == nil || jwtToken2 == nil {
-		return false
+// Encode JWT token and add to cache. This return signed string token
+func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time, privateKey string, cacheFunc func(string, string) error) (*types.JwtToken, string, error) {
+	// Encode token with claims
+	jwtToken.Issuer = issuer
+	jwtToken.ExpiresAt = jwt.NewNumericDate(*expires)
+	jwtToken.IssuedAt = jwt.NewNumericDate(time.Now())
+	var jwtTokenClaimed = jwt.NewWithClaims(jwt.SigningMethodES512, *jwtToken)
+	var signedKey, errParse = jwt.ParseECPrivateKeyFromPEM([]byte(privateKey))
+	if errParse != nil {
+		return nil, "", errParse
 	}
-	if GetCachedKey(jwtToken1) != GetCachedKey(jwtToken2) {
-		return false
-	}
-
-	return true
-}
-
-// Encrypt JWT
-func EncryptJWTToken(jwtToken *types.JwtToken, privateKey string, loadCached bool) (newJwt *types.JwtToken, tokenStr string, err error) {
-	// Check if there is some cached token
-	if loadCached {
-		tokenStr, err = config.GetRedisVal(GetCachedKey(jwtToken))
-		if err == nil && len(tokenStr) > 0 {
-			jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, config.Keys.JwtPublicKey)
-			if errDecrypted == nil && IsSameCachedKey(jwtToken, jwtDecrypted) {
-				newJwt = jwtDecrypted
-				return
-			}
-		}
-	}
-
-	// Otherwise generate new one. Also only add string on MapClaims, others types are not regonised
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, jwt.MapClaims{
-		"iss":    jwtToken.Issuer,
-		"userId": fmt.Sprintf("%d", jwtToken.UserId),
-		"role":   jwtToken.Role,
-		"device": jwtToken.Device,
-		"exp":    jwt.NewNumericDate(jwtToken.Expires),
-		"iat":    jwt.NewNumericDate(time.Now()),
-		"code":   fmt.Sprintf("%d", jwtToken.Code),
-	})
-	var signedKey *ecdsa.PrivateKey
-	signedKey, err = jwt.ParseECPrivateKeyFromPEM([]byte(privateKey))
-	if err != nil {
-		return
-	}
-	tokenStr, err = token.SignedString(signedKey)
-	if err != nil {
-		return
+	var token, errSigning = jwtTokenClaimed.SignedString(signedKey)
+	if errSigning != nil {
+		return nil, "", errSigning
 	}
 
 	// Cache new token
-	config.SetRedisVal(GetCachedKey(jwtToken), tokenStr)
-	newJwt = jwtToken
-	return
+	var errCache = cacheFunc(GetJWTCachedKey(jwtToken), token)
+	if errCache != nil {
+		return nil, "", errCache
+	}
+	return jwtToken, token, nil
 }
 
-// Decrypt JWT
-func DecryptJWTToken(tokenStr string, publicKey string) (*types.JwtToken, error) {
+// Decode JWT token by providing signed string token and public key. This return JWT token object
+func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
 	// Parse the token and get claims
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (signedKey interface{}, err error) {
-		// Validate the alg
+	var errMessage string
+	jwtToken, err := jwt.ParseWithClaims(token, &types.JwtToken{}, func(token *jwt.Token) (signedKey interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			message := fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"])
-			return nil, fmt.Errorf("%s", message)
+			errMessage = fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("%s", errMessage)
 		}
 		signedKey, err = jwt.ParseECPublicKeyFromPEM([]byte(publicKey))
 		return
 	})
 	if err != nil {
 		return nil, err
+	} else if claims, ok := jwtToken.Claims.(*types.JwtToken); ok && jwtToken.Valid {
+		return claims, nil
 	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-
-	// Check if the token is valid
-	if !ok || !token.Valid {
-		message := "Invalid token or expired! Please enter valid information."
-		return nil, fmt.Errorf("%s", message)
-	}
-
-	// Extract information
-	iss := fmt.Sprintf("%s", claims["iss"])
-	userId, _ := strconv.Atoi(fmt.Sprintf("%s", claims["userId"]))
-	roleStr := fmt.Sprintf("%s", claims["role"])
-	role, _ := strconv.Atoi(roleStr)
-	codeStr := fmt.Sprintf("%s", claims["code"])
-	code, _ := strconv.Atoi(codeStr)
-	device := fmt.Sprintf("%s", claims["device"])
-
-	// Return it
-	return &types.JwtToken{
-		UserId: uint(userId),
-		Role:   role,
-		Code:   code,
-		Device: device,
-		Issuer: iss,
-	}, nil
+	errMessage = "Invalid token or expired! Please enter valid information."
+	return nil, fmt.Errorf("%s", errMessage)
 }
 
-// Verify JWT
-func VerifyJWTToken(tokenStr string, publicKey string) (*types.JwtToken, bool) {
-	// Decrypt the token
-	jwtDecrypted, errDecrypted := DecryptJWTToken(tokenStr, publicKey)
-	if errDecrypted != nil || jwtDecrypted == nil {
-		return nil, false
+// Validate the token by checking if the token it's cached
+func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc func(string) (string, error)) bool {
+	tokenCached, errCached := loadCachedFunc(GetJWTCachedKey(jwtToken))
+	if errCached != nil || len(tokenCached) <= 0 {
+		return false
 	}
-
-	// Check if the token is cached
-	tokenStrCached, errCached := config.GetRedisVal(GetCachedKey(jwtDecrypted))
-	if errCached != nil || len(tokenStrCached) <= 0 {
-		return nil, false
+	if token != tokenCached {
+		return false
 	}
-	if tokenStr != tokenStrCached {
-		return nil, false
-	}
-	return jwtDecrypted, true
+	return true
 }
 
-// Encrypt jwtToken using Argon2id
-func EncryptWithArgon2id(password string) (hash string, err error) {
+// Encode password using Argon2id and returns new hashed password
+func EncodeArgon2id(password string) (string, error) {
 	params := &argon2id.Params{
 		Memory:      uint32(config.Env.ArgonMemoryLeft * config.Env.ArgonMemoryRight),
 		Iterations:  uint32(config.Env.ArgonIterations),
@@ -158,18 +108,17 @@ func EncryptWithArgon2id(password string) (hash string, err error) {
 		KeyLength:   uint32(config.Env.ArgonKeyLength),
 	}
 	tempHash, tempErr := argon2id.CreateHash(password, params)
-	err = tempErr
-	if err != nil {
-		return
+	if tempErr != nil {
+		return "", tempErr
 	}
 	// Encode to base64
-	hash = EncodeBase64(tempHash)
-	return
+	var hash = EncodeBase64(tempHash)
+	return hash, nil
 }
 
 // Verify if Argon2id password matches string
-func CompareToArgon2id(password string, hashedPassword string) (match bool, err error) {
+func CompareArgon2id(password string, hashedPassword string) (bool, error) {
 	initialHashedPassword, _ := DecodeBase64(hashedPassword)
-	match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
-	return
+	var match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
+	return match, err
 }

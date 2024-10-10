@@ -17,7 +17,7 @@ func NewAuthController(service AuthService) *AuthController {
 	return &AuthController{Service: service}
 }
 
-func (controller *AuthController) SignInWithEmail(deviceName string, input *data.SignInWithEmailRequest) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
 	// Check email and password
 	var errMessage string
 	var isEmailValid = utils.IsEmailValid(input.Email)
@@ -43,12 +43,12 @@ func (controller *AuthController) SignInWithEmail(deviceName string, input *data
 	var accessToken string
 	var accessExpires *time.Time = nil
 	accessToken, accessExpires, errCode, err = controller.Service.SignIn(
-		deviceName,
 		&data.SignInRequest{
 			Email:         input.Email,
 			Password:      input.Password,
 			StayConnected: input.StayConnected,
 		},
+		device,
 	)
 	if err != nil {
 		return
@@ -60,7 +60,7 @@ func (controller *AuthController) SignInWithEmail(deviceName string, input *data
 	return
 }
 
-func (controller *AuthController) SignInWithPhoneNumber(deviceName string, input *data.SignInWithPhoneNumberRequest) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPhoneNumberRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
 	// Check phone number and password
 	var errMessage string
 	var isPhoneNumberValid = utils.IsPhoneNumberValid(input.PhoneNumber)
@@ -86,12 +86,12 @@ func (controller *AuthController) SignInWithPhoneNumber(deviceName string, input
 	var accessToken string
 	var accessExpires *time.Time = nil
 	accessToken, accessExpires, errCode, err = controller.Service.SignIn(
-		deviceName,
 		&data.SignInRequest{
 			PhoneNumber:   input.PhoneNumber,
 			Password:      input.Password,
 			StayConnected: input.StayConnected,
 		},
+		device,
 	)
 	if err != nil {
 		return
@@ -103,7 +103,7 @@ func (controller *AuthController) SignInWithPhoneNumber(deviceName string, input
 	return
 }
 
-func (controller *AuthController) SignInWithProvider(deviceName string, input *data.SignInWithProviderRequest) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
 	// Check provider
 	var errMessage string
 	var isProviderValid = utils.IsAuthProviderValid(input.Provider)
@@ -117,7 +117,7 @@ func (controller *AuthController) SignInWithProvider(deviceName string, input *d
 	// Execute the service
 	var accessToken string
 	var accessExpires *time.Time = nil
-	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(deviceName, input)
+	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(input, device)
 	if err != nil {
 		return
 	}

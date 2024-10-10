@@ -2,7 +2,9 @@ package data
 
 // Sign in
 type SignInDevice struct {
-	DeviceName string `json:"deviceName" required:"true" doc:"Device name" minLength:"2" maxLength:"30" example:"Android - Pixel 5"`
+	Platform   string `json:"platform" required:"true" doc:"Platform" minLength:"2" maxLength:"30" example:"Android"`
+	DeviceName string `json:"deviceName" required:"true" doc:"Device name" minLength:"2" maxLength:"30" example:"Google Pixel 5"`
+	App        string `json:"app" required:"true" doc:"Application used to login" minLength:"2" maxLength:"30" example:"Google Chrome"`
 }
 type SignInWithEmailRequest struct {
 	Email         string `json:"email" required:"true" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`

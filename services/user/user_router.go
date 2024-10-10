@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/user/data"
 	"github.com/4kpros/go-api/services/user/model"
@@ -34,7 +33,6 @@ func SetupEndpoints(
 			Description:   "Create new user by providing email and user and return created object.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
@@ -62,7 +60,6 @@ func SetupEndpoints(
 			Description:   "Create new user by providing phone number and role and return created object.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
@@ -90,7 +87,6 @@ func SetupEndpoints(
 			Description:   "Update existing user with matching id and return the new user object.",
 			Method:        http.MethodPut,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -106,7 +102,7 @@ func SetupEndpoints(
 				Email:       input.Body.Email,
 				PhoneNumber: input.Body.PhoneNumber,
 				Language:    input.Body.Language,
-				Role:        input.Body.Role,
+				RoleId:      input.Body.RoleId,
 			}
 			inputFormatted.ID = uint(input.UserId.Id)
 			var result, errCode, err = controller.UpdateUser(inputFormatted)
@@ -126,7 +122,6 @@ func SetupEndpoints(
 			Description:   "Update existing user info with matching id and return the new user object.",
 			Method:        http.MethodPut,
 			Path:          fmt.Sprintf("%s/info/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -162,7 +157,6 @@ func SetupEndpoints(
 			Description:   "Delete existing user with matching id and return affected rows in database.",
 			Method:        http.MethodDelete,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -190,7 +184,6 @@ func SetupEndpoints(
 			Description:   "Return one user with matching id",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
@@ -218,7 +211,6 @@ func SetupEndpoints(
 			Description:   "Get all users with support for search, filter and pagination",
 			Method:        http.MethodGet,
 			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},

@@ -56,7 +56,7 @@ func (service *UserServiceImpl) Create(user *model.User) (result *model.User, er
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
 		Password:    randomPassword,
-		Role:        user.Role,
+		RoleId:      user.RoleId,
 	}
 	err = service.Repository.Create(newUser)
 	if err != nil {

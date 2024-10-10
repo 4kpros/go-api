@@ -30,7 +30,7 @@ func init() {
 	}
 
 	// Test argon2id with empty password
-	_, errArgon2id := utils.EncryptWithArgon2id("")
+	_, errArgon2id := utils.EncodeArgon2id("")
 	if errArgon2id != nil {
 		errInit = errArgon2id
 		helpers.Logger.Error(
