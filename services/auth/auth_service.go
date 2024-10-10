@@ -78,6 +78,7 @@ func (service *AuthServiceImpl) SignIn(input *data.SignInRequest, device *data.S
 			config.SetRedisStr,
 		)
 		if errEncode != nil || jwtToken == nil {
+			errMessage = "Error occurred when trying to encode JWT token! Please try again later."
 			errCode = http.StatusInternalServerError
 			err = errEncode
 			return
@@ -116,6 +117,7 @@ func (service *AuthServiceImpl) SignIn(input *data.SignInRequest, device *data.S
 		config.InsertRedisArrayStr,
 	)
 	if errEncode != nil {
+		errMessage = "Error occurred when trying to encode JWT token! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errEncode
 	}
@@ -130,7 +132,7 @@ func (service *AuthServiceImpl) SignInWithProvider(input *data.SignInWithProvide
 	var providerUserId = "Test"
 	if len(providerUserId) <= 0 {
 		errMessage = "Invalid provider or token! Please enter valid information."
-		errCode = http.StatusNotFound
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -144,6 +146,7 @@ func (service *AuthServiceImpl) SignInWithProvider(input *data.SignInWithProvide
 		}
 		err = service.Repository.Create(user)
 		if err != nil {
+			errMessage = "Error occurred when trying to create user! Please try again later."
 			errCode = http.StatusInternalServerError
 			return
 		}
@@ -164,6 +167,7 @@ func (service *AuthServiceImpl) SignInWithProvider(input *data.SignInWithProvide
 		config.InsertRedisArrayStr,
 	)
 	if errEncode != nil {
+		errMessage = "Error occurred when trying to encode JWT token! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errEncode
 	}
@@ -185,11 +189,12 @@ func (service *AuthServiceImpl) SignUp(input *data.SignUpRequest) (errCode int, 
 		userFound, errFound = service.Repository.GetByPhoneNumber(input.PhoneNumber)
 	}
 	if errFound != nil {
+		errMessage = "Error occurred when trying to find user on DB! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errFound
 		return
 	}
-	if userFound != nil && userFound.Email == input.Email {
+	if userFound.Email == input.Email {
 		errCode = http.StatusFound
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -201,6 +206,7 @@ func (service *AuthServiceImpl) SignUp(input *data.SignUpRequest) (errCode int, 
 	userFound.Password = input.Password
 	err = service.Repository.Create(userFound)
 	if err != nil {
+		errMessage = "Error occurred when trying to create user! Please try again later."
 		errCode = http.StatusInternalServerError
 		return
 	}
@@ -222,6 +228,7 @@ func (service *AuthServiceImpl) SignUp(input *data.SignUpRequest) (errCode int, 
 		config.SetRedisStr,
 	)
 	if errEncode != nil || jwtToken == nil {
+		errMessage = "Error occurred when trying to generate random code! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errEncode
 	}
@@ -245,20 +252,21 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if errDecode != nil {
-		errCode = http.StatusNotFound
+		errMessage = "Invalid token! Please enter valid information."
+		errCode = http.StatusUnprocessableEntity
 		err = errDecode
 		return
 	}
 	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_ACTIVATE {
 		errMessage = "Invalid or expired token! Please enter valid information."
-		errCode = http.StatusPreconditionFailed
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
 	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
 	if !isTokenValid {
 		errMessage = "Token already expired! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -267,7 +275,7 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 	fmt.Printf("\nRequested code: %d\n", input.Code)
 	if jwtToken.Code <= 0 || jwtToken.Code != input.Code {
 		errMessage = "Invalid code! Please enter valid information."
-		errCode = http.StatusPreconditionFailed
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -277,7 +285,7 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 	var userFound, errFound = service.Repository.GetById(userId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
-		errCode = http.StatusNotFound
+		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -290,28 +298,23 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 		return
 	}
 
-	// Update account
-	var tmpActivatedAt = time.Now()
-	userFound.ActivatedAt = &tmpActivatedAt
-	userFound.IsActivated = true
-	err = service.Repository.Update(userFound)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		return
-	}
-
 	// Create user info
 	var userInfo = &model.UserInfo{}
 	err = service.Repository.CreateUserInfo(userInfo)
 	if err != nil {
+		errMessage = "Error occurred when trying to create user info! Please try again later."
 		errCode = http.StatusInternalServerError
 		return
 	}
 
-	// Update user with user info id
+	// Update account
+	var tmpActivatedAt = time.Now()
+	userFound.ActivatedAt = &tmpActivatedAt
+	userFound.IsActivated = true
 	userFound.UserInfoId = userInfo.ID
 	err = service.Repository.Update(userFound)
 	if err != nil {
+		errMessage = "Error occurred when trying to update user! Please try again later."
 		errCode = http.StatusInternalServerError
 		return
 	}
@@ -331,18 +334,13 @@ func (service *AuthServiceImpl) ResetPasswordInit(input *data.ResetPasswordInitR
 	var errFound error
 	var errMessage string
 	if utils.IsEmailValid(input.Email) {
+		errMessage = "User with this email not found! Please enter valid information."
 		userFound, errFound = service.Repository.GetByEmail(input.Email)
-		errMessage = "User not found! Please enter valid information."
 	} else {
-		errMessage = "User not found! Please enter valid information."
+		errMessage = "User with this phone number not found! Please enter valid information."
 		userFound, errFound = service.Repository.GetByPhoneNumber(input.PhoneNumber)
 	}
-	if errFound != nil {
-		errCode = http.StatusInternalServerError
-		err = errFound
-		return
-	}
-	if userFound == nil || userFound.ID <= 0 {
+	if errFound != nil || userFound.ID <= 0 {
 		errCode = http.StatusNotFound
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -351,6 +349,7 @@ func (service *AuthServiceImpl) ResetPasswordInit(input *data.ResetPasswordInitR
 	// Generate new random code
 	var randomCode, errRandomCode = utils.GenerateRandomCode(5)
 	if errRandomCode != nil {
+		errMessage = "Error occurred when trying to generate random code! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errRandomCode
 	}
@@ -370,6 +369,7 @@ func (service *AuthServiceImpl) ResetPasswordInit(input *data.ResetPasswordInitR
 		config.SetRedisStr,
 	)
 	if errEncode != nil || newJwtToken == nil {
+		errMessage = "Error occurred when trying to generate new JWT token! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errEncode
 		return
@@ -395,20 +395,21 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if errDecode != nil {
-		errCode = http.StatusNotFound
+		errMessage = "Invalid token! Please enter valid information."
+		errCode = http.StatusUnprocessableEntity
 		err = errDecode
 		return
 	}
 	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_RESET_CODE {
 		errMessage = "Invalid or expired token! Please enter valid information."
-		errCode = http.StatusPreconditionFailed
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
 	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
 	if !isTokenValid {
 		errMessage = "Token already expired! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -416,7 +417,7 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 	// Check if code is valid
 	if jwtToken.Code <= 0 || jwtToken.Code != input.Code {
 		errMessage = "Invalid code! Please enter valid information."
-		errCode = http.StatusPreconditionFailed
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -426,7 +427,7 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 	var userFound, errFound = service.Repository.GetById(userId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
-		errCode = http.StatusNotFound
+		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -449,6 +450,7 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 		config.SetRedisStr,
 	)
 	if errEncode != nil || newJwtToken == nil {
+		errMessage = "Error occurred when trying to generate new JWT token! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errEncode
 	}
@@ -461,20 +463,21 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if errDecode != nil {
-		errCode = http.StatusForbidden
+		errMessage = "Invalid token! Please enter valid information."
+		errCode = http.StatusUnprocessableEntity
 		err = errDecode
 		return
 	}
 	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_RESET_PASSWORD {
 		errMessage = "Invalid or expired token! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
 	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
 	if !isTokenValid {
 		errMessage = "Token already expired! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -484,7 +487,7 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	var userFound, errFound = service.Repository.GetById(userId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
-		errCode = http.StatusNotFound
+		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
@@ -492,13 +495,20 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	// Update user password
 	var userUpdated, errUpdate = service.Repository.UpdatePasswordById(userId, input.NewPassword)
 	if errUpdate != nil || userUpdated == nil {
+		errMessage = "Error occurred when trying to update password! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = errUpdate
 		return
 	}
 
 	// Invalidate token
-	config.DeleteRedisStr(utils.GetJWTCachedKey(jwtToken))
+	var _, errDel = config.DeleteRedisStr(utils.GetJWTCachedKey(jwtToken))
+	if errDel != nil {
+		errMessage = "Error occurred when deleting cached session! Please try again later."
+		errCode = http.StatusInternalServerError
+		err = fmt.Errorf("%s", errMessage)
+		return
+	}
 	return
 }
 
@@ -524,20 +534,20 @@ func (service *AuthServiceImpl) SignOut(token string) (errCode int, err error) {
 	var sessions, errSession = config.GetRedisArrayStr(fmt.Sprintf("%d", jwtToken.UserId))
 	if errSession != nil {
 		errMessage = "Token already expired! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnauthorized
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
 	var tokenIndex = slices.Index(sessions, token)
 	if tokenIndex < 0 {
 		errMessage = "Token already expired! Please enter valid information."
-		errCode = http.StatusForbidden
+		errCode = http.StatusUnauthorized
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
 	var errDel = config.DeleteRedisStrFromArrayStr(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
 	if errDel != nil {
-		errMessage = "Error occurred when deleting cached session! Please try again later."
+		errMessage = "Error occurred when trying to delete cached session! Please try again later."
 		errCode = http.StatusInternalServerError
 		err = fmt.Errorf("%s", errMessage)
 		return
