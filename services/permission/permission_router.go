@@ -1,4 +1,4 @@
-package role
+package permission
 
 import (
 	"context"
@@ -7,27 +7,27 @@ import (
 
 	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/role/data"
-	"github.com/4kpros/go-api/services/role/model"
+	"github.com/4kpros/go-api/services/permission/data"
+	"github.com/4kpros/go-api/services/permission/model"
 	"github.com/danielgtaylor/huma/v2"
 )
 
 func SetupEndpoints(
 	humaApi *huma.API,
-	controller *RoleController,
+	controller *PermissionController,
 ) {
 	var endpointConfig = types.APIEndpointConfig{
-		Group: "/roles",
-		Tag:   []string{"Roles"},
+		Group: "/permissions",
+		Tag:   []string{"Permissions"},
 	}
 
-	// Create role
+	// Create permission
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "post-role",
-			Summary:     "Create role",
-			Description: "Create new role by providing name and description and return created object. The name role should be unique.",
+			OperationID: "post-permission",
+			Summary:     "Create permission",
+			Description: "Create new permission by providing name and description and return created object. The name permission should be unique.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -41,24 +41,24 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.RoleRequest
+				Body data.CreatePermissionRequest
 			},
-		) (*struct{ Body model.Role }, error) {
+		) (*struct{ Body model.Permission }, error) {
 			var result, errCode, err = controller.Create(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body model.Permission }{Body: *result}, nil
 		},
 	)
 
-	// Update role with id
+	// Update permission with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-role",
-			Summary:     "Update role",
-			Description: "Update existing role with matching id and return the new role object.",
+			OperationID: "update-permission",
+			Summary:     "Update permission",
+			Description: "Update existing permission with matching id and return the new permission object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -72,30 +72,25 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
-				Body data.RoleRequest
+				data.PermissionId
+				Body data.UpdatePermissionRequest
 			},
-		) (*struct{ Body model.Role }, error) {
-			var inputFormatted = &model.Role{
-				Name:        input.Body.Name,
-				Description: input.Body.Name,
-			}
-			inputFormatted.ID = input.RoleId.Id
-			var result, errCode, err = controller.Update(inputFormatted)
+		) (*struct{ Body model.Permission }, error) {
+			var result, errCode, err = controller.Update(input.PermissionId.Id, &input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body model.Permission }{Body: *result}, nil
 		},
 	)
 
-	// Delete role with id
+	// Delete permission with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-role",
-			Summary:     "Delete role",
-			Description: "Delete existing role with matching id and return affected rows in database.",
+			OperationID: "delete-permission",
+			Summary:     "Delete permission",
+			Description: "Delete existing permission with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -109,10 +104,10 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
+				data.PermissionId
 			},
 		) (*struct{ Body types.DeleteResponse }, error) {
-			var result, errCode, err = controller.Delete(&input.RoleId)
+			var result, errCode, err = controller.Delete(input.Id)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -120,13 +115,13 @@ func SetupEndpoints(
 		},
 	)
 
-	// Get role by id
+	// Get permission by id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-role-id",
-			Summary:     "Get role by id",
-			Description: "Return one role with matching id",
+			OperationID: "get-permission-id",
+			Summary:     "Get permission by id",
+			Description: "Return one permission with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -140,24 +135,24 @@ func SetupEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
+				data.PermissionId
 			},
-		) (*struct{ Body model.Role }, error) {
-			var result, errCode, err = controller.GetById(&input.RoleId)
+		) (*struct{ Body model.Permission }, error) {
+			var result, errCode, err = controller.GetById(input.Id)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body model.Permission }{Body: *result}, nil
 		},
 	)
 
-	// Get all roles
+	// Get all permissions
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-roles",
-			Summary:     "Get all roles",
-			Description: "Get all roles with support for search, filter and pagination",
+			OperationID: "get-permissions",
+			Summary:     "Get all permissions",
+			Description: "Get all permissions with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -175,14 +170,14 @@ func SetupEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.RolesResponse
+			Body data.PermissionsResponse
 		}, error) {
 			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.RolesResponse
+				Body data.PermissionsResponse
 			}{Body: *result}, nil
 		},
 	)

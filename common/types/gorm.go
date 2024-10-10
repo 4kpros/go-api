@@ -7,7 +7,7 @@ import (
 )
 
 type BaseGormModel struct {
-	ID        uint           `gorm:"primaryKey; not null" json:"id" required:"false"`
+	ID        int64          `gorm:"primaryKey; not null" json:"id" required:"false"`
 	CreatedAt time.Time      `json:"createdAt" required:"false"`
 	UpdatedAt time.Time      `json:"updatedAt" required:"false"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt" required:"false"`

@@ -1,8 +1,6 @@
 package role
 
 import (
-	"strconv"
-
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/role/data"
@@ -42,7 +40,7 @@ func (controller *RoleController) Update(input *model.Role) (result *model.Role,
 
 func (controller *RoleController) Delete(input *data.RoleId) (result int64, errCode int, err error) {
 	var affectedRows int64
-	affectedRows, errCode, err = controller.Service.Delete(strconv.Itoa(input.Id))
+	affectedRows, errCode, err = controller.Service.Delete(input.Id)
 	if err != nil {
 		return
 	}
@@ -52,7 +50,7 @@ func (controller *RoleController) Delete(input *data.RoleId) (result int64, errC
 
 func (controller *RoleController) GetById(input *data.RoleId) (result *model.Role, errCode int, err error) {
 	var role *model.Role
-	role, errCode, err = controller.Service.GetById(strconv.Itoa(input.Id))
+	role, errCode, err = controller.Service.GetById(input.Id)
 	if err != nil {
 		return
 	}

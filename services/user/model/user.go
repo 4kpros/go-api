@@ -11,16 +11,16 @@ import (
 type User struct {
 	types.BaseGormModel
 	Email          string     `json:"email" doc:"Email" minLength:"3" maxLength:"20" example:"example@domain.com"`
-	PhoneNumber    int        `json:"phoneNumber" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
+	PhoneNumber    uint64     `json:"phoneNumber" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
 	Provider       string     `json:"provider" doc:"Provider" example:"google"`
 	ProviderUserId string     `json:"providerUserId" doc:"User id from provider"  example:"121"`
 	IsActivated    bool       `json:"isActivated" doc:"Is user account activated ?"  example:"false"`
 	ActivatedAt    *time.Time `json:"activatedAt"`
-	RoleId         int        `json:"roleId" doc:"Role id" example:"1"`
+	RoleId         int64      `json:"roleId" doc:"Role id" example:"1"`
 	Language       string     `json:"language" doc:"Language with 2 letter" minLength:"2" maxLength:"2" example:"en"`
 	Password       string     `json:"password"`
 	UserInfo       UserInfo   `json:"userInfo,omitempty" gorm:"foreignKey:UserInfoId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserInfoId     uint       `json:"_" gorm:"default:null"`
+	UserInfoId     int64      `json:"_" gorm:"default:null"`
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) (err error) {

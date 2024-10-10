@@ -7,5 +7,5 @@ import (
 type UserSession struct {
 	types.BaseGormModel
 	Token  string `json:"Token"`
-	UserId string `json:"userId"`
+	UserId int64  `json:"userId"`
 }

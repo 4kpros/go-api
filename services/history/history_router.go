@@ -15,10 +15,7 @@ func SetupEndpoints(
 	humaApi *huma.API,
 	controller *HistoryController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	var endpointConfig = types.APIEndpointConfig{
 		Group: "/history",
 		Tag:   []string{"History"},
 	}

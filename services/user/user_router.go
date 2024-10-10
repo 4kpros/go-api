@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/user/data"
 	"github.com/4kpros/go-api/services/user/model"
@@ -15,25 +16,25 @@ func SetupEndpoints(
 	humaApi *huma.API,
 	controller *UserController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	var endpointConfig = types.APIEndpointConfig{
 		Group: "/users",
 		Tag:   []string{"Users"},
 	}
-	const requireAuth = true
 
 	// Create user with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "post-user-email",
-			Summary:       "Create user with email",
-			Description:   "Create new user by providing email and user and return created object.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/email", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "post-user-email",
+			Summary:     "Create user with email",
+			Description: "Create new user by providing email and user and return created object.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/email", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -55,12 +56,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "create-user-phone",
-			Summary:       "Create user with phone",
-			Description:   "Create new user by providing phone number and role and return created object.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/phone", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "create-user-phone",
+			Summary:     "Create user with phone",
+			Description: "Create new user by providing phone number and role and return created object.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/phone", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -82,12 +87,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "update-user",
-			Summary:       "Update user",
-			Description:   "Update existing user with matching id and return the new user object.",
-			Method:        http.MethodPut,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "update-user",
+			Summary:     "Update user",
+			Description: "Update existing user with matching id and return the new user object.",
+			Method:      http.MethodPut,
+			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -104,7 +113,7 @@ func SetupEndpoints(
 				Language:    input.Body.Language,
 				RoleId:      input.Body.RoleId,
 			}
-			inputFormatted.ID = uint(input.UserId.Id)
+			inputFormatted.ID = input.UserId.Id
 			var result, errCode, err = controller.UpdateUser(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
@@ -117,12 +126,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "update-user-info",
-			Summary:       "Update user info",
-			Description:   "Update existing user info with matching id and return the new user object.",
-			Method:        http.MethodPut,
-			Path:          fmt.Sprintf("%s/info/:id", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "update-user-info",
+			Summary:     "Update user info",
+			Description: "Update existing user info with matching id and return the new user object.",
+			Method:      http.MethodPut,
+			Path:        fmt.Sprintf("%s/info/:id", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -139,7 +152,7 @@ func SetupEndpoints(
 				LastName:  input.Body.LastName,
 				Address:   input.Body.Address,
 			}
-			inputFormatted.ID = uint(input.UserId.Id)
+			inputFormatted.ID = input.UserId.Id
 			var result, errCode, err = controller.UpdateUserInfo(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
@@ -152,12 +165,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "delete-user",
-			Summary:       "Delete user",
-			Description:   "Delete existing user with matching id and return affected rows in database.",
-			Method:        http.MethodDelete,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "delete-user",
+			Summary:     "Delete user",
+			Description: "Delete existing user with matching id and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -179,12 +196,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "get-user-id",
-			Summary:       "Get user by id",
-			Description:   "Return one user with matching id",
-			Method:        http.MethodGet,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "get-user-id",
+			Summary:     "Get user by id",
+			Description: "Return one user with matching id",
+			Method:      http.MethodGet,
+			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -206,12 +227,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "get-users",
-			Summary:       "Get all users",
-			Description:   "Get all users with support for search, filter and pagination",
-			Method:        http.MethodGet,
-			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "get-users",
+			Summary:     "Get all users",
+			Description: "Get all users with support for search, filter and pagination",
+			Method:      http.MethodGet,
+			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},

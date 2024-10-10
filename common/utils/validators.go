@@ -13,8 +13,8 @@ func IsAuthProviderValid(provider string) bool {
 	return slices.Contains(constants.AUTH_PROVIDERS, provider)
 }
 
-func IsPhoneNumberValid(phoneNumber int) bool {
-	return phoneNumber > 100000
+func IsPhoneNumberValid(phoneNumber uint64) bool {
+	return phoneNumber > 1000000
 }
 
 func IsEmailValid(email string) bool {

@@ -11,6 +11,20 @@ import (
 
 var errInit error = nil
 
+// Entrypoint
+func main() {
+	if errInit != nil {
+		helpers.Logger.Warn(
+			"There are some errors when initializing app!",
+			zap.String("Error", "Please fix previous errors before."),
+		)
+		panic(errInit)
+	}
+	migrate.Start()
+	api.Start()
+}
+
+// Method called before main()
 func init() {
 	// Setup logger
 	helpers.SetupLogger()
@@ -98,16 +112,4 @@ func init() {
 			"All OpenAPI templates loaded!",
 		)
 	}
-}
-
-func main() {
-	if errInit != nil {
-		helpers.Logger.Warn(
-			"There are some errors when initializing app!",
-			zap.String("Error", "Please fix previous errors before."),
-		)
-		return
-	}
-	migrate.Start()
-	api.Start()
 }

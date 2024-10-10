@@ -1,8 +1,6 @@
 package user
 
 import (
-	"strconv"
-
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/user/data"
@@ -56,13 +54,13 @@ func (controller *UserController) UpdateUserInfo(input *model.UserInfo) (result 
 }
 
 func (controller *UserController) Delete(input *data.UserId) (result int64, errCode int, err error) {
-	result, errCode, err = controller.Service.Delete(strconv.Itoa(input.Id))
+	result, errCode, err = controller.Service.Delete(input.Id)
 	return
 }
 
 func (controller *UserController) GetById(input *data.UserId) (result *model.User, errCode int, err error) {
 	var user *model.User
-	user, errCode, err = controller.Service.GetById(strconv.Itoa(input.Id))
+	user, errCode, err = controller.Service.GetById(input.Id)
 	if err != nil {
 		return
 	}

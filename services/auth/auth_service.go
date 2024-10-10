@@ -13,30 +13,16 @@ import (
 	"github.com/4kpros/go-api/services/user/model"
 )
 
-type AuthService interface {
-	SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error)
-	SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error)
-
-	SignUp(input *data.SignUpRequest) (errCode int, err error)
-
-	ActivateAccount(input *data.ActivateAccountRequest) (date *time.Time, errCode int, err error)
-
-	ResetPasswordInit(input *data.ResetPasswordInitRequest) (token string, errCode int, err error)
-	ResetPasswordCode(input *data.ResetPasswordCodeRequest) (token string, errCode int, err error)
-	ResetPasswordNewPassword(input *data.ResetPasswordNewPasswordRequest) (errCode int, err error)
-
-	SignOut(token string) (errCode int, err error)
-}
-
-type AuthServiceImpl struct {
+type AuthService struct {
 	Repository AuthRepository
 }
 
-func NewAuthServiceImpl(repository AuthRepository) AuthService {
-	return &AuthServiceImpl{Repository: repository}
+func NewAuthService(repository AuthRepository) *AuthService {
+	return &AuthService{Repository: repository}
 }
 
-func (service *AuthServiceImpl) SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
+// Login with email or phone number
+func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
 	var errFound error
@@ -126,7 +112,8 @@ func (service *AuthServiceImpl) SignIn(input *data.SignInRequest, device *data.S
 	return
 }
 
-func (service *AuthServiceImpl) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
+// Login with provider like Google and Facebook
+func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Validate provider token and update user
 	var errMessage string
 	var providerUserId = "Test"
@@ -176,7 +163,8 @@ func (service *AuthServiceImpl) SignInWithProvider(input *data.SignInWithProvide
 	return
 }
 
-func (service *AuthServiceImpl) SignUp(input *data.SignUpRequest) (errCode int, err error) {
+// Register with email or phone number
+func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
 	var errFound error
@@ -247,7 +235,8 @@ func (service *AuthServiceImpl) SignUp(input *data.SignUpRequest) (errCode int, 
 	return
 }
 
-func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountRequest) (activatedAt *time.Time, errCode int, err error) {
+// Activate user account
+func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) (activatedAt *time.Time, errCode int, err error) {
 	// Extract token information and validate the token
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
@@ -281,8 +270,7 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 	}
 
 	// Check if user exists
-	var userId = fmt.Sprintf("%d", jwtToken.UserId)
-	var userFound, errFound = service.Repository.GetById(userId)
+	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
 		errCode = http.StatusForbidden
@@ -328,7 +316,8 @@ func (service *AuthServiceImpl) ActivateAccount(input *data.ActivateAccountReque
 	return
 }
 
-func (service *AuthServiceImpl) ResetPasswordInit(input *data.ResetPasswordInitRequest) (token string, errCode int, err error) {
+// Forgot password step 1: request forgot password
+func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitRequest) (token string, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
 	var errFound error
@@ -390,7 +379,8 @@ func (service *AuthServiceImpl) ResetPasswordInit(input *data.ResetPasswordInitR
 	return
 }
 
-func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeRequest) (token string, errCode int, err error) {
+// Forgot password step 2: validate sended code
+func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest) (token string, errCode int, err error) {
 	// Extract token information and validate the token
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
@@ -423,8 +413,7 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 	}
 
 	// Check if user exists
-	var userId = fmt.Sprintf("%d", jwtToken.UserId)
-	var userFound, errFound = service.Repository.GetById(userId)
+	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
 		errCode = http.StatusForbidden
@@ -458,7 +447,8 @@ func (service *AuthServiceImpl) ResetPasswordCode(input *data.ResetPasswordCodeR
 	return
 }
 
-func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswordNewPasswordRequest) (errCode int, err error) {
+// Forgot password step 3: setup new password
+func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPasswordNewPasswordRequest) (errCode int, err error) {
 	// Extract token information and validate the token
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
@@ -483,8 +473,7 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	}
 
 	// Check if user exists
-	var userId = fmt.Sprintf("%d", jwtToken.UserId)
-	var userFound, errFound = service.Repository.GetById(userId)
+	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
 	if errFound != nil || userFound == nil {
 		errMessage = "User not found! Please enter valid information."
 		errCode = http.StatusForbidden
@@ -493,7 +482,7 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	}
 
 	// Update user password
-	var userUpdated, errUpdate = service.Repository.UpdatePasswordById(userId, input.NewPassword)
+	var userUpdated, errUpdate = service.Repository.UpdatePasswordById(jwtToken.UserId, input.NewPassword)
 	if errUpdate != nil || userUpdated == nil {
 		errMessage = "Error occurred when trying to update password! Please try again later."
 		errCode = http.StatusInternalServerError
@@ -512,7 +501,8 @@ func (service *AuthServiceImpl) ResetPasswordNewPassword(input *data.ResetPasswo
 	return
 }
 
-func (service *AuthServiceImpl) SignOut(token string) (errCode int, err error) {
+// Logout user with provided token
+func (service *AuthService) SignOut(token string) (errCode int, err error) {
 	// Extract token information and validate the token
 	var errMessage string
 	var jwtToken, errDecode = utils.DecodeJWTToken(token, config.Keys.JwtPublicKey)

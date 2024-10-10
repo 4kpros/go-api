@@ -1,7 +1,7 @@
 package data
 
 type RoleId struct {
-	Id int `json:"id" path:"id" doc:"Role id" example:"29"`
+	Id int64 `json:"id" path:"id" doc:"Role id" example:"29"`
 }
 
 type RoleRequest struct {

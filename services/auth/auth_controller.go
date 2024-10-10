@@ -216,7 +216,7 @@ func (controller *AuthController) ActivateAccount(input *data.ActivateAccountReq
 	return
 }
 
-func (controller *AuthController) ResetPasswordEmailInit(input *data.ResetPasswordInitRequest) (result *data.ResetPasswordInitResponse, errCode int, err error) {
+func (controller *AuthController) ForgotPasswordEmailInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
 	// Check email
 	var errMessage string
 	var isEmailValid = utils.IsEmailValid(input.Email)
@@ -229,7 +229,7 @@ func (controller *AuthController) ResetPasswordEmailInit(input *data.ResetPasswo
 
 	// Execute the service
 	var token string
-	token, errCode, err = controller.Service.ResetPasswordInit(input)
+	token, errCode, err = controller.Service.ForgotPasswordInit(input)
 	if err != nil {
 		return
 	}
@@ -239,13 +239,13 @@ func (controller *AuthController) ResetPasswordEmailInit(input *data.ResetPasswo
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	result = &data.ResetPasswordInitResponse{
+	result = &data.ForgotPasswordInitResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ResetPasswordPhoneNumberInit(input *data.ResetPasswordInitRequest) (result *data.ResetPasswordInitResponse, errCode int, err error) {
+func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
 	// Check phone number
 	var errMessage string
 	var isPhoneNumberValid = utils.IsPhoneNumberValid(input.PhoneNumber)
@@ -258,7 +258,7 @@ func (controller *AuthController) ResetPasswordPhoneNumberInit(input *data.Reset
 
 	// Execute the service
 	var token string
-	token, errCode, err = controller.Service.ResetPasswordInit(input)
+	token, errCode, err = controller.Service.ForgotPasswordInit(input)
 	if err != nil {
 		return
 	}
@@ -268,30 +268,30 @@ func (controller *AuthController) ResetPasswordPhoneNumberInit(input *data.Reset
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	result = &data.ResetPasswordInitResponse{
+	result = &data.ForgotPasswordInitResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ResetPasswordCode(input *data.ResetPasswordCodeRequest) (result *data.ResetPasswordCodeResponse, errCode int, err error) {
+func (controller *AuthController) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest) (result *data.ForgotPasswordCodeResponse, errCode int, err error) {
 	var token string
-	token, errCode, err = controller.Service.ResetPasswordCode(input)
+	token, errCode, err = controller.Service.ForgotPasswordCode(input)
 	if err != nil {
 		return
 	}
-	result = &data.ResetPasswordCodeResponse{
+	result = &data.ForgotPasswordCodeResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ResetPasswordNewPassword(input *data.ResetPasswordNewPasswordRequest) (result *data.ResetPasswordNewPasswordResponse, errCode int, err error) {
-	errCode, err = controller.Service.ResetPasswordNewPassword(input)
+func (controller *AuthController) ForgotPasswordNewPassword(input *data.ForgotPasswordNewPasswordRequest) (result *data.ForgotPasswordNewPasswordResponse, errCode int, err error) {
+	errCode, err = controller.Service.ForgotPasswordNewPassword(input)
 	if err != nil {
 		return
 	}
-	result = &data.ResetPasswordNewPasswordResponse{
+	result = &data.ForgotPasswordNewPasswordResponse{
 		Message: "Password successful changed! Please sign in to start using our services.",
 	}
 	return

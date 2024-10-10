@@ -13,18 +13,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Used to setup and start API: dependency injection, setup API doc, middlewares and security
 func Start() {
-	// Inject Dependencies
-	historyRepo, roleRepo, authRepo, userRepo :=
-		di.InitRepositories() // Repositories
-	historySvc, roleSvc, authSvc, userSvc :=
+	// Inject Dependencies step 1
+	// Repositories
+	authRepo, historyRepo, roleRepo, permissionRepo, userRepo :=
+		di.InitRepositories()
+	// Services
+	authSvc, historySvc, roleSvc, permissionSvc, userSvc :=
 		di.InitServices(
-			historyRepo, roleRepo, authRepo, userRepo,
-		) // Services
-	historyCtrl, roleCtrl, authCtrl, userCtrl :=
+			authRepo, historyRepo, roleRepo, permissionRepo, userRepo,
+		)
+	// Controllers
+	authCtrl, historyCtrl, roleCtrl, permissionCtrl, userCtrl :=
 		di.InitControllers(
-			historySvc, roleSvc, authSvc, userSvc,
-		) // Controllers
+			authSvc, historySvc, roleSvc, permissionSvc, userSvc,
+		)
 
 	// Setup gin for your API
 	gin.SetMode(config.Env.GinMode)
@@ -34,7 +38,7 @@ func Start() {
 	engine.ForwardedByClientIP = true
 	engine.SetTrustedProxies([]string{"127.0.0.1"})
 	ginGroup := engine.Group(config.Env.ApiGroup)
-	// OpenAPI documentation
+	// OpenAPI documentation based on huma
 	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
 	humaConfig.DocsPath = ""
 	humaConfig.Servers = []*huma.Server{
@@ -59,11 +63,13 @@ func Start() {
 		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
 
+	// Inject Dependencies step 2
+	// Routers
 	di.InitRouters(
-		&humaApi, historyCtrl, roleCtrl, authCtrl, userCtrl,
-	) // Routers
+		&humaApi, authCtrl, historyCtrl, roleCtrl, permissionCtrl, userCtrl,
+	)
 
-	// Run gin
+	// Start to listen
 	formattedPort := fmt.Sprintf(":%d", config.Env.ApiPort)
 	engine.Run(formattedPort)
 }

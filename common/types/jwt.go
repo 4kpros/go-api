@@ -5,11 +5,11 @@ import (
 )
 
 type JwtToken struct {
-	UserId   uint   `json:"userId"`
-	RoleId   int    `json:"roleId"`
+	jwt.RegisteredClaims
+	UserId   int64  `json:"userId"`
+	RoleId   int64  `json:"roleId"`
 	Platform string `json:"platform"`
 	Device   string `json:"device"`
 	App      string `json:"app"`
 	Code     int    `json:"code"`
-	jwt.RegisteredClaims
 }

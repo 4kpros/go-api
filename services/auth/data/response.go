@@ -19,13 +19,13 @@ type ActivateAccountResponse struct {
 }
 
 // Reset password
-type ResetPasswordInitResponse struct {
+type ForgotPasswordInitResponse struct {
 	Token string `json:"token" required:"false" doc:"Token" example:""`
 }
-type ResetPasswordCodeResponse struct {
+type ForgotPasswordCodeResponse struct {
 	Token string `json:"token" required:"false" doc:"Token" example:""`
 }
-type ResetPasswordNewPasswordResponse struct {
+type ForgotPasswordNewPasswordResponse struct {
 	Message string `json:"message" required:"false" doc:"Message" example:""`
 }
 

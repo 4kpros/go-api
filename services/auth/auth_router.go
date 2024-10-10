@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/4kpros/go-api/common/constants"
+	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/auth/data"
 	"github.com/danielgtaylor/huma/v2"
 )
@@ -13,14 +15,10 @@ func SetupEndpoints(
 	humaApi *huma.API,
 	controller *AuthController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	var endpointConfig = types.APIEndpointConfig{
 		Group: "/auth",
 		Tag:   []string{"Authentication"},
 	}
-	const requireAuth = false
 
 	// Sign in with email
 	huma.Register(
@@ -32,6 +30,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -60,6 +59,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -88,6 +88,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/provider", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -116,6 +117,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -143,6 +145,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -170,6 +173,7 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/activate", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -197,19 +201,20 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordWithEmailInitRequest
+				Body data.ForgotPasswordWithEmailInitRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordEmailInit(
-				&data.ResetPasswordInitRequest{
+			var result, errCode, err = controller.ForgotPasswordEmailInit(
+				&data.ForgotPasswordInitRequest{
 					Email: input.Body.Email,
 				},
 			)
@@ -217,7 +222,7 @@ func SetupEndpoints(
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -232,19 +237,20 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/init/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordWithPhoneNumberInitRequest
+				Body data.ForgotPasswordWithPhoneNumberInitRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordPhoneNumberInit(
-				&data.ResetPasswordInitRequest{
+			var result, errCode, err = controller.ForgotPasswordPhoneNumberInit(
+				&data.ForgotPasswordInitRequest{
 					PhoneNumber: input.Body.PhoneNumber,
 				},
 			)
@@ -252,7 +258,7 @@ func SetupEndpoints(
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -267,23 +273,24 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/code", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordCodeRequest
+				Body data.ForgotPasswordCodeRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordCodeResponse
+			Body data.ForgotPasswordCodeResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordCode(&input.Body)
+			var result, errCode, err = controller.ForgotPasswordCode(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordCodeResponse
+				Body data.ForgotPasswordCodeResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -298,23 +305,24 @@ func SetupEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/reset/password", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordNewPasswordRequest
+				Body data.ForgotPasswordNewPasswordRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordNewPasswordResponse
+			Body data.ForgotPasswordNewPasswordResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordNewPassword(&input.Body)
+			var result, errCode, err = controller.ForgotPasswordNewPassword(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordNewPasswordResponse
+				Body data.ForgotPasswordNewPasswordResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -323,12 +331,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "logout",
-			Summary:       "Logout",
-			Description:   "Logout user with provided token.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/logout", endpointConfig.Group),
-			Tags:          endpointConfig.Tag,
+			OperationID: "logout",
+			Summary:     "Logout",
+			Description: "Logout user with provided token.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/logout", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
