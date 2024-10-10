@@ -27,19 +27,19 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 1. Requirements
 
-Make installed for shortcuts
+  - Make installed for shortcuts
 
-Docker installed if you want to build and start postgres and redis containers
+  - Docker installed if you want to build and start postgres and redis containers
 
-Build and start Redis container with the command ```make docker-redis```
+  - Build and start Redis container with the command ```make docker-redis```
 
-Build and start postgres container with the command ```make docker-postgres```
+  - Build and start postgres container with the command ```make docker-postgres```
 
-Rename .env.example to ```app.env```
+  - Rename .env.example to ```app.env```
 
-JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
+  - JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
 
-Others information such configurations are on ```app.env```
+  Others information such configurations are on ```app.env```
 
 ### 2. Clone the repository
 
