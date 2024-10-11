@@ -28,7 +28,7 @@ func SetupEndpoints(
 			Summary:     "Get history",
 			Description: "Get history with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication

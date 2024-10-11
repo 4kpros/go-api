@@ -24,10 +24,10 @@ func (service *UserService) Create(user *model.User) (result *model.User, errCod
 	var errFound error = nil
 	var message string = ""
 	if utils.IsEmailValid(user.Email) {
-		message = "email"
+		message = "user email"
 		foundUser, errFound = service.Repository.GetByEmail(user.Email)
 	} else {
-		message = "phone number"
+		message = "user phone number"
 		foundUser, errFound = service.Repository.GetByPhoneNumber(user.PhoneNumber)
 	}
 	if errFound != nil {

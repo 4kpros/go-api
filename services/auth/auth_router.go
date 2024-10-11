@@ -191,15 +191,15 @@ func SetupEndpoints(
 		},
 	)
 
-	// Reset password step 1 with email
+	// Forgot password step 1 with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-init-email",
-			Summary:       "Reset step 1 - email",
-			Description:   "Reset user password, step 1 with email.",
+			OperationID:   "forgot-init-email",
+			Summary:       "Forgot step 1 - email",
+			Description:   "Forgot password step 1 with email.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/init/email", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/init/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -227,15 +227,15 @@ func SetupEndpoints(
 		},
 	)
 
-	// Reset password step 1 with phone
+	// Forgot password step 1 with phone
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-init-phone",
-			Summary:       "Reset step 1 - phone",
-			Description:   "Reset user password, step 1 with phone number.",
+			OperationID:   "forgot-init-phone",
+			Summary:       "Forgot step 1 - phone",
+			Description:   "Forgot password step 1 with phone number.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/init/phone", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/init/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -263,15 +263,15 @@ func SetupEndpoints(
 		},
 	)
 
-	// Reset password step 2
+	// Forgot password step 2
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-code",
-			Summary:       "Reset step 2",
-			Description:   "Reset user password, step 2 need your code received from step 1.",
+			OperationID:   "forgot-code",
+			Summary:       "Forgot step 2",
+			Description:   "Forgot password step 2 need your received code from step 1.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/code", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/code", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -295,15 +295,15 @@ func SetupEndpoints(
 		},
 	)
 
-	// Reset password step 3
+	// Forgot password step 3
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password",
-			Summary:       "Reset step 3",
-			Description:   "Reset user password, step 3 to set your new password by providing a token received from step 2.",
+			OperationID:   "forgot-password",
+			Summary:       "Forgot step 3",
+			Description:   "Forgot password step 3 to set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/password", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/password", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

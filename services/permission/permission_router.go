@@ -29,7 +29,7 @@ func SetupEndpoints(
 			Summary:     "Create permission",
 			Description: "Create new permission by providing name and description and return created object. The name permission should be unique.",
 			Method:      http.MethodPost,
-			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -154,7 +154,7 @@ func SetupEndpoints(
 			Summary:     "Get all permissions",
 			Description: "Get all permissions with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication

@@ -6,6 +6,10 @@ var HTTP_500_ERROR_MESSAGE = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("Error occurred when trying to %s! Please try again later.", message))
 }
 
+var HTTP_401_ERROR_MESSAGE = func() error {
+	return fmt.Errorf("%s", fmt.Sprintf("Invalid or expired token! Please enter valid information."))
+}
+
 var HTTP_404_ERROR_MESSAGE = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("%s not found! Please enter valid information.", message))
 }

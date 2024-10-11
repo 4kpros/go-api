@@ -29,7 +29,7 @@ func SetupEndpoints(
 			Summary:     "Create role",
 			Description: "Create new role by providing name and description and return created object. The name role should be unique.",
 			Method:      http.MethodPost,
-			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -159,7 +159,7 @@ func SetupEndpoints(
 			Summary:     "Get all roles",
 			Description: "Get all roles with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s ", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication

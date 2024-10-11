@@ -77,7 +77,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		// Parse and decode the token
 		token := utils.ExtractBearerTokenHeader(&ctx)
 		if len(token) < 1 {
-			errMessage = "Missing or bad authorization header! Please enter authorization header and try again."
+			errMessage = "Missing or bad authorization header! Please enter valid information."
 			huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
@@ -86,8 +86,8 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			errMessage = "Invalid or expired authorization header! Please enter valid authorization header and try again."
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
+			var tempErr = constants.HTTP_401_ERROR_MESSAGE()
+			huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}
 
@@ -111,7 +111,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			return
 		}
 
-		errMessage = "Invalid or expired authorization header! Please enter valid authorization header and try again."
-		huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
+		var tempErr = constants.HTTP_401_ERROR_MESSAGE()
+		huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }
