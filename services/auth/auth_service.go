@@ -62,7 +62,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 			constants.JWT_ISSUER_ACTIVATE,
 			utils.NewExpiresDateDefault(),
 			config.Keys.JwtPrivateKey,
-			config.SetRedisStr,
+			config.SetRedisString,
 		)
 		if errEncode != nil || jwtToken == nil {
 			errCode = http.StatusInternalServerError
@@ -99,7 +99,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateSignIn(input.StayConnected),
 		config.Keys.JwtPrivateKey,
-		config.InsertRedisArrayStr,
+		config.AppendToRedisStringList,
 	)
 	if errEncode != nil {
 		errCode = http.StatusInternalServerError
@@ -147,7 +147,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateSignIn(true),
 		config.Keys.JwtPrivateKey,
-		config.InsertRedisArrayStr,
+		config.AppendToRedisStringList,
 	)
 	if errEncode != nil {
 		errCode = http.StatusInternalServerError
@@ -207,7 +207,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 		constants.JWT_ISSUER_ACTIVATE,
 		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
-		config.SetRedisStr,
+		config.SetRedisString,
 	)
 	if errEncode != nil || jwtToken == nil {
 		errCode = http.StatusInternalServerError
@@ -243,7 +243,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
+	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -296,7 +296,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	activatedAt = userFound.ActivatedAt
 
 	// Invalidate token
-	config.DeleteRedisStr(utils.GetJWTCachedKey(jwtToken))
+	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 
 	// Send welcome message
 	// TODO
@@ -341,7 +341,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 		constants.JWT_ISSUER_FORGOT_PASSWORD_CODE,
 		expires,
 		config.Keys.JwtPrivateKey,
-		config.SetRedisStr,
+		config.SetRedisString,
 	)
 	if errEncode != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
@@ -379,7 +379,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
+	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -402,7 +402,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 	}
 
 	// Invalidate token
-	config.DeleteRedisStr(utils.GetJWTCachedKey(jwtToken))
+	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 
 	// Generate new token
 	var newJwtToken, newToken, errEncode = utils.EncodeJWTToken(
@@ -416,7 +416,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
-		config.SetRedisStr,
+		config.SetRedisString,
 	)
 	if errEncode != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
@@ -441,7 +441,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisStr)
+	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -465,7 +465,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 	}
 
 	// Invalidate token
-	var _, errDel = config.DeleteRedisStr(utils.GetJWTCachedKey(jwtToken))
+	var _, errDel = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 	if errDel != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
@@ -483,7 +483,7 @@ func (service *AuthService) SignOut(token string) (errCode int, err error) {
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(token, jwtToken, config.CheckRedisStrFromArrayStr(token))
+	var isTokenValid = utils.ValidateJWTToken(token, jwtToken, config.CheckValueInRedisList(token))
 	if !isTokenValid {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
@@ -491,7 +491,7 @@ func (service *AuthService) SignOut(token string) (errCode int, err error) {
 	}
 
 	// Invalidate token
-	var sessions, errSession = config.GetRedisArrayStr(fmt.Sprintf("%d", jwtToken.UserId))
+	var sessions, errSession = config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken))
 	if errSession != nil {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
@@ -503,7 +503,7 @@ func (service *AuthService) SignOut(token string) (errCode int, err error) {
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return
 	}
-	var errDel = config.DeleteRedisStrFromArrayStr(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
+	var errDel = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
 	if errDel != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("delete cached session")

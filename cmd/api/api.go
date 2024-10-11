@@ -69,7 +69,7 @@ func Start() {
 		middleware.AuthMiddleware(humaApi),
 	)
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
-		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
+		ctx.Data(200, "text/html", []byte(*config.OpenAPITemplates.Scalar))
 	})
 
 	// Register endpoints

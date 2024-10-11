@@ -19,9 +19,9 @@ import (
 //
 // - Pagination applies an offset and limit to the results, determining which subset of data to display.
 func PaginationScope(model any, pagination *types.Pagination, filter *types.Filter, db *gorm.DB) func(*gorm.DB) *gorm.DB {
-	var count int64
-	db.Model(model).Count(&count)
-	pagination.UpdateFields(&count)
+	var count *int64
+	db.Model(model).Count(count)
+	pagination.UpdateFields(*count)
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Offset(pagination.Offset).Limit(pagination.Limit).Order(
 			fmt.Sprintf("%s %s", filter.OrderBy, filter.Sort),

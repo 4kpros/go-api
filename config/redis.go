@@ -11,8 +11,9 @@ import (
 var RedisClient *redis.Client
 var RedisContext = context.Background()
 
-func ConnectRedis() (err error) {
-	addr := fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
+// Establishes a connection to the Redis server.
+func ConnectRedis() error {
+	var addr = fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Username: Env.RedisUserName,
@@ -20,51 +21,79 @@ func ConnectRedis() (err error) {
 		DB:       Env.RedisDatabase,
 	})
 
-	return
+	// Check redis status
+	var err = RedisClient.Ping(RedisContext).Err()
+	return err
 }
 
-// String
-func GetRedisStr(key string) (val string, err error) {
-	val, err = RedisClient.Get(RedisContext, key).Result()
-	return
-}
-func SetRedisStr(key string, val string) (err error) {
-	err = RedisClient.Set(RedisContext, key, val, 0).Err()
-	return
-}
-func DeleteRedisStr(key string) (val int64, err error) {
-	val, err = RedisClient.Del(RedisContext, key).Result()
-	return
+//
+//
+//
+//
+// String operations below
+//
+//
+//
+//
+
+// Retrieves a string value from Redis using the provided key.
+func GetRedisString(key string) (string, error) {
+	return RedisClient.Get(RedisContext, key).Result()
 }
 
-// String array
-func CheckRedisStrFromArrayStr(requiredToken string) func(string) (string, error) {
-	return func(key string) (val string, err error) {
-		var array, errArray = GetRedisArrayStr(key)
+// Stores a string value in Redis using the provided key.
+func SetRedisString(key string, val string) error {
+	return RedisClient.Set(RedisContext, key, val, 0).Err()
+}
+
+// Removes a string value from Redis using the provided key.
+func DeleteRedisString(key string) (int64, error) {
+	return RedisClient.Del(RedisContext, key).Result()
+}
+
+//
+//
+//
+//
+// String List operations below
+//
+//
+//
+
+// Creates a function that checks if a specified value exists in a Redis list.
+//
+// The returned function takes a Redis key as input and returns the found value
+// (or an empty string if not found) and an error if any.
+func CheckValueInRedisList(requiredVal string) func(string) (string, error) {
+	return func(key string) (string, error) {
+		var array, errArray = GetRedisStringList(key)
 		if errArray != nil {
-			err = errArray
-			return
+			return "", errArray
 		}
-		if slices.Contains(array, requiredToken) {
-			val = requiredToken
+		var result string
+		if slices.Contains(array, requiredVal) {
+			result = requiredVal
 		}
-		return
+		return result, nil
 	}
 }
-func GetRedisArrayStr(key string) (val []string, err error) {
+
+// Retrieves a string array from Redis using the provided key.
+func GetRedisStringList(key string) ([]string, error) {
 	var len, errLen = RedisClient.LLen(RedisContext, key).Result()
 	if errLen != nil {
-		err = errLen
-		return
+		return nil, errLen
 	}
-	val, err = RedisClient.LRange(RedisContext, key, 0, len-1).Result()
-	return
+	return RedisClient.LRange(RedisContext, key, 0, len-1).Result()
 }
-func InsertRedisArrayStr(key string, val string) (err error) {
-	err = RedisClient.LPush(RedisContext, key, val).Err()
-	return
+
+// Appends a new element to a string array stored in Redis.
+func AppendToRedisStringList(key string, val string) error {
+	return RedisClient.LPush(RedisContext, key, val).Err()
 }
-func DeleteRedisStrFromArrayStr(key string, index int64) (err error) {
-	_, err = RedisClient.LTrim(RedisContext, key, index, index).Result()
-	return
+
+// Removes the element at the specified index from a string array stored in Redis.
+func RemoveFromRedisStringList(key string, index int64) error {
+	var _, err = RedisClient.LTrim(RedisContext, key, index, index).Result()
+	return err
 }

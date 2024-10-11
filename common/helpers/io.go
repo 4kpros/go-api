@@ -4,11 +4,15 @@ import (
 	"os"
 )
 
-// Reads the entire file at the specified path into a string.
-func ReadFileContentToString(path string) (string, error) {
+// Reads the entire contents of a file into a string.
+//
+// It returns a pointer to the string for potential performance
+// optimization when dealing with large files content.
+func ReadFileContentToString(path string) (*string, error) {
 	content, errRead := os.ReadFile(path)
 	if errRead != nil {
-		return "", errRead
+		return nil, errRead
 	}
-	return string(content), nil
+	var result = string(content)
+	return &result, nil
 }

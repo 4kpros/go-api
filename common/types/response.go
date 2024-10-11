@@ -9,6 +9,6 @@ type PaginatedResponse struct {
 	Pagination *Pagination `json:"pagination" required:"false"`
 }
 
-type DeleteResponse struct {
+type DeletedResponse struct {
 	AffectedRows int64 `json:"affectedRows" required:"false" doc:"Number of row affected with this delete" example:"1"`
 }

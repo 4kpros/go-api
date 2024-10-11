@@ -50,16 +50,18 @@ type Environment struct {
 
 var Env = &Environment{}
 
-func LoadEnv(path string) (err error) {
+// Loads environment variables from the specified file.
+func LoadEnv(path string) error {
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
 
+	var err error
 	err = viper.ReadInConfig()
 	if err == nil {
 		err = viper.Unmarshal(Env)
 	}
-	return
+	return err
 }

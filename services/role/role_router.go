@@ -111,12 +111,12 @@ func RegisterEndpoints(
 			input *struct {
 				data.RoleId
 			},
-		) (*struct{ Body types.DeleteResponse }, error) {
+		) (*struct{ Body types.DeletedResponse }, error) {
 			var result, errCode, err = controller.Delete(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body types.DeleteResponse }{Body: types.DeleteResponse{AffectedRows: result}}, nil
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
 		},
 	)
 

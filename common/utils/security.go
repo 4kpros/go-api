@@ -40,13 +40,13 @@ func GetJWTCachedKey(jwtToken *types.JwtToken) (key string) {
 }
 
 // Encode the JWT token and store it in the cache. This returns a signed string token.
-func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time, privateKey string, cacheFunc func(string, string) error) (*types.JwtToken, string, error) {
+func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time, privateKey *string, cacheFunc func(string, string) error) (*types.JwtToken, string, error) {
 	// Encode token with claims
 	jwtToken.Issuer = issuer
 	jwtToken.ExpiresAt = jwt.NewNumericDate(*expires)
 	jwtToken.IssuedAt = jwt.NewNumericDate(time.Now())
 	var jwtTokenClaimed = jwt.NewWithClaims(jwt.SigningMethodES512, *jwtToken)
-	var signedKey, errParse = jwt.ParseECPrivateKeyFromPEM([]byte(privateKey))
+	var signedKey, errParse = jwt.ParseECPrivateKeyFromPEM([]byte(*privateKey))
 	if errParse != nil {
 		return nil, "", errParse
 	}
@@ -65,13 +65,13 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 
 // Decode the JWT token using the signed string token and public key.
 // This returns a JWT token object.
-func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
+func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 	// Parse the token and get claims
 	jwtToken, err := jwt.ParseWithClaims(token, &types.JwtToken{}, func(token *jwt.Token) (signedKey interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("%s", fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"]))
 		}
-		signedKey, err = jwt.ParseECPublicKeyFromPEM([]byte(publicKey))
+		signedKey, err = jwt.ParseECPublicKeyFromPEM([]byte(*publicKey))
 		return
 	})
 	if err != nil {

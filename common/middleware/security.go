@@ -18,7 +18,7 @@ func isOriginKnown(host string) bool {
 	return slices.Contains(hosts, host)
 }
 
-// Middleware to add more security like CORS, header XSS protection, ...
+// Sets security-related HTTP headers for responses.
 func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
@@ -43,7 +43,7 @@ func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)
 	}
 }
 
-// Middleware for rate limiting based on IP address
+// Limits the number of requests that can be made to the API.
 func RateLimitMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
@@ -56,7 +56,7 @@ func RateLimitMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	}
 }
 
-// Middleware to check authorization if it's required on every endpoint
+// Handles authentication for API requests.
 func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
@@ -97,13 +97,13 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
 				jwtDecoded,
-				config.CheckRedisStrFromArrayStr(token),
+				config.CheckValueInRedisList(token),
 			)
 		} else if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION_GENERATED {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
 				jwtDecoded,
-				config.GetRedisStr,
+				config.GetRedisString,
 			)
 		}
 		if isTokenCached {
