@@ -18,16 +18,21 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
+// Generates a random numeric code of specified length.
+// Returns the generated code and an error if any.
 func GenerateRandomCode(length int) (code int, err error) {
-	code, err = strconv.Atoi(GenerateRandomValue(letterBytesCode, length))
+	code, err = strconv.Atoi(generateRandomValue(letterBytesCode, length))
 	return
 }
 
+// Returns a random password of the specified length.
 func GenerateRandomPassword(length int) string {
-	return GenerateRandomValue(letterBytes, length)
+	return generateRandomValue(letterBytes, length)
 }
 
-func GenerateRandomValue(letters string, length int) string {
+// Returns a random string of specified length, using provided characters.
+// It's useful to generate passwords, OTP code and various other things
+func generateRandomValue(letters string, length int) string {
 	sb := strings.Builder{}
 	sb.Grow(length)
 	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!

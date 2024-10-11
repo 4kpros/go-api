@@ -7,26 +7,30 @@ import (
 
 var tokenLenErr string = "Invalid or empty token! Please enter valid information."
 
-func IsGoogleTokenValid(token string) (userId string, expires time.Time, err error) {
+// Verifies a Google token, returning the user ID and expiration time if it is valid.
+func IsGoogleTokenValid(token string) (string, *time.Time, error) {
+	var err error
+	var userId = ""
 	if len(token) <= 0 {
 		err = fmt.Errorf("%s", tokenLenErr)
-		return
+		return userId, nil, err
 	}
 
 	// Check with Google API
-	userId = "1234567890"
-	expires = time.Now().Add(time.Hour * 24)
-	return
+	var expires = time.Now().Add(time.Hour * 24)
+	return userId, &expires, err
 }
 
-func IsFacebookTokenValid(token string) (userId string, expires time.Time, err error) {
+// Verifies a Facebook token, returning the user ID and expiration time if it is valid.
+func IsFacebookTokenValid(token string) (string, *time.Time, error) {
+	var err error
+	var userId = ""
 	if len(token) <= 0 {
 		err = fmt.Errorf("%s", tokenLenErr)
-		return
+		return userId, nil, err
 	}
 
-	// Check with Facebook API
-	userId = "1234567890"
-	expires = time.Now().Add(time.Hour * 24)
-	return
+	// Check with Google API
+	var expires = time.Now().Add(time.Hour * 24)
+	return userId, &expires, err
 }

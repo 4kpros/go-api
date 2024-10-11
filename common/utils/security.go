@@ -17,13 +17,15 @@ const JWT_ISSUER_ACTIVATE = "JWT_ISSUER_ACTIVATE"
 const JWT_ISSUER_RESET_CODE = "JWT_ISSUER_RESET_CODE"
 const JWT_ISSUER_RESET_PASSWORD = "JWT_ISSUER_RESET_PASSWORD"
 
-// Return default time for JWT expires
+// Returns the default expiration time for JWT. It's 10 min.
 func NewExpiresDateDefault() *time.Time {
 	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresDefault))
 	return &tempDate
 }
 
-// Return time for JWT expires when user try to login
+// Returns the login expiration time for JWT.
+// With default ENV var, the JWT login expiration time is 24 hours
+// if stayConnected is true, otherwise it's 1 hour.
 func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	if stayConnected {
 		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresSignInStayConnected))
@@ -33,7 +35,7 @@ func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	return &tempDate
 }
 
-// Return the key of Redis entry(combining userId and Issuer)
+// Returns the key of Redis entry(combining userId and Issuer)
 func GetJWTCachedKey(jwtToken *types.JwtToken) (key string) {
 	if jwtToken != nil {
 		return fmt.Sprintf("%d%s", jwtToken.UserId, jwtToken.Issuer)
@@ -41,7 +43,7 @@ func GetJWTCachedKey(jwtToken *types.JwtToken) (key string) {
 	return ""
 }
 
-// Encode JWT token and add to cache. This return signed string token
+// Encode the JWT token and store it in the cache. This returns a signed string token.
 func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time, privateKey string, cacheFunc func(string, string) error) (*types.JwtToken, string, error) {
 	// Encode token with claims
 	jwtToken.Issuer = issuer
@@ -65,7 +67,8 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 	return jwtToken, token, nil
 }
 
-// Decode JWT token by providing signed string token and public key. This return JWT token object
+// Decode the JWT token using the signed string token and public key.
+// This returns a JWT token object.
 func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
 	// Parse the token and get claims
 	var errMessage string
@@ -86,7 +89,7 @@ func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
 	return nil, fmt.Errorf("%s", errMessage)
 }
 
-// Validate the token by checking if the token it's cached
+// Validate the token by checking if it is cached.
 func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc func(string) (string, error)) bool {
 	tokenCached, errCached := loadCachedFunc(GetJWTCachedKey(jwtToken))
 	if errCached != nil || len(tokenCached) <= 0 {
@@ -98,7 +101,7 @@ func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc fun
 	return true
 }
 
-// Encode password using Argon2id and returns new hashed password
+// Apply the Argon2id hashing algorithm to the password and return the resulting hashed string.
 func EncodeArgon2id(password string) (string, error) {
 	params := &argon2id.Params{
 		Memory:      uint32(config.Env.ArgonMemoryLeft * config.Env.ArgonMemoryRight),
@@ -116,7 +119,7 @@ func EncodeArgon2id(password string) (string, error) {
 	return hash, nil
 }
 
-// Verify if Argon2id password matches string
+// Verify if the Argon2id password matches the string.
 func CompareArgon2id(password string, hashedPassword string) (bool, error) {
 	initialHashedPassword, _ := DecodeBase64(hashedPassword)
 	var match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
