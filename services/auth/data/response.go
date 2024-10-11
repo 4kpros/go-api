@@ -2,23 +2,23 @@ package data
 
 import "time"
 
-// Sign in
+// Login
 type SignInResponse struct {
-	AccessToken string    `json:"accessToken" required:"false" doc:"Access token" example:""`
-	Expires     time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
+	AccessToken string     `json:"accessToken" required:"false" doc:"Access token" example:""`
+	Expires     *time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
 }
 
-// Sign up
+// Register
 type SignUpResponse struct {
 	Message string `json:"message" required:"false" doc:"Message" example:""`
 }
 
 // Activate account
 type ActivateAccountResponse struct {
-	ActivatedAt time.Time `json:"activatedAt" required:"false" doc:"Activation date" example:""`
+	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Activation date" example:""`
 }
 
-// Reset password
+// Forgot password
 type ForgotPasswordInitResponse struct {
 	Token string `json:"token" required:"false" doc:"Token" example:""`
 }
@@ -29,7 +29,7 @@ type ForgotPasswordNewPasswordResponse struct {
 	Message string `json:"message" required:"false" doc:"Message" example:""`
 }
 
-// Sign out
+// Logout
 type SignOutResponse struct {
 	Message string `json:"message" required:"false" doc:"Message" example:""`
 }

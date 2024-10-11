@@ -55,7 +55,7 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 	}
 	result = &data.SignInResponse{
 		AccessToken: accessToken,
-		Expires:     *accessExpires,
+		Expires:     accessExpires,
 	}
 	return
 }
@@ -98,7 +98,7 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 	}
 	result = &data.SignInResponse{
 		AccessToken: accessToken,
-		Expires:     *accessExpires,
+		Expires:     accessExpires,
 	}
 	return
 }
@@ -123,7 +123,7 @@ func (controller *AuthController) SignInWithProvider(input *data.SignInWithProvi
 	}
 	result = &data.SignInResponse{
 		AccessToken: accessToken,
-		Expires:     *accessExpires,
+		Expires:     accessExpires,
 	}
 	return
 }
@@ -211,7 +211,7 @@ func (controller *AuthController) ActivateAccount(input *data.ActivateAccountReq
 		return
 	}
 	result = &data.ActivateAccountResponse{
-		ActivatedAt: *activatedAt,
+		ActivatedAt: activatedAt,
 	}
 	return
 }

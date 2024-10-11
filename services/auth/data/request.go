@@ -1,6 +1,6 @@
 package data
 
-// Sign in
+// Login
 type SignInDevice struct {
 	Platform   string `json:"platform" required:"true" doc:"Platform" minLength:"2" maxLength:"30" example:"Android"`
 	DeviceName string `json:"deviceName" required:"true" doc:"Device name" minLength:"2" maxLength:"30" example:"Google Pixel 5"`
@@ -27,7 +27,7 @@ type SignInRequest struct {
 	StayConnected bool   `json:"stayConnected" required:"false" doc:"Stay connected"`
 }
 
-// Sign up
+// Register
 type SignUpWithEmailRequest struct {
 	Email    string `json:"email" required:"true" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`
 	Password string `json:"password" required:"true" doc:"Base64 encoded password" minLength:"8" maxLength:"30" example:""`

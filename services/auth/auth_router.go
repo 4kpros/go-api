@@ -20,7 +20,7 @@ func RegisterEndpoints(
 		Tag:   []string{"Authentication"},
 	}
 
-	// Sign in with email
+	// Login with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -49,7 +49,7 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Sign in with phone number
+	// Login with phone number
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -78,13 +78,13 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Sign in with provider
+	// Login with provider
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID:   "login-provider",
 			Summary:       "Login with provider",
-			Description:   "Login user with provider and and token.",
+			Description:   "Login user with a provider(Google, Facebook, ...) and token.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/provider", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
@@ -107,7 +107,7 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Sign up with email
+	// Register with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -135,7 +135,7 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Sign up with phone
+	// Register with phone
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -195,9 +195,9 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "forgot-init-email",
+			OperationID:   "forgot-password-init-email",
 			Summary:       "Forgot step 1 - email",
-			Description:   "Forgot password step 1 with email.",
+			Description:   "Forgot password step 1 initialize request with email.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/init/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
@@ -231,9 +231,9 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "forgot-init-phone",
+			OperationID:   "forgot-password-init-phone",
 			Summary:       "Forgot step 1 - phone",
-			Description:   "Forgot password step 1 with phone number.",
+			Description:   "Forgot password step 1 initialize request with phone number.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/init/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
@@ -267,9 +267,9 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "forgot-code",
+			OperationID:   "forgot-password-code",
 			Summary:       "Forgot step 2",
-			Description:   "Forgot password step 2 need your received code from step 1.",
+			Description:   "Forgot password step 2 validate your request with your received(email/phone) code and token from step 1.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/code", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
@@ -299,9 +299,9 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "forgot-password",
+			OperationID:   "forgot-password-new-password",
 			Summary:       "Forgot step 3",
-			Description:   "Forgot password step 3 to set your new password by providing a token received from step 2.",
+			Description:   "Forgot password step 3 set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/password", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
