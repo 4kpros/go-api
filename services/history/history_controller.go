@@ -8,10 +8,10 @@ import (
 )
 
 type HistoryController struct {
-	Service HistoryService
+	Service *HistoryService
 }
 
-func NewHistoryController(service HistoryService) *HistoryController {
+func NewHistoryController(service *HistoryService) *HistoryController {
 	return &HistoryController{Service: service}
 }
 

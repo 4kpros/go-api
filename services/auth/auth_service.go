@@ -15,10 +15,10 @@ import (
 )
 
 type AuthService struct {
-	Repository AuthRepository
+	Repository *AuthRepository
 }
 
-func NewAuthService(repository AuthRepository) *AuthService {
+func NewAuthService(repository *AuthRepository) *AuthService {
 	return &AuthService{Repository: repository}
 }
 
@@ -59,7 +59,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 				App:      "*",
 				Code:     randomCode,
 			},
-			utils.JWT_ISSUER_ACTIVATE,
+			constants.JWT_ISSUER_ACTIVATE,
 			utils.NewExpiresDateDefault(),
 			config.Keys.JwtPrivateKey,
 			config.SetRedisStr,
@@ -96,7 +96,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 			Device:   device.DeviceName,
 			App:      device.App,
 		},
-		utils.JWT_ISSUER_SESSION,
+		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateSignIn(input.StayConnected),
 		config.Keys.JwtPrivateKey,
 		config.InsertRedisArrayStr,
@@ -144,7 +144,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 			Device:   device.DeviceName,
 			App:      device.App,
 		},
-		utils.JWT_ISSUER_SESSION,
+		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateSignIn(true),
 		config.Keys.JwtPrivateKey,
 		config.InsertRedisArrayStr,
@@ -204,7 +204,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 			App:      "*",
 			Code:     randomCode,
 		},
-		utils.JWT_ISSUER_ACTIVATE,
+		constants.JWT_ISSUER_ACTIVATE,
 		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisStr,
@@ -238,7 +238,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_ACTIVATE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_ACTIVATE {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -338,7 +338,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 			App:      "*",
 			Code:     randomCode,
 		},
-		utils.JWT_ISSUER_RESET_CODE,
+		constants.JWT_ISSUER_FORGOT_PASSWORD_CODE,
 		expires,
 		config.Keys.JwtPrivateKey,
 		config.SetRedisStr,
@@ -374,7 +374,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_RESET_CODE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_FORGOT_PASSWORD_CODE {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -413,7 +413,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 			Device:   "*",
 			App:      "*",
 		},
-		utils.JWT_ISSUER_SESSION,
+		constants.JWT_ISSUER_SESSION,
 		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisStr,
@@ -436,7 +436,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_RESET_PASSWORD {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_FORGOT_PASSWORD_NEW_PASSWORD {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -478,7 +478,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 func (service *AuthService) SignOut(token string) (errCode int, err error) {
 	// Extract token information and validate the token
 	var jwtToken, errDecode = utils.DecodeJWTToken(token, config.Keys.JwtPublicKey)
-	if errDecode != nil || jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != utils.JWT_ISSUER_SESSION {
+	if errDecode != nil || jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_SESSION {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return

@@ -8,10 +8,10 @@ import (
 )
 
 type RoleController struct {
-	Service RoleService
+	Service *RoleService
 }
 
-func NewRoleController(service RoleService) *RoleController {
+func NewRoleController(service *RoleService) *RoleController {
 	return &RoleController{Service: service}
 }
 

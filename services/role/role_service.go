@@ -9,10 +9,10 @@ import (
 )
 
 type RoleService struct {
-	Repository RoleRepository
+	Repository *RoleRepository
 }
 
-func NewRoleService(repository RoleRepository) *RoleService {
+func NewRoleService(repository *RoleRepository) *RoleService {
 	return &RoleService{Repository: repository}
 }
 

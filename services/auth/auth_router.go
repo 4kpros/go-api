@@ -11,7 +11,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 )
 
-func SetupEndpoints(
+func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *AuthController,
 ) {

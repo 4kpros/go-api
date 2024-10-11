@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var tokenLenErr string = "Invalid or empty token! Please enter valid information."
+var tokenLenErr string = "Invalid or expired token! Please enter valid information."
 
 // Verifies a Google token, returning the user ID and expiration time if it is valid.
 func IsGoogleTokenValid(token string) (string, *time.Time, error) {
@@ -30,7 +30,7 @@ func IsFacebookTokenValid(token string) (string, *time.Time, error) {
 		return userId, nil, err
 	}
 
-	// Check with Google API
+	// Check with Facebook API
 	var expires = time.Now().Add(time.Hour * 24)
 	return userId, &expires, err
 }

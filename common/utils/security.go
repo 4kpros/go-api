@@ -1,21 +1,17 @@
 package utils
 
 import (
+	base64 "encoding/base64"
 	"fmt"
 	"runtime"
 	"time"
 
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/config"
 	"github.com/alexedwards/argon2id"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-const JWT_ISSUER_SESSION = "JWT_ISSUER_SESSION"
-const JWT_ISSUER_SESSION_GENERATED = "JWT_ISSUER_SESSION_GENERATED"
-const JWT_ISSUER_ACTIVATE = "JWT_ISSUER_ACTIVATE"
-const JWT_ISSUER_RESET_CODE = "JWT_ISSUER_RESET_CODE"
-const JWT_ISSUER_RESET_PASSWORD = "JWT_ISSUER_RESET_PASSWORD"
 
 // Returns the default expiration time for JWT. It's 10 min.
 func NewExpiresDateDefault() *time.Time {
@@ -71,11 +67,9 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 // This returns a JWT token object.
 func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
 	// Parse the token and get claims
-	var errMessage string
 	jwtToken, err := jwt.ParseWithClaims(token, &types.JwtToken{}, func(token *jwt.Token) (signedKey interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			errMessage = fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"])
-			return nil, fmt.Errorf("%s", errMessage)
+			return nil, fmt.Errorf("%s", fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"]))
 		}
 		signedKey, err = jwt.ParseECPublicKeyFromPEM([]byte(publicKey))
 		return
@@ -85,8 +79,7 @@ func DecodeJWTToken(token string, publicKey string) (*types.JwtToken, error) {
 	} else if claims, ok := jwtToken.Claims.(*types.JwtToken); ok && jwtToken.Valid {
 		return claims, nil
 	}
-	errMessage = "Invalid token or expired! Please enter valid information."
-	return nil, fmt.Errorf("%s", errMessage)
+	return nil, constants.HTTP_401_ERROR_MESSAGE()
 }
 
 // Validate the token by checking if it is cached.
@@ -124,4 +117,17 @@ func CompareArgon2id(password string, hashedPassword string) (bool, error) {
 	initialHashedPassword, _ := DecodeBase64(hashedPassword)
 	var match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
 	return match, err
+}
+
+// Encodes the input string into Base64 format.
+func EncodeBase64(data string) string {
+	return base64.StdEncoding.EncodeToString([]byte(data))
+}
+
+// Decodes a Base64-encoded string and returns an error if the input is invalid.
+func DecodeBase64(data string) (string, error) {
+	var base64Text = make([]byte, base64.StdEncoding.DecodedLen(len(data)))
+	var n, err = base64.StdEncoding.Decode(base64Text, []byte(data))
+	var output = string(base64Text[:n])
+	return output, err
 }

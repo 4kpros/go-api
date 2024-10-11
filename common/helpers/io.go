@@ -4,12 +4,11 @@ import (
 	"os"
 )
 
-func ReadFileContentToString(path string) (contentStr string, err error) {
+// Reads the entire file at the specified path into a string.
+func ReadFileContentToString(path string) (string, error) {
 	content, errRead := os.ReadFile(path)
 	if errRead != nil {
-		err = errRead
-		return
+		return "", errRead
 	}
-	contentStr = string(content)
-	return
+	return string(content), nil
 }

@@ -6,11 +6,13 @@ import (
 
 var Logger *zap.Logger
 
-func SetupLogger() {
+// Enable the logger to print beautiful log messages.
+func EnableLogger() {
 	Logger, _ = zap.NewProduction()
 	defer Logger.Sync()
 }
 
+// Custom log message for migrations.
 func LogMigrations(err error) {
 	if err != nil {
 		Logger.Error(

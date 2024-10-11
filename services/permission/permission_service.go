@@ -10,10 +10,10 @@ import (
 )
 
 type PermissionService struct {
-	Repository PermissionRepository
+	Repository *PermissionRepository
 }
 
-func NewPermissionService(repository PermissionRepository) *PermissionService {
+func NewPermissionService(repository *PermissionRepository) *PermissionService {
 	return &PermissionService{Repository: repository}
 }
 

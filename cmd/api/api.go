@@ -6,31 +6,40 @@ import (
 	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/middleware"
 	"github.com/4kpros/go-api/config"
-	"github.com/4kpros/go-api/di"
+	"github.com/4kpros/go-api/services/auth"
+	"github.com/4kpros/go-api/services/history"
+	"github.com/4kpros/go-api/services/permission"
+	"github.com/4kpros/go-api/services/role"
+	"github.com/4kpros/go-api/services/user"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Used to setup and start API: dependency injection, setup API doc, middlewares and security
-func Start() {
-	// Inject Dependencies step 1
-	// Repositories
-	authRepo, historyRepo, roleRepo, permissionRepo, userRepo :=
-		di.InitRepositories()
-	// Services
-	authSvc, historySvc, roleSvc, permissionSvc, userSvc :=
-		di.InitServices(
-			authRepo, historyRepo, roleRepo, permissionRepo, userRepo,
-		)
-	// Controllers
-	authCtrl, historyCtrl, roleCtrl, permissionCtrl, userCtrl :=
-		di.InitControllers(
-			authSvc, historySvc, roleSvc, permissionSvc, userSvc,
-		)
+type APIControllers struct {
+	AuthController       *auth.AuthController
+	HistoryController    *history.HistoryController
+	RoleController       *role.RoleController
+	PermissionController *permission.PermissionController
+	UserController       *user.UserController
+}
 
-	// Setup gin for your API
+var Controllers = &APIControllers{}
+
+// Register all API endpoints
+func registerEndpoints(humaApi *huma.API) {
+	auth.RegisterEndpoints(humaApi, Controllers.AuthController)
+	history.RegisterEndpoints(humaApi, Controllers.HistoryController)
+	role.RegisterEndpoints(humaApi, Controllers.RoleController)
+	permission.RegisterEndpoints(humaApi, Controllers.PermissionController)
+	user.RegisterEndpoints(humaApi, Controllers.UserController)
+}
+
+// Set up and start the API: set up API documentation,
+// configure middlewares, and security measures.
+func Start() {
+	// Set up gin for your API
 	gin.SetMode(config.Env.GinMode)
 	gin.ForceConsoleColor()
 	engine := gin.Default()
@@ -63,11 +72,8 @@ func Start() {
 		ctx.Data(200, "text/html", []byte(config.OpenAPITemplates.Scalar))
 	})
 
-	// Inject Dependencies step 2
-	// Routers
-	di.InitRouters(
-		&humaApi, authCtrl, historyCtrl, roleCtrl, permissionCtrl, userCtrl,
-	)
+	// Register endpoints
+	registerEndpoints(&humaApi)
 
 	// Start to listen
 	formattedPort := fmt.Sprintf(":%d", config.Env.ApiPort)

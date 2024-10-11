@@ -21,9 +21,10 @@ type Environment struct {
 	PostGresTimeZone string `mapstructure:"POSTGRES_TIME_ZONE"`
 
 	// JWT
-	JwtExpiresSignIn              int `mapstructure:"JWT_EXPIRES_SIGN_IN"`
-	JwtExpiresSignInStayConnected int `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
-	JwtExpiresDefault             int `mapstructure:"JWT_EXPIRES_DEFAULT"`
+	JwtExpiresSignIn              int    `mapstructure:"JWT_EXPIRES_SIGN_IN"`
+	JwtExpiresSignInStayConnected int    `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
+	JwtExpiresDefault             int    `mapstructure:"JWT_EXPIRES_DEFAULT"`
+	JwtIssuerPassphrase           string `mapstructure:"JWT_ISSUER_PASSPHRASE"`
 
 	// Redis for fast key-value database
 	RedisHost     string `mapstructure:"REDIS_HOST"`

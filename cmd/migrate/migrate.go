@@ -9,7 +9,7 @@ import (
 	userModel "github.com/4kpros/go-api/services/user/model"
 )
 
-// Used to load all migrations
+// Loads and Applies all available migrations.
 func Start() {
 	var err = config.DB.AutoMigrate(
 		&historyModel.History{},
