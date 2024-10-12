@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "post-permission",
 			Summary:     "Create permission",
-			Description: "Create new permission by providing name and description and return created object. The name permission should be unique.",
+			Description: "Create new permission for role. You will need the table name and set read, write, update and delete values",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,

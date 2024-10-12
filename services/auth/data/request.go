@@ -2,9 +2,9 @@ package data
 
 // Login
 type SignInDevice struct {
-	Platform   string `json:"platform" required:"true" doc:"Platform" minLength:"2" maxLength:"30" example:"Android"`
+	Platform   string `json:"platform" required:"true" doc:"Platform(Android, IOS, Windows, ...)" minLength:"2" maxLength:"30" example:"Android"`
 	DeviceName string `json:"deviceName" required:"true" doc:"Device name" minLength:"2" maxLength:"30" example:"Google Pixel 5"`
-	App        string `json:"app" required:"true" doc:"Application used to login" minLength:"2" maxLength:"30" example:"Google Chrome"`
+	App        string `json:"app" required:"true" doc:"Application used to login. E.g. Chrome, Firefox, Custom app, ..." minLength:"2" maxLength:"30" example:"Chrome"`
 }
 type SignInWithEmailRequest struct {
 	Email         string `json:"email" required:"true" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`
@@ -44,11 +44,11 @@ type SignUpRequest struct {
 
 // Activate account
 type ActivateAccountRequest struct {
-	Token string `json:"token" required:"true" doc:"Token" minLength:"3" maxLength:"30" example:""`
-	Code  int    `json:"code" required:"true" doc:"Email" example:"37044"`
+	Token string `json:"token" required:"true" doc:"Received token on sign in or sign up" minLength:"3" maxLength:"30" example:""`
+	Code  int    `json:"code" required:"true" doc:"Received code by email or phone number" example:"37044"`
 }
 
-// Reset password
+// Forgot password
 type ForgotPasswordWithEmailInitRequest struct {
 	Email string `json:"email" required:"true" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`
 }
@@ -56,19 +56,19 @@ type ForgotPasswordWithPhoneNumberInitRequest struct {
 	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
 }
 type ForgotPasswordInitRequest struct {
-	Email       string `json:"email" required:"true" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
+	Email       string `json:"email" required:"false" doc:"Email" minLength:"3" maxLength:"30" example:"example@domain.com"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number" minLength:"11" maxLength:"25" example:"237690909090"`
 }
 type ForgotPasswordCodeRequest struct {
-	Token string `json:"token" required:"true" doc:"Token" minLength:"3" maxLength:"30" example:""`
-	Code  int    `json:"code" required:"true" doc:"Email" example:"37044"`
+	Token string `json:"token" required:"true" doc:"Received token on step 1" minLength:"3" maxLength:"30" example:""`
+	Code  int    `json:"code" required:"true" doc:"Code" example:"37044"`
 }
 type ForgotPasswordNewPasswordRequest struct {
-	Token       string `json:"token" required:"true" doc:"Token" minLength:"3" maxLength:"30" example:""`
+	Token       string `json:"token" required:"true" doc:"Received token on step 2" minLength:"3" maxLength:"30" example:""`
 	NewPassword string `json:"password" required:"true" doc:"Base64 encoded password" minLength:"8" maxLength:"30" example:""`
 }
 
 // Sign out
 type SignOutRequest struct {
-	Token string `json:"token" required:"true" doc:"Token" minLength:"3" maxLength:"30" example:""`
+	Token string `json:"token" required:"true" doc:"Valid access token returned wen user sign in" minLength:"3" maxLength:"30" example:""`
 }

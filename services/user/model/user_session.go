@@ -6,6 +6,6 @@ import (
 
 type UserSession struct {
 	types.BaseGormModel
-	Token  string `json:"Token"`
-	UserId int64  `json:"userId"`
+	Token  string `json:"Token" doc:"Access token" example:""`
+	UserId int64  `json:"userId" doc:"User id" example:""`
 }

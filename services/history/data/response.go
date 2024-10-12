@@ -7,5 +7,5 @@ import (
 
 type HistoriesResponse struct {
 	types.PaginatedResponse
-	Data []model.History `json:"data" required:"false" doc:"Array of histories" example:"[]"`
+	Data []model.History `json:"data" required:"false" doc:"List of histories" example:"[]"`
 }

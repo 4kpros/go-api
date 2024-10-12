@@ -15,15 +15,15 @@ type SignUpResponse struct {
 
 // Activate account
 type ActivateAccountResponse struct {
-	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Activation date" example:""`
+	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Account activation date time" example:""`
 }
 
 // Forgot password
 type ForgotPasswordInitResponse struct {
-	Token string `json:"token" required:"false" doc:"Token" example:""`
+	Token string `json:"token" required:"false" doc:"Token used to validate code" example:""`
 }
 type ForgotPasswordCodeResponse struct {
-	Token string `json:"token" required:"false" doc:"Token" example:""`
+	Token string `json:"token" required:"false" doc:"Token used to set new password" example:""`
 }
 type ForgotPasswordNewPasswordResponse struct {
 	Message string `json:"message" required:"false" doc:"Message" example:""`

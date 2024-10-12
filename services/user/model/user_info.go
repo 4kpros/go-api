@@ -6,9 +6,9 @@ import (
 
 type UserInfo struct {
 	types.BaseGormModel
-	UserName  string `json:"userName"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Address   string `json:"address"`
-	Image     string `json:"image"`
+	UserName  string `json:"userName" doc:"User name" example:""`
+	FirstName string `json:"firstName" doc:"First name" example:""`
+	LastName  string `json:"lastName" doc:"Last name or family name" example:""`
+	Address   string `json:"address" doc:"Address" example:""`
+	Image     string `json:"image" doc:"Thumbnail" example:""`
 }
