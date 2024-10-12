@@ -43,12 +43,12 @@ func (a *SMTPAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 	return nil, nil
 }
 
+// Sends an email with the specified subject, message, and receiver.
 func SendMail(subject string, message string, receiver string) error {
 	return SendWithGmail(subject, message, receiver)
 }
 
-// Sends an email using Gmail's SMTP server with the specified
-// subject, message, and receiver.
+// Sends an email using Gmail's SMTP server
 func SendWithGmail(subject string, message string, receiver string) error {
 	var to = []string{receiver}
 	var msg = []byte(

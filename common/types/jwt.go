@@ -13,3 +13,60 @@ type JwtToken struct {
 	App      string `json:"app"`
 	Code     int    `json:"code"`
 }
+
+// Represents claims for a Google user.
+//
+// Refer to the official Google documentation for more details
+// https://developers.google.com/identity/openid-connect/openid-connect
+type GoogleUserProfileResponse struct {
+	Id            string `json:"sub"`
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	FirstName     string `json:"given_name"`
+	LastName      string `json:"family_name"`
+	FullName      string `json:"name"`
+	Language      string `json:"locale"`
+	Picture       string `json:"picture"`
+}
+
+type FacebookAccessTokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+}
+
+type FacebookDebugAccessTokenResponse struct {
+	Data struct {
+		UserId            string   `json:"user_id"`
+		AppId             string   `json:"app_id"`
+		Type              string   `json:"type"`
+		Application       string   `json:"application"`
+		DataAccessExpires int64    `json:"data_access_expires_at"`
+		Expires           int64    `json:"expires_at"`
+		IsValid           bool     `json:"is_valid"`
+		Scopes            []string `json:"scopes"`
+	} `json:"data"`
+}
+
+type FacebookUserProfileResponse struct {
+	ID           string `json:"id"`
+	Email        string `json:"email"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	FullName     string `json:"name"`
+	Languages    string `json:"languages"`
+	PictureSmall *struct {
+		FacebookUserPictureResponse
+	} `json:"picture_small"`
+	PictureLarge *struct {
+		FacebookUserPictureResponse
+	} `json:"picture_large"`
+}
+
+type FacebookUserPictureResponse struct {
+	Data struct {
+		Width        int    `json:"width"`
+		Height       int    `json:"height"`
+		IsSilhouette bool   `json:"is_silhouette"`
+		Url          string `json:"url"`
+	} `json:"data"`
+}

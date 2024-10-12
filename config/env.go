@@ -46,6 +46,17 @@ type Environment struct {
 	SmtpUsername string `mapstructure:"SMTP_USERNAME"`
 	SmtpPassword string `mapstructure:"SMTP_PASSWORD"`
 	SmtpSender   string `mapstructure:"SMTP_SENDER"`
+
+	// Google
+	GooglePlusClientId string `mapstructure:"GOOGLE_PLUS_CLIENT_ID"`
+
+	// Facebook
+	FacebookAppName       string `mapstructure:"FACEBOOK_APP_NAME"`
+	FacebookAppId         string `mapstructure:"FACEBOOK_APP_ID"`
+	FacebookClientSecret  string `mapstructure:"FACEBOOK_CLIENT_SECRET"`
+	FacebookApiBaseUrl    string `mapstructure:"FACEBOOK_API_BASE_URL"`
+	FacebookDebugTokenUrl string `mapstructure:"FACEBOOK_DEBUG_TOKEN_URL"`
+	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`
 }
 
 var Env = &Environment{}

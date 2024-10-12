@@ -1,10 +1,9 @@
 # ------------------ Golang commands ------------------
-.PHONY: install swagger test build run
+.PHONY: install update test build run
 install:
 	@go mod download
-	@go install github.com/swaggo/swag/cmd/swag@latest
-swagger:
-	@swag init --generalInfo ./cmd/main.go --output ./docs --parseDependency ./docs
+update:
+	@go get -u all
 test:
 	@go test -v ./tests/...
 build:
@@ -13,6 +12,12 @@ build:
 	cd ../
 run:
 	@./.build/main
+
+# Third party libraries commands
+.PHONY: check-vuln
+check-vuln:
+	@go install golang.org/x/vuln/cmd/govulncheck@latest
+	@govulncheck ./...
 
 
 # ------------------ Docker commands ------------------
