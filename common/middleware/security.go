@@ -42,18 +42,6 @@ func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)
 	}
 }
 
-// Limits the number of requests that can be made to the API.
-func RateLimitMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
-	return func(ctx huma.Context, next func(huma.Context)) {
-		if 1 == 2 {
-			errMessage := "Our system detected your request as malicious! Your are banned for 24hours."
-			huma.WriteErr(api, ctx, http.StatusForbidden, errMessage, fmt.Errorf("%s", errMessage))
-			return
-		}
-		next(ctx)
-	}
-}
-
 // Handles authentication for API requests.
 func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string

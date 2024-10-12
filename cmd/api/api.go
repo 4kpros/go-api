@@ -63,11 +63,12 @@ func Start() {
 	}
 	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
 	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
+	// Register middlewares
 	humaApi.UseMiddleware(
 		middleware.SecureHeadersMiddleware(humaApi),
-		middleware.RateLimitMiddleware(humaApi),
 		middleware.AuthMiddleware(humaApi),
 	)
+	// Register endpoint for docs with support for custom template
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(*config.OpenAPITemplates.Scalar))
 	})

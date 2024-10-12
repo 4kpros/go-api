@@ -1,6 +1,6 @@
 package constants
 
-const SECURITY_AUTH_NAME = "bearerAuth"
+const SECURITY_AUTH_NAME = "Bearer token"
 
 const AUTH_PROVIDER_GOOGLE = "google"
 const AUTH_PROVIDER_FACEBOOK = "facebook"
