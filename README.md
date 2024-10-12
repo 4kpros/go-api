@@ -37,7 +37,8 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
   - Rename .env.example to ```app.env```
 
-  - JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
+  - JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
+    You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/) 
 
   Others information such configurations are on ```app.env```
 
@@ -74,7 +75,22 @@ API docs with openAPI v3.1(latest) is on
 /api/v1/docs
 ```
 
-Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, Stoplight, Swagger). 
+# Features
+
+- [x] History
+
+- [x] Roles
+
+- [x] Permissions
+
+- [x] Authentication(2FA and passKey)
+
+- [x] Users
+
+- [...] Api key(useful to grant access to third party tools or t)
+
+
+Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
 
 <ins>Scalar(default) template screenshot</ins>
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
@@ -87,30 +103,6 @@ Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, S
 
 <ins>Swagger template screenshot</ins>
 ![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
-
-
-# Features
-
-- [x] History
-  - Get history with search, filter and pagination
-
-- [x] Role
-  - CRUD operations
-
-- [x] Role-permission
-  - Create and Get all with search, filter and pagination
-
-- [x] Auth
-  - Login (📩Email, 📲Phone number, ☁️Provider['Google', 'Facebook']),
-  
-  - Register (📩Email, 📲Phone number),
-  
-  - Activate account,
-    
-  - Reset password.
-
-- [x] Users
-  - CRUD operations
 
 
 # Contributing
