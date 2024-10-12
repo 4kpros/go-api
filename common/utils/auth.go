@@ -13,6 +13,8 @@ import (
 
 const invalidTokenErrMessage = "Invalid or expired token! Please enter valid information."
 
+var contextGoogle = context.Background()
+
 // Verifies a Google ID token and returns the associated user information.
 //
 // Refer to the official Google documentation for more details on token validation
@@ -21,11 +23,11 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	if len(token) <= 0 {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-	tokenValidator, err := googleIdToken.NewValidator(context.Background())
+	tokenValidator, err := googleIdToken.NewValidator(contextGoogle)
 	if err != nil {
 		return nil, constants.HTTP_500_ERROR_MESSAGE("validate Google token")
 	}
-	payload, err := tokenValidator.Validate(context.Background(), token, config.Env.GooglePlusClientId)
+	payload, err := tokenValidator.Validate(contextGoogle, token, config.Env.GooglePlusClientId)
 	if err != nil {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
