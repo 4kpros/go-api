@@ -96,7 +96,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 				jwtDecoded,
 				config.CheckValueInRedisList(token),
 			)
-		} else if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION_GENERATED {
+		} else if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION_API_KEY {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
 				jwtDecoded,

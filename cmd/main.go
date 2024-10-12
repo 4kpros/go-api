@@ -44,7 +44,11 @@ func init() {
 		)
 	} else {
 		// Initialize the JWT issuer passphrase after the environment file is loaded
-		constants.InitializeJwtIssuerConst(config.Env.JwtIssuerPassphrase)
+		constants.InitializeJwtIssuerConst(
+			config.Env.JwtIssuerSessionPassphrase,
+			config.Env.JwtIssuerSessionApiKeyPassphrase,
+			config.Env.JwtIssuerAuthPassphrase,
+		)
 		helpers.Logger.Info("Env loaded!")
 	}
 

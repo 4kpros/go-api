@@ -66,7 +66,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 				App:      "*",
 				Code:     randomCode,
 			},
-			constants.JWT_ISSUER_ACTIVATE,
+			constants.JWT_ISSUER_AUTH_ACTIVATE,
 			utils.NewExpiresDateDefault(),
 			config.Keys.JwtPrivateKey,
 			config.SetRedisString,
@@ -210,7 +210,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 			App:      "*",
 			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_ACTIVATE,
+		constants.JWT_ISSUER_AUTH_ACTIVATE,
 		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
@@ -244,7 +244,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_ACTIVATE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_ACTIVATE {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -343,7 +343,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 			App:      "*",
 			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_FORGOT_PASSWORD_CODE,
+		constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_CODE,
 		expires,
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
@@ -379,7 +379,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_FORGOT_PASSWORD_CODE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_CODE {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -441,7 +441,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_FORGOT_PASSWORD_NEW_PASSWORD {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_NEW_PASSWORD {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
