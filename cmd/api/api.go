@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/middleware"
+	"github.com/4kpros/go-api/common/middlewares"
 	"github.com/4kpros/go-api/config"
 	"github.com/4kpros/go-api/services/auth"
 	"github.com/4kpros/go-api/services/history"
@@ -65,8 +65,8 @@ func Start() {
 	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
 	// Register middlewares
 	humaApi.UseMiddleware(
-		middleware.SecureHeadersMiddleware(humaApi),
-		middleware.AuthMiddleware(humaApi),
+		middlewares.SecureHeadersMiddleware(humaApi),
+		middlewares.AuthMiddleware(humaApi),
 	)
 	// Register endpoint for docs with support for custom template
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
