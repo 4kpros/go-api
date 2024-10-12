@@ -1,5 +1,9 @@
 # ------------------ Golang commands ------------------
-.PHONY: install update test build run
+.PHONY: clean install update test build run
+clean:
+	@go clean -cache
+	@go clean -testcache
+	@go clean -modcache
 install:
 	@go mod download
 update:
@@ -14,8 +18,8 @@ run:
 	@./.build/main
 
 # Third party libraries commands
-.PHONY: check-vuln
-check-vuln:
+.PHONY: scan
+scan:
 	@go install golang.org/x/vuln/cmd/govulncheck@latest
 	@govulncheck ./...
 

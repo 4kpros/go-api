@@ -1,4 +1,4 @@
-FROM golang:1.22.3
+FROM golang:1.23.2 as builder
 
 ENV LANG=C.UTF-8
 
@@ -7,19 +7,13 @@ WORKDIR /app
 # Installing packages
 RUN apt-get -y install bash make
 
-# Copy project files
 COPY . .
 
-# Install dependencies
-RUN make go-install
-# Generate swagger docs
-RUN make go-swagger
-# Build
-RUN make go-build
+RUN make clean-cache
+RUN make install
+RUN make build
 
-# Run
 CMD ["/go-api/build/main"]
-
 
 WORKDIR /app
 
