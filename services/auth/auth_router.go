@@ -15,7 +15,7 @@ func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *AuthController,
 ) {
-	var endpointConfig = types.APIEndpointConfig{
+	endpointConfig := types.APIEndpointConfig{
 		Group: "/auth",
 		Tag:   []string{"Authentication"},
 	}
@@ -41,7 +41,7 @@ func RegisterEndpoints(
 				Body data.SignInWithEmailRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithEmail(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithEmail(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -70,7 +70,7 @@ func RegisterEndpoints(
 				Body data.SignInWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithPhoneNumber(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithPhoneNumber(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -99,7 +99,7 @@ func RegisterEndpoints(
 				Body data.SignInWithProviderRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithProvider(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithProvider(&input.Body, &input.SignInDevice)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -127,7 +127,7 @@ func RegisterEndpoints(
 				Body data.SignUpWithEmailRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			var result, errCode, err = controller.SignUpWithEmail(&input.Body)
+			result, errCode, err := controller.SignUpWithEmail(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -155,7 +155,7 @@ func RegisterEndpoints(
 				Body data.SignUpWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			var result, errCode, err = controller.SignUpWithPhoneNumber(&input.Body)
+			result, errCode, err := controller.SignUpWithPhoneNumber(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -183,7 +183,7 @@ func RegisterEndpoints(
 				Body data.ActivateAccountRequest
 			},
 		) (*struct{ Body data.ActivateAccountResponse }, error) {
-			var result, errCode, err = controller.ActivateAccount(&input.Body)
+			result, errCode, err := controller.ActivateAccount(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -213,7 +213,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ForgotPasswordEmailInit(
+			result, errCode, err := controller.ForgotPasswordEmailInit(
 				&data.ForgotPasswordInitRequest{
 					Email: input.Body.Email,
 				},
@@ -249,7 +249,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ForgotPasswordPhoneNumberInit(
+			result, errCode, err := controller.ForgotPasswordPhoneNumberInit(
 				&data.ForgotPasswordInitRequest{
 					PhoneNumber: input.Body.PhoneNumber,
 				},
@@ -285,7 +285,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordCodeResponse
 		}, error) {
-			var result, errCode, err = controller.ForgotPasswordCode(&input.Body)
+			result, errCode, err := controller.ForgotPasswordCode(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -317,7 +317,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordNewPasswordResponse
 		}, error) {
-			var result, errCode, err = controller.ForgotPasswordNewPassword(&input.Body)
+			result, errCode, err := controller.ForgotPasswordNewPassword(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -350,7 +350,7 @@ func RegisterEndpoints(
 				data.SignOutRequest
 			},
 		) (*struct{ Body data.SignOutResponse }, error) {
-			var result, errCode, err = controller.SignOut(input.Token)
+			result, errCode, err := controller.SignOut(input.Token)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

@@ -11,7 +11,7 @@ var DB *gorm.DB
 
 // Establishes a connection to the database.
 func ConnectDatabase() error {
-	var dsn = fmt.Sprintf(
+	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
 		Env.PostGresHost,
 		Env.PostGresUserName,

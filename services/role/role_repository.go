@@ -24,25 +24,25 @@ func (repository *RoleRepository) Update(role *model.Role) error {
 }
 
 func (repository *RoleRepository) Delete(id int64) (int64, error) {
-	var role = &model.Role{}
-	var result = repository.Db.Where("id = ?", id).Delete(role)
+	role := &model.Role{}
+	result := repository.Db.Where("id = ?", id).Delete(role)
 	return result.RowsAffected, result.Error
 }
 
 func (repository *RoleRepository) GetById(id int64) (*model.Role, error) {
-	var role = &model.Role{}
-	var result = repository.Db.Where("id = ?", id).Limit(1).Find(role)
+	role := &model.Role{}
+	result := repository.Db.Where("id = ?", id).Limit(1).Find(role)
 	return role, result.Error
 }
 
 func (repository *RoleRepository) GetByName(name string) (*model.Role, error) {
-	var roleInfo = &model.Role{}
-	var result = repository.Db.Where("name = ?", name).Limit(1).Find(roleInfo)
-	return roleInfo, result.Error
+	role := &model.Role{}
+	result := repository.Db.Where("name = ?", name).Limit(1).Find(role)
+	return role, result.Error
 }
 
 func (repository *RoleRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
-	var roles = []model.Role{}
-	var result = repository.Db.Scopes(utils.PaginationScope(roles, pagination, filter, repository.Db)).Find(roles)
+	roles := []model.Role{}
+	result := repository.Db.Scopes(utils.PaginationScope(roles, pagination, filter, repository.Db)).Find(roles)
 	return roles, result.Error
 }

@@ -20,7 +20,7 @@ func (repository *HistoryRepository) Create(history *model.History) error {
 }
 
 func (repository *HistoryRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
-	var histories = []model.History{}
-	var result = repository.Db.Scopes(utils.PaginationScope(histories, pagination, filter, repository.Db)).Find(histories)
+	histories := []model.History{}
+	result := repository.Db.Scopes(utils.PaginationScope(histories, pagination, filter, repository.Db)).Find(histories)
 	return histories, result.Error
 }

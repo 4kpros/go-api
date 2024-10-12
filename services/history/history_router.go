@@ -46,7 +46,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.HistoriesResponse
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

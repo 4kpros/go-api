@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"net/smtp"
 )
 
@@ -41,31 +40,4 @@ func (a *SMTPAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 		}
 	}
 	return nil, nil
-}
-
-// Sends an email with the specified subject, message, and receiver.
-func SendMail(subject string, message string, receiver string) error {
-	return SendWithGmail(subject, message, receiver)
-}
-
-// Sends an email using Gmail's SMTP server
-func SendWithGmail(subject string, message string, receiver string) error {
-	var to = []string{receiver}
-	var msg = []byte(
-		fmt.Sprintf(
-			"To: %s\r\n"+
-				"Subject: Go-api %s\r\n"+
-				"\r\n"+
-				"%s\r\n",
-			receiver, subject, message,
-		),
-	)
-
-	return smtp.SendMail(
-		fmt.Sprintf("%s:%d", Env.SmtpHost, Env.SmtpPort),
-		LoginSMTPAuth(Env.SmtpUsername, Env.SmtpPassword),
-		Env.SmtpSender,
-		to,
-		msg,
-	)
 }

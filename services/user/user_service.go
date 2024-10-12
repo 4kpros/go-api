@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/4kpros/go-api/common/constants"
@@ -20,30 +21,33 @@ func NewUserService(repository *UserRepository) *UserService {
 // Create user
 func (service *UserService) Create(user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
-	var foundUser *model.User = nil
-	var errFound error = nil
-	var message string = ""
+	var foundUser *model.User
+	var errMessage string = ""
 	if utils.IsEmailValid(user.Email) {
-		message = "user email"
-		foundUser, errFound = service.Repository.GetByEmail(user.Email)
+		errMessage = "email"
+		foundUser, err = service.Repository.GetByEmail(user.Email)
 	} else {
-		message = "user phone number"
-		foundUser, errFound = service.Repository.GetByPhoneNumber(user.PhoneNumber)
+		errMessage = "phone number"
+		foundUser, err = service.Repository.GetByPhoneNumber(user.PhoneNumber)
 	}
-	if errFound != nil {
+	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("get user by email/phone from database")
+		err = constants.HTTP_500_ERROR_MESSAGE(
+			fmt.Sprintf("get user by %s from database", errMessage),
+		)
 		return
 	}
 	if foundUser != nil && foundUser.Email == user.Email {
 		errCode = http.StatusFound
-		err = constants.HTTP_302_ERROR_MESSAGE(message)
+		err = constants.HTTP_302_ERROR_MESSAGE(
+			fmt.Sprintf("user %s", errMessage),
+		)
 		return
 	}
 
 	// Create new user
-	var randomPassword = utils.GenerateRandomPassword(8)
-	var newUser = &model.User{
+	randomPassword := utils.GenerateRandomPassword(8)
+	newUser := &model.User{
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
 		Password:    randomPassword,

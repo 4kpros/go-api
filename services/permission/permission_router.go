@@ -44,7 +44,7 @@ func RegisterEndpoints(
 				Body data.CreatePermissionRequest
 			},
 		) (*struct{ Body model.Permission }, error) {
-			var result, errCode, err = controller.Create(&input.Body)
+			result, errCode, err := controller.Create(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -76,7 +76,7 @@ func RegisterEndpoints(
 				Body data.UpdatePermissionRequest
 			},
 		) (*struct{ Body model.Permission }, error) {
-			var result, errCode, err = controller.Update(input.PermissionId.Id, &input.Body)
+			result, errCode, err := controller.Update(input.PermissionId.Id, &input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -107,7 +107,7 @@ func RegisterEndpoints(
 				data.PermissionId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			var result, errCode, err = controller.Delete(input.Id)
+			result, errCode, err := controller.Delete(input.Id)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -138,7 +138,7 @@ func RegisterEndpoints(
 				data.PermissionId
 			},
 		) (*struct{ Body model.Permission }, error) {
-			var result, errCode, err = controller.GetById(input.Id)
+			result, errCode, err := controller.GetById(input.Id)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -172,7 +172,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.PermissionsResponse
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

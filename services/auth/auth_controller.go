@@ -18,31 +18,33 @@ func NewAuthController(service *AuthService) *AuthController {
 }
 
 func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
-	// Check email and password
-	var errMessage string
-	var isEmailValid = utils.IsEmailValid(input.Email)
-	var isPasswordValid, missingPasswordChars = utils.IsPasswordValid(input.Password)
-	errCode = http.StatusBadRequest
+	// Check input
+	isEmailValid := utils.IsEmailValid(input.Email)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
 	if !isEmailValid && !isPasswordValid {
-		errMessage = "Invalid email and password! Please enter valid information. Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid email and password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 	if !isEmailValid {
-		errMessage = "Invalid email! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid email! Please enter valid information.")
 		return
 	}
 	if !isPasswordValid {
-		errMessage = "Invalid password! Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 
 	// Execute the service
-	var accessToken string
-	var accessExpires *time.Time = nil
-	accessToken, accessExpires, errCode, err = controller.Service.SignIn(
+	accessToken, accessExpires, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
 			Email:         input.Email,
 			Password:      input.Password,
@@ -61,31 +63,33 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 }
 
 func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPhoneNumberRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
-	// Check phone number and password
-	var errMessage string
-	var isPhoneNumberValid = utils.IsPhoneNumberValid(input.PhoneNumber)
-	var isPasswordValid, missingPasswordChars = utils.IsPasswordValid(input.Password)
-	errCode = http.StatusBadRequest
+	// Check input
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
 	if !isPhoneNumberValid && !isPasswordValid {
-		errMessage = "Invalid phone number and password! Please enter valid information. Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid phone number and password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 	if !isPhoneNumberValid {
-		errMessage = "Invalid phone number! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid phone number! Please enter valid information.")
 		return
 	}
 	if !isPasswordValid {
-		errMessage = "Invalid password! Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 
 	// Execute the service
-	var accessToken string
-	var accessExpires *time.Time = nil
-	accessToken, accessExpires, errCode, err = controller.Service.SignIn(
+	accessToken, accessExpires, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
 			PhoneNumber:   input.PhoneNumber,
 			Password:      input.Password,
@@ -104,19 +108,17 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 }
 
 func (controller *AuthController) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
-	// Check provider
-	var errMessage string
-	var isProviderValid = utils.IsAuthProviderValid(input.Provider)
-	errCode = http.StatusBadRequest
+	// Check input
+	isProviderValid := utils.IsAuthProviderValid(input.Provider)
 	if !isProviderValid {
-		errMessage = "Invalid or empty provider! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid or empty provider! Please enter valid information.")
 		return
 	}
 
 	// Execute the service
-	var accessToken string
-	var accessExpires *time.Time = nil
+	accessToken := ""
+	var accessExpires *time.Time
 	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(input, device)
 	if err != nil {
 		return
@@ -129,24 +131,28 @@ func (controller *AuthController) SignInWithProvider(input *data.SignInWithProvi
 }
 
 func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailRequest) (result *data.SignUpResponse, errCode int, err error) {
-	// Check email and password
-	var errMessage string
-	var isEmailValid = utils.IsEmailValid(input.Email)
-	var isPasswordValid, missingPasswordChars = utils.IsPasswordValid(input.Password)
-	errCode = http.StatusBadRequest
+	// Check input
+	isEmailValid := utils.IsEmailValid(input.Email)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
 	if !isEmailValid && !isPasswordValid {
-		errMessage = "Invalid email and password! Please enter valid information. Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid email and password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 	if !isEmailValid {
-		errMessage = "Invalid email! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid email! Please enter valid information.")
 		return
 	}
 	if !isPasswordValid {
-		errMessage = "Invalid password! Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 
@@ -167,24 +173,28 @@ func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailReq
 }
 
 func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPhoneNumberRequest) (result *data.SignUpResponse, errCode int, err error) {
-	// Check phone number and password
-	var errMessage string
-	var isPhoneNumberValid = utils.IsPhoneNumberValid(input.PhoneNumber)
-	var isPasswordValid, missingPasswordChars = utils.IsPasswordValid(input.Password)
-	errCode = http.StatusBadRequest
+	// Check input
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
 	if !isPhoneNumberValid && !isPasswordValid {
-		errMessage = "Invalid phone number and password! Please enter valid information. Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid phone number and password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 	if !isPhoneNumberValid {
-		errMessage = "Invalid phone number! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid phone number! Please enter valid information.")
 		return
 	}
 	if !isPasswordValid {
-		errMessage = "Invalid password! Password missing " + missingPasswordChars
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid password! Password missing",
+			missingPasswordChars,
+		)
 		return
 	}
 
@@ -205,8 +215,7 @@ func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPh
 }
 
 func (controller *AuthController) ActivateAccount(input *data.ActivateAccountRequest) (result *data.ActivateAccountResponse, errCode int, err error) {
-	var activatedAt *time.Time
-	activatedAt, errCode, err = controller.Service.ActivateAccount(input)
+	activatedAt, errCode, err := controller.Service.ActivateAccount(input)
 	if err != nil {
 		return
 	}
@@ -217,26 +226,23 @@ func (controller *AuthController) ActivateAccount(input *data.ActivateAccountReq
 }
 
 func (controller *AuthController) ForgotPasswordEmailInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
-	// Check email
-	var errMessage string
-	var isEmailValid = utils.IsEmailValid(input.Email)
-	errCode = http.StatusBadRequest
+	// Check input
+	isEmailValid := utils.IsEmailValid(input.Email)
 	if !isEmailValid {
-		errMessage = "Invalid email! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid email! Please enter valid information.")
 		return
 	}
 
 	// Execute the service
-	var token string
+	token := ""
 	token, errCode, err = controller.Service.ForgotPasswordInit(input)
 	if err != nil {
 		return
 	}
 	if len(token) <= 0 {
 		errCode = http.StatusInternalServerError
-		errMessage = "Failed to start the process! Please try again later."
-		err = fmt.Errorf("%s", errMessage)
+		err = fmt.Errorf("%s", "Failed to start the process! Please try again later.")
 		return
 	}
 	result = &data.ForgotPasswordInitResponse{
@@ -246,26 +252,23 @@ func (controller *AuthController) ForgotPasswordEmailInit(input *data.ForgotPass
 }
 
 func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
-	// Check phone number
-	var errMessage string
-	var isPhoneNumberValid = utils.IsPhoneNumberValid(input.PhoneNumber)
-	errCode = http.StatusBadRequest
+	// Check input
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
 	if !isPhoneNumberValid {
-		errMessage = "Invalid phone number! Please enter valid information."
-		err = fmt.Errorf("%s", errMessage)
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid phone number! Please enter valid information.")
 		return
 	}
 
 	// Execute the service
-	var token string
+	token := ""
 	token, errCode, err = controller.Service.ForgotPasswordInit(input)
 	if err != nil {
 		return
 	}
 	if len(token) <= 0 {
 		errCode = http.StatusInternalServerError
-		errMessage = "Failed to start the process! Please try again later."
-		err = fmt.Errorf("%s", errMessage)
+		err = fmt.Errorf("%s", "Failed to start the process! Please try again later.")
 		return
 	}
 	result = &data.ForgotPasswordInitResponse{
@@ -275,7 +278,25 @@ func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.Forg
 }
 
 func (controller *AuthController) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest) (result *data.ForgotPasswordCodeResponse, errCode int, err error) {
-	var token string
+	// Check input
+	if len(input.Token) <= 0 && input.Code < 10000 {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid token and code! Please enter valid information.")
+		return
+	}
+	if len(input.Token) <= 0 {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid token! Please enter valid information.")
+		return
+	}
+	if input.Code < 10000 {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid code! Please enter valid information.")
+		return
+	}
+
+	// Execute the service
+	token := ""
 	token, errCode, err = controller.Service.ForgotPasswordCode(input)
 	if err != nil {
 		return
@@ -287,6 +308,31 @@ func (controller *AuthController) ForgotPasswordCode(input *data.ForgotPasswordC
 }
 
 func (controller *AuthController) ForgotPasswordNewPassword(input *data.ForgotPasswordNewPasswordRequest) (result *data.ForgotPasswordNewPasswordResponse, errCode int, err error) {
+	// Check input
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.NewPassword)
+	if len(input.Token) <= 0 && !isPasswordValid {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid token and password! Password missing",
+			missingPasswordChars,
+		)
+		return
+	}
+	if len(input.Token) <= 0 {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s", "Invalid token! Please enter valid information.")
+		return
+	}
+	if !isPasswordValid {
+		errCode = http.StatusBadRequest
+		err = fmt.Errorf("%s %s",
+			"Invalid password! Password missing",
+			missingPasswordChars,
+		)
+		return
+	}
+
+	// Execute the service
 	errCode, err = controller.Service.ForgotPasswordNewPassword(input)
 	if err != nil {
 		return

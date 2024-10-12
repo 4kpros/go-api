@@ -13,7 +13,7 @@ var RedisContext = context.Background()
 
 // Establishes a connection to the Redis server.
 func ConnectRedis() error {
-	var addr = fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
+	addr := fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Username: Env.RedisUserName,
@@ -22,7 +22,7 @@ func ConnectRedis() error {
 	})
 
 	// Check redis status
-	var err = RedisClient.Ping(RedisContext).Err()
+	err := RedisClient.Ping(RedisContext).Err()
 	return err
 }
 
@@ -66,21 +66,20 @@ func DeleteRedisString(key string) (int64, error) {
 // (or an empty string if not found) and an error if any.
 func CheckValueInRedisList(requiredVal string) func(string) (string, error) {
 	return func(key string) (string, error) {
-		var array, errArray = GetRedisStringList(key)
+		array, errArray := GetRedisStringList(key)
 		if errArray != nil {
 			return "", errArray
 		}
-		var result string
 		if slices.Contains(array, requiredVal) {
-			result = requiredVal
+			return requiredVal, nil
 		}
-		return result, nil
+		return "", nil
 	}
 }
 
 // Retrieves a string array from Redis using the provided key.
 func GetRedisStringList(key string) ([]string, error) {
-	var len, errLen = RedisClient.LLen(RedisContext, key).Result()
+	len, errLen := RedisClient.LLen(RedisContext, key).Result()
 	if errLen != nil {
 		return nil, errLen
 	}
@@ -94,6 +93,6 @@ func AppendToRedisStringList(key string, val string) error {
 
 // Removes the element at the specified index from a string array stored in Redis.
 func RemoveFromRedisStringList(key string, index int64) error {
-	var _, err = RedisClient.LTrim(RedisContext, key, index, index).Result()
+	_, err := RedisClient.LTrim(RedisContext, key, index, index).Result()
 	return err
 }

@@ -16,7 +16,7 @@ func NewUserController(service *UserService) *UserController {
 }
 
 func (controller *UserController) CreateWithEmail(input *data.UserWithEmailRequest) (result *model.User, errCode int, err error) {
-	var user = &model.User{
+	user := &model.User{
 		Email:  input.Email,
 		RoleId: input.RoleId,
 	}
@@ -25,7 +25,7 @@ func (controller *UserController) CreateWithEmail(input *data.UserWithEmailReque
 }
 
 func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
-	var user = &model.User{
+	user := &model.User{
 		PhoneNumber: input.PhoneNumber,
 		RoleId:      input.RoleId,
 	}
@@ -34,7 +34,7 @@ func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhon
 }
 
 func (controller *UserController) UpdateUser(input *model.User) (result *model.User, errCode int, err error) {
-	var user = *input
+	user := *input
 	errCode, err = controller.Service.UpdateUser(&user)
 	if err != nil {
 		return
@@ -44,7 +44,7 @@ func (controller *UserController) UpdateUser(input *model.User) (result *model.U
 }
 
 func (controller *UserController) UpdateUserInfo(input *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
-	var userInfo = *input
+	userInfo := *input
 	errCode, err = controller.Service.UpdateUserInfo(&userInfo)
 	if err != nil {
 		return
@@ -59,8 +59,7 @@ func (controller *UserController) Delete(input *data.UserId) (result int64, errC
 }
 
 func (controller *UserController) GetById(input *data.UserId) (result *model.User, errCode int, err error) {
-	var user *model.User
-	user, errCode, err = controller.Service.GetById(input.Id)
+	user, errCode, err := controller.Service.GetById(input.Id)
 	if err != nil {
 		return
 	}
@@ -69,9 +68,8 @@ func (controller *UserController) GetById(input *data.UserId) (result *model.Use
 }
 
 func (controller *UserController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UsersResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
-	var users []model.User
-	users, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
+	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
+	users, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}

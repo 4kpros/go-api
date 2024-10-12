@@ -48,18 +48,18 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 	jwtToken.Issuer = issuer
 	jwtToken.ExpiresAt = jwt.NewNumericDate(*expires)
 	jwtToken.IssuedAt = jwt.NewNumericDate(time.Now())
-	var jwtTokenClaimed = jwt.NewWithClaims(jwt.SigningMethodES512, *jwtToken)
-	var signedKey, errParse = jwt.ParseECPrivateKeyFromPEM([]byte(*privateKey))
+	jwtTokenClaimed := jwt.NewWithClaims(jwt.SigningMethodES512, *jwtToken)
+	signedKey, errParse := jwt.ParseECPrivateKeyFromPEM([]byte(*privateKey))
 	if errParse != nil {
 		return nil, "", errParse
 	}
-	var token, errSigning = jwtTokenClaimed.SignedString(signedKey)
+	token, errSigning := jwtTokenClaimed.SignedString(signedKey)
 	if errSigning != nil {
 		return nil, "", errSigning
 	}
 
 	// Cache new token
-	var errCache = cacheFunc(GetJWTCachedKey(jwtToken), token)
+	errCache := cacheFunc(GetJWTCachedKey(jwtToken), token)
 	if errCache != nil {
 		return nil, "", errCache
 	}
@@ -110,16 +110,13 @@ func EncodeArgon2id(password string) (string, error) {
 	if tempErr != nil {
 		return "", tempErr
 	}
-	// Encode to base64
-	var hash = EncodeBase64(tempHash)
-	return hash, nil
+	return EncodeBase64(tempHash), nil
 }
 
 // Verify if the Argon2id password matches the string.
 func CompareArgon2id(password string, hashedPassword string) (bool, error) {
 	initialHashedPassword, _ := DecodeBase64(hashedPassword)
-	var match, err = argon2id.ComparePasswordAndHash(password, initialHashedPassword)
-	return match, err
+	return argon2id.ComparePasswordAndHash(password, initialHashedPassword)
 }
 
 // Encodes the input string into Base64 format.
@@ -129,10 +126,9 @@ func EncodeBase64(data string) string {
 
 // Decodes a Base64-encoded string and returns an error if the input is invalid.
 func DecodeBase64(data string) (string, error) {
-	var base64Text = make([]byte, base64.StdEncoding.DecodedLen(len(data)))
-	var n, err = base64.StdEncoding.Decode(base64Text, []byte(data))
-	var output = string(base64Text[:n])
-	return output, err
+	base64Text := make([]byte, base64.StdEncoding.DecodedLen(len(data)))
+	n, err := base64.StdEncoding.Decode(base64Text, []byte(data))
+	return string(base64Text[:n]), err
 }
 
 // Generates an HMAC-SHA256 signature for the given message using the provided private key.

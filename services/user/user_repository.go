@@ -28,43 +28,43 @@ func (repository *UserRepository) UpdateUserInfo(userInfo *model.UserInfo) error
 }
 
 func (repository *UserRepository) Delete(id int64) (int64, error) {
-	var user = &model.User{}
-	var result = repository.Db.Where("id = ?", id).Delete(user)
+	user := &model.User{}
+	result := repository.Db.Where("id = ?", id).Delete(user)
 	return result.RowsAffected, result.Error
 }
 
 func (repository *UserRepository) GetById(id int64) (*model.User, error) {
-	var user = &model.User{}
-	var result = repository.Db.Where("id = ?", id).Limit(1).Find(user)
+	user := &model.User{}
+	result := repository.Db.Where("id = ?", id).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *UserRepository) GetUserInfoById(id int64) (*model.UserInfo, error) {
-	var userInfo = &model.UserInfo{}
-	var result = repository.Db.Where("id = ?", id).Limit(1).Find(userInfo)
+	userInfo := &model.UserInfo{}
+	result := repository.Db.Where("id = ?", id).Limit(1).Find(userInfo)
 	return userInfo, result.Error
 }
 
 func (repository *UserRepository) GetByEmail(email string) (*model.User, error) {
-	var user = &model.User{}
-	var result = repository.Db.Where("email = ? AND (provider is null OR provider = '')", email).Limit(1).Find(user)
+	user := &model.User{}
+	result := repository.Db.Where("email = ? AND (provider is null OR provider = '')", email).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *UserRepository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
-	var user = &model.User{}
-	var result = repository.Db.Where("phoneNumber = ? AND (provider is null OR provider = '')", phoneNumber).Limit(1).Find(user)
+	user := &model.User{}
+	result := repository.Db.Where("phoneNumber = ? AND (provider is null OR provider = '')", phoneNumber).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *UserRepository) GetByProvider(provider string, providerUserId string) (*model.User, error) {
-	var user = &model.User{}
-	var result = repository.Db.Where("provider = ? AND providerUserId = ?", provider, providerUserId).Limit(1).Find(user)
+	user := &model.User{}
+	result := repository.Db.Where("provider = ? AND providerUserId = ?", provider, providerUserId).Limit(1).Find(user)
 	return user, result.Error
 }
 
 func (repository *UserRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
-	var users = []model.User{}
-	var result = repository.Db.Scopes(utils.PaginationScope(users, pagination, filter, repository.Db)).Find(users)
+	users := []model.User{}
+	result := repository.Db.Scopes(utils.PaginationScope(users, pagination, filter, repository.Db)).Find(users)
 	return users, result.Error
 }

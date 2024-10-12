@@ -11,7 +11,7 @@ import (
 	googleIdToken "google.golang.org/api/idtoken"
 )
 
-var invalidTokenErrMessage = "Invalid or expired token! Please enter valid information."
+const invalidTokenErrMessage = "Invalid or expired token! Please enter valid information."
 
 // Verifies a Google ID token and returns the associated user information.
 //
@@ -35,7 +35,7 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	}
 
 	// Extract info
-	var user = &types.GoogleUserProfileResponse{}
+	user := &types.GoogleUserProfileResponse{}
 	user.Id, _ = payload.Claims["sub"].(string)
 	user.Email, _ = payload.Claims["email"].(string)
 	user.EmailVerified, _ = payload.Claims["email_verified"].(bool)
@@ -58,8 +58,8 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	}
 
 	// Retrieve token info
-	var debugResp = &types.FacebookDebugAccessTokenResponse{}
-	var errDebug = HTTPGet(
+	debugResp := &types.FacebookDebugAccessTokenResponse{}
+	errDebug := HTTPGet(
 		fmt.Sprintf(
 			"%s%s&access_token=%s|%s",
 			config.Env.FacebookDebugTokenUrl,
@@ -77,12 +77,12 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 	// Retrieve user info
-	var userResp = &types.FacebookUserProfileResponse{}
-	var secretProof, errSecretProof = EncodeHMAC_SHA256(token, config.Env.FacebookClientSecret)
+	userResp := &types.FacebookUserProfileResponse{}
+	secretProof, errSecretProof := EncodeHMAC_SHA256(token, config.Env.FacebookClientSecret)
 	if errSecretProof != nil {
 		return nil, constants.HTTP_500_ERROR_MESSAGE("encode Facebook HMAC HS256 secret proof")
 	}
-	var errUser = HTTPGet(
+	errUser := HTTPGet(
 		fmt.Sprintf(
 			"%s%s&appsecret_proof=%s",
 			config.Env.FacebookProfileUrl,

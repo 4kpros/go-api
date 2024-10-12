@@ -16,7 +16,7 @@ func ExtractBearerTokenHeader(ctx *huma.Context) string {
 
 // Fetch url and return response
 func HTTPGet(url string, response any) error {
-	var resp, err = http.Get(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}

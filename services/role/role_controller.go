@@ -16,7 +16,7 @@ func NewRoleController(service *RoleService) *RoleController {
 }
 
 func (controller *RoleController) Create(input *data.RoleRequest) (result *model.Role, errCode int, err error) {
-	var role = model.Role{
+	role := model.Role{
 		Name:        (*input).Name,
 		Description: (*input).Description,
 	}
@@ -29,7 +29,7 @@ func (controller *RoleController) Create(input *data.RoleRequest) (result *model
 }
 
 func (controller *RoleController) Update(input *model.Role) (result *model.Role, errCode int, err error) {
-	var role = *input
+	role := *input
 	errCode, err = controller.Service.Update(&role)
 	if err != nil {
 		return
@@ -39,8 +39,7 @@ func (controller *RoleController) Update(input *model.Role) (result *model.Role,
 }
 
 func (controller *RoleController) Delete(input *data.RoleId) (result int64, errCode int, err error) {
-	var affectedRows int64
-	affectedRows, errCode, err = controller.Service.Delete(input.Id)
+	affectedRows, errCode, err := controller.Service.Delete(input.Id)
 	if err != nil {
 		return
 	}
@@ -49,8 +48,7 @@ func (controller *RoleController) Delete(input *data.RoleId) (result int64, errC
 }
 
 func (controller *RoleController) GetById(input *data.RoleId) (result *model.Role, errCode int, err error) {
-	var role *model.Role
-	role, errCode, err = controller.Service.GetById(input.Id)
+	role, errCode, err := controller.Service.GetById(input.Id)
 	if err != nil {
 		return
 	}
@@ -59,9 +57,8 @@ func (controller *RoleController) GetById(input *data.RoleId) (result *model.Rol
 }
 
 func (controller *RoleController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.RolesResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
-	var roles []model.Role
-	roles, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
+	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
+	roles, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}

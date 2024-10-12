@@ -44,7 +44,7 @@ func RegisterEndpoints(
 				Body data.UserWithEmailRequest
 			},
 		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.CreateWithEmail(&input.Body)
+			result, errCode, err := controller.CreateWithEmail(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -75,7 +75,7 @@ func RegisterEndpoints(
 				Body data.UserWithPhoneNumberRequest
 			},
 		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.CreateWithPhoneNumber(&input.Body)
+			result, errCode, err := controller.CreateWithPhoneNumber(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -107,14 +107,14 @@ func RegisterEndpoints(
 				Body data.UserRequest
 			},
 		) (*struct{ Body model.User }, error) {
-			var inputFormatted = &model.User{
+			inputFormatted := &model.User{
 				Email:       input.Body.Email,
 				PhoneNumber: input.Body.PhoneNumber,
 				Language:    input.Body.Language,
 				RoleId:      input.Body.RoleId,
 			}
 			inputFormatted.ID = input.UserId.Id
-			var result, errCode, err = controller.UpdateUser(inputFormatted)
+			result, errCode, err := controller.UpdateUser(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -146,14 +146,14 @@ func RegisterEndpoints(
 				Body data.UserInfoRequest
 			},
 		) (*struct{ Body model.UserInfo }, error) {
-			var inputFormatted = &model.UserInfo{
+			inputFormatted := &model.UserInfo{
 				UserName:  input.Body.UserName,
 				FirstName: input.Body.FirstName,
 				LastName:  input.Body.LastName,
 				Address:   input.Body.Address,
 			}
 			inputFormatted.ID = input.UserId.Id
-			var result, errCode, err = controller.UpdateUserInfo(inputFormatted)
+			result, errCode, err := controller.UpdateUserInfo(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -184,7 +184,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			var result, errCode, err = controller.Delete(&input.UserId)
+			result, errCode, err := controller.Delete(&input.UserId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -215,7 +215,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.GetById(&input.UserId)
+			result, errCode, err := controller.GetById(&input.UserId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -249,7 +249,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.UsersResponse
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

@@ -20,7 +20,6 @@ func isOriginKnown(host string) bool {
 
 // Sets security-related HTTP headers for responses.
 func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
-	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
 		// Add headers for more security
 		ctx.SetHeader("Content-Type", "application/json")
@@ -34,7 +33,7 @@ func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)
 
 		// Check for allowed hosts
 		if !isOriginKnown(ctx.Host()) {
-			errMessage = "Our system detected your request as malicious! Please fix that before."
+			errMessage := "Our system detected your request as malicious! Please fix that before."
 			huma.WriteErr(api, ctx, http.StatusForbidden, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
@@ -45,10 +44,9 @@ func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)
 
 // Limits the number of requests that can be made to the API.
 func RateLimitMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
-	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
 		if 1 == 2 {
-			errMessage = "Our system detected your request as malicious! Your are banned for 24hours."
+			errMessage := "Our system detected your request as malicious! Your are banned for 24hours."
 			huma.WriteErr(api, ctx, http.StatusForbidden, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
@@ -63,8 +61,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		// Check if current endpoint require authorization
 		isAuthorizationRequired := false
 		for _, opScheme := range ctx.Operation().Security {
-			var ok bool
-			if _, ok = opScheme[constants.SECURITY_AUTH_NAME]; ok {
+			if _, ok := opScheme[constants.SECURITY_AUTH_NAME]; ok {
 				isAuthorizationRequired = true
 				break
 			}
@@ -86,13 +83,13 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			var tempErr = constants.HTTP_401_ERROR_MESSAGE()
+			tempErr := constants.HTTP_401_ERROR_MESSAGE()
 			huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}
 
 		// Validate the token by checking if it's cached
-		var isTokenCached bool = false
+		isTokenCached := false
 		if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
@@ -111,7 +108,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			return
 		}
 
-		var tempErr = constants.HTTP_401_ERROR_MESSAGE()
+		tempErr := constants.HTTP_401_ERROR_MESSAGE()
 		huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }

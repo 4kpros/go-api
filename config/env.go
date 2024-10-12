@@ -69,8 +69,7 @@ func LoadEnv(path string) error {
 
 	viper.AutomaticEnv()
 
-	var err error
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err == nil {
 		err = viper.Unmarshal(Env)
 	}

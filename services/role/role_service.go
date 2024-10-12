@@ -19,8 +19,8 @@ func NewRoleService(repository *RoleRepository) *RoleService {
 // Create new role
 func (service *RoleService) Create(role *model.Role) (errCode int, err error) {
 	// Check if role already exists
-	var foundRole, errFound = service.Repository.GetByName(role.Name)
-	if errFound != nil {
+	foundRole, err := service.Repository.GetByName(role.Name)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get role by name from database")
 		return
@@ -44,8 +44,8 @@ func (service *RoleService) Create(role *model.Role) (errCode int, err error) {
 // Update role
 func (service *RoleService) Update(role *model.Role) (errCode int, err error) {
 	// Check if role already exists
-	var foundRole, errFound = service.Repository.GetByName(role.Name)
-	if errFound != nil {
+	foundRole, err := service.Repository.GetByName(role.Name)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get role by name from database")
 		return

@@ -54,7 +54,7 @@ func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.Pagin
 // We validate the inputs and return a new pagination object with the applied settings:
 // current page, next page, previous page, total pages, count, limit, and offset.
 func NewPaginationData(page int, limit int) *types.Pagination {
-	var offset = 0
+	offset := 0
 	if page > 1 {
 		offset = (page - 1) * limit
 	}

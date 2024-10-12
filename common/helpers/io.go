@@ -13,6 +13,6 @@ func ReadFileContentToString(path string) (*string, error) {
 	if errRead != nil {
 		return nil, errRead
 	}
-	var result = string(content)
+	result := string(content)
 	return &result, nil
 }

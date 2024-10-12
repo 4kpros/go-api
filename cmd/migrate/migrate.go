@@ -9,13 +9,15 @@ import (
 	userModel "github.com/4kpros/go-api/services/user/model"
 )
 
-// Loads and Applies all available migrations.
+// Loads and applies all migrations.
 func Start() {
-	var err = config.DB.AutoMigrate(
-		&historyModel.History{},
-		&roleModel.Role{},
-		&permissionModel.Permission{},
-		&userModel.User{},
+	helpers.LogMigrations(
+		config.DB.AutoMigrate(
+			&historyModel.History{},
+			&roleModel.Role{},
+			&permissionModel.Permission{},
+			&userModel.User{},
+			// Add others models here
+		),
 	)
-	helpers.LogMigrations(err)
 }

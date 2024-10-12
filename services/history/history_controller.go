@@ -16,7 +16,7 @@ func NewHistoryController(service *HistoryService) *HistoryController {
 }
 
 func (controller *HistoryController) Create(input *model.History) (result *model.History, errCode int, err error) {
-	var history = *input
+	history := *input
 	errCode, err = controller.Service.Create(&history)
 	if err != nil {
 		return
@@ -26,7 +26,7 @@ func (controller *HistoryController) Create(input *model.History) (result *model
 }
 
 func (controller *HistoryController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.HistoriesResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
+	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
 	var histories []model.History
 	histories, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {

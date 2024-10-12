@@ -16,7 +16,7 @@ func NewPermissionController(service *PermissionService) *PermissionController {
 }
 
 func (controller *PermissionController) Create(input *data.CreatePermissionRequest) (result *model.Permission, errCode int, err error) {
-	var permission = model.Permission{
+	permission := model.Permission{
 		RoleId: (*input).RoleId,
 		Table:  (*input).Table,
 		Read:   (*input).Read,
@@ -33,7 +33,7 @@ func (controller *PermissionController) Create(input *data.CreatePermissionReque
 }
 
 func (controller *PermissionController) Update(id int64, input *data.UpdatePermissionRequest) (result *model.Permission, errCode int, err error) {
-	var permission = model.Permission{
+	permission := model.Permission{
 		Read:   (*input).Read,
 		Create: (*input).Create,
 		Update: (*input).Update,
@@ -68,9 +68,8 @@ func (controller *PermissionController) GetById(id int64) (result *model.Permiss
 }
 
 func (controller *PermissionController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.PermissionsResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
-	var permissions []model.Permission
-	permissions, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
+	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
+	permissions, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}

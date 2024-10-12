@@ -26,22 +26,21 @@ func NewAuthService(repository *AuthRepository) *AuthService {
 func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
-	var errFound error
 	var errMessage string
 	if utils.IsEmailValid(input.Email) {
-		userFound, errFound = service.Repository.GetByEmail(input.Email)
+		userFound, err = service.Repository.GetByEmail(input.Email)
 		errMessage = "Invalid email or password! Please enter valid information."
 	} else {
 		errMessage = "Invalid phone number or password! Please enter valid information."
-		userFound, errFound = service.Repository.GetByPhoneNumber(input.PhoneNumber)
+		userFound, err = service.Repository.GetByPhoneNumber(input.PhoneNumber)
 	}
-	if errFound != nil || userFound == nil || userFound.Email != input.Email {
+	if err != nil || userFound == nil || userFound.Email != input.Email {
 		errCode = http.StatusNotFound
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isPasswordMatches, errCompare = utils.CompareArgon2id(input.Password, userFound.Password)
-	if errCompare != nil || !isPasswordMatches {
+	isPasswordMatches, err := utils.CompareArgon2id(input.Password, userFound.Password)
+	if err != nil || !isPasswordMatches {
 		errCode = http.StatusNotFound
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -49,8 +48,16 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 
 	// Check if account is activated
 	if !userFound.IsActivated {
-		var randomCode, _ = utils.GenerateRandomCode(5)
-		var jwtToken, token, errEncode = utils.EncodeJWTToken(
+		randomCode := 0
+		randomCode, err = utils.GenerateRandomCode(5)
+		if err != nil {
+			errCode = http.StatusInternalServerError
+			err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+			return
+		}
+		var jwtToken *types.JwtToken
+		token := ""
+		jwtToken, token, err = utils.EncodeJWTToken(
 			&types.JwtToken{
 				UserId:   userFound.ID,
 				RoleId:   userFound.RoleId,
@@ -64,7 +71,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 			config.Keys.JwtPrivateKey,
 			config.SetRedisString,
 		)
-		if errEncode != nil || jwtToken == nil {
+		if err != nil || jwtToken == nil {
 			errCode = http.StatusInternalServerError
 			err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
 			return
@@ -75,7 +82,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 		fmt.Printf("\nGenerated code: %d \n", randomCode)
 		// Send code to email or phone number
 		if utils.IsEmailValid(input.Email) {
-			go config.SendMail(
+			go utils.SendMail(
 				"Reset password",
 				fmt.Sprintf("Your code: %d \nYour token: %s", randomCode, token),
 				input.Email,
@@ -88,7 +95,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 	}
 
 	// Generate new token
-	var jwtToken, token, errEncode = utils.EncodeJWTToken(
+	jwtToken, token, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -101,7 +108,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 		config.Keys.JwtPrivateKey,
 		config.AppendToRedisStringList,
 	)
-	if errEncode != nil {
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
 	}
@@ -113,7 +120,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 // Login with provider like Google and Facebook
 func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Validate provider token and update user
-	var providerUserId = "Test"
+	providerUserId := "Test"
 	if len(providerUserId) <= 0 {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
@@ -121,9 +128,9 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 	}
 
 	// Save user if it's not in database
-	var userFound, errFound = service.Repository.GetByProvider(input.Provider, providerUserId)
-	if errFound != nil || userFound == nil || userFound.Provider != input.Provider {
-		var user = &model.User{
+	userFound, err := service.Repository.GetByProvider(input.Provider, providerUserId)
+	if err != nil || userFound == nil || userFound.Provider != input.Provider {
+		user := &model.User{
 			Provider:       input.Provider,
 			ProviderUserId: providerUserId,
 		}
@@ -136,7 +143,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 	}
 
 	// Generate new token
-	var jwtToken, token, errEncode = utils.EncodeJWTToken(
+	jwtToken, token, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -149,7 +156,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 		config.Keys.JwtPrivateKey,
 		config.AppendToRedisStringList,
 	)
-	if errEncode != nil {
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
 	}
@@ -162,16 +169,15 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
-	var errFound error
 	var errMessage string
 	if utils.IsEmailValid(input.Email) {
-		userFound, errFound = service.Repository.GetByEmail(input.Email)
+		userFound, err = service.Repository.GetByEmail(input.Email)
 		errMessage = "user email"
 	} else {
 		errMessage = "user phone number"
-		userFound, errFound = service.Repository.GetByPhoneNumber(input.PhoneNumber)
+		userFound, err = service.Repository.GetByPhoneNumber(input.PhoneNumber)
 	}
-	if errFound != nil {
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("find user on database")
 		return
@@ -194,8 +200,8 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 	}
 
 	// Generate new token
-	var randomCode, _ = utils.GenerateRandomCode(5)
-	var jwtToken, token, errEncode = utils.EncodeJWTToken(
+	randomCode, _ := utils.GenerateRandomCode(5)
+	jwtToken, token, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -209,7 +215,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
-	if errEncode != nil || jwtToken == nil {
+	if err != nil || jwtToken == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
 	}
@@ -217,7 +223,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 	fmt.Printf("\nGenerated code: %d \n", randomCode)
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
-		go config.SendMail(
+		go utils.SendMail(
 			"Reset password",
 			fmt.Sprintf("Your code: %d \nYour token: %s", randomCode, token),
 			input.Email,
@@ -231,9 +237,9 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 // Activate user account
 func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) (activatedAt *time.Time, errCode int, err error) {
 	// Extract token information and validate the token
-	var errMessage string = "Invalid or expired token! Please enter valid information."
-	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
-	if errDecode != nil {
+	errMessage := "Invalid or expired token! Please enter valid information."
+	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -243,7 +249,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -259,8 +265,8 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	}
 
 	// Check if user exists
-	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
-	if errFound != nil || userFound == nil {
+	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
 		return
@@ -274,7 +280,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	}
 
 	// Create user info
-	var userInfo = &model.UserInfo{}
+	userInfo := &model.UserInfo{}
 	err = service.Repository.CreateUserInfo(userInfo)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -283,7 +289,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	}
 
 	// Update account
-	var tmpActivatedAt = time.Now()
+	tmpActivatedAt := time.Now()
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
 	userFound.UserInfoId = userInfo.ID
@@ -307,29 +313,28 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitRequest) (token string, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
-	var errFound error
 	var errMessage string
 	if utils.IsEmailValid(input.Email) {
 		errMessage = "User with this email"
-		userFound, errFound = service.Repository.GetByEmail(input.Email)
+		userFound, err = service.Repository.GetByEmail(input.Email)
 	} else {
 		errMessage = "User with this phone number"
-		userFound, errFound = service.Repository.GetByPhoneNumber(input.PhoneNumber)
+		userFound, err = service.Repository.GetByPhoneNumber(input.PhoneNumber)
 	}
-	if errFound != nil || userFound.ID <= 0 {
+	if err != nil || userFound.ID <= 0 {
 		errCode = http.StatusNotFound
 		err = constants.HTTP_404_ERROR_MESSAGE(errMessage)
 		return
 	}
 
 	// Generate new random code
-	var randomCode, errRandomCode = utils.GenerateRandomCode(5)
-	if errRandomCode != nil {
+	randomCode, err := utils.GenerateRandomCode(5)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
 	}
-	var expires = utils.NewExpiresDateDefault()
-	var newJwtToken, newToken, errEncode = utils.EncodeJWTToken(
+	expires := utils.NewExpiresDateDefault()
+	newJwtToken, newToken, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -343,7 +348,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
-	if errEncode != nil || newJwtToken == nil {
+	if err != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate new JWT token")
 		return
@@ -353,7 +358,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 	fmt.Printf("\nGenerated code: %d \n", randomCode)
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
-		go config.SendMail(
+		go utils.SendMail(
 			"Reset password",
 			fmt.Sprintf("Your code: %d", randomCode),
 			input.Email,
@@ -367,9 +372,9 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 // Forgot password step 2: validate sended code
 func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest) (token string, errCode int, err error) {
 	// Extract token information and validate the token
-	var errMessage string = "Invalid or expired token! Please enter valid information."
-	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
-	if errDecode != nil {
+	errMessage := "Invalid or expired token! Please enter valid information."
+	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -379,7 +384,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -394,8 +399,8 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 	}
 
 	// Check if user exists
-	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
-	if errFound != nil || userFound == nil {
+	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
 		return
@@ -405,7 +410,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 
 	// Generate new token
-	var newJwtToken, newToken, errEncode = utils.EncodeJWTToken(
+	newJwtToken, newToken, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -418,7 +423,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
-	if errEncode != nil || newJwtToken == nil {
+	if err != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate new JWT token")
 	}
@@ -429,9 +434,9 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 // Forgot password step 3: setup new password
 func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPasswordNewPasswordRequest) (errCode int, err error) {
 	// Extract token information and validate the token
-	var errMessage string = "Invalid or expired token! Please enter valid information."
-	var jwtToken, errDecode = utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
-	if errDecode != nil {
+	errMessage := "Invalid or expired token! Please enter valid information."
+	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
 		return
@@ -441,7 +446,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 		err = fmt.Errorf("%s", errMessage)
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMessage)
@@ -449,24 +454,24 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 	}
 
 	// Check if user exists
-	var userFound, errFound = service.Repository.GetById(jwtToken.UserId)
-	if errFound != nil || userFound == nil {
+	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
 		return
 	}
 
 	// Update user password
-	var userUpdated, errUpdate = service.Repository.UpdatePasswordById(jwtToken.UserId, input.NewPassword)
-	if errUpdate != nil || userUpdated == nil {
+	userUpdated, err := service.Repository.UpdatePasswordById(jwtToken.UserId, input.NewPassword)
+	if err != nil || userUpdated == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update password")
 		return
 	}
 
 	// Invalidate token
-	var _, errDel = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
-	if errDel != nil {
+	_, err = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
 		return
@@ -477,13 +482,13 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 // Logout user with provided token
 func (service *AuthService) SignOut(token string) (errCode int, err error) {
 	// Extract token information and validate the token
-	var jwtToken, errDecode = utils.DecodeJWTToken(token, config.Keys.JwtPublicKey)
-	if errDecode != nil || jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_SESSION {
+	jwtToken, err := utils.DecodeJWTToken(token, config.Keys.JwtPublicKey)
+	if err != nil || jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_SESSION {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return
 	}
-	var isTokenValid = utils.ValidateJWTToken(token, jwtToken, config.CheckValueInRedisList(token))
+	isTokenValid := utils.ValidateJWTToken(token, jwtToken, config.CheckValueInRedisList(token))
 	if !isTokenValid {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
@@ -491,20 +496,20 @@ func (service *AuthService) SignOut(token string) (errCode int, err error) {
 	}
 
 	// Invalidate token
-	var sessions, errSession = config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken))
-	if errSession != nil {
+	sessions, err := config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken))
+	if err != nil {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return
 	}
-	var tokenIndex = slices.Index(sessions, token)
+	tokenIndex := slices.Index(sessions, token)
 	if tokenIndex < 0 {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_ERROR_MESSAGE()
 		return
 	}
-	var errDel = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
-	if errDel != nil {
+	err = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("delete cached session")
 		return

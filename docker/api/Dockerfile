@@ -9,19 +9,19 @@ RUN apt-get -y install bash make
 
 COPY . .
 
+# Build app
 RUN make clean-cache
 RUN make install
 RUN make build
 
-CMD ["/go-api/build/main"]
+FROM alpine:latest as api
 
 WORKDIR /app
 
-
-# Copy and add permissions to entrypoint script
-RUN cp ./docker/api/entrypoint.sh ./
-RUN chmod +x ./entrypoint.sh
+# Copy app
+COPY FROM builder ./docker/api/entrypoint.sh ./
+RUN chmod +x ./app/.build/main
 
 EXPOSE 9000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["make run"]

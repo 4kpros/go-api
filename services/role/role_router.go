@@ -44,7 +44,7 @@ func RegisterEndpoints(
 				Body data.RoleRequest
 			},
 		) (*struct{ Body model.Role }, error) {
-			var result, errCode, err = controller.Create(&input.Body)
+			result, errCode, err := controller.Create(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -76,12 +76,12 @@ func RegisterEndpoints(
 				Body data.RoleRequest
 			},
 		) (*struct{ Body model.Role }, error) {
-			var inputFormatted = &model.Role{
+			inputFormatted := &model.Role{
 				Name:        input.Body.Name,
 				Description: input.Body.Name,
 			}
 			inputFormatted.ID = input.RoleId.Id
-			var result, errCode, err = controller.Update(inputFormatted)
+			result, errCode, err := controller.Update(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -112,7 +112,7 @@ func RegisterEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			var result, errCode, err = controller.Delete(&input.RoleId)
+			result, errCode, err := controller.Delete(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -143,7 +143,7 @@ func RegisterEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body model.Role }, error) {
-			var result, errCode, err = controller.GetById(&input.RoleId)
+			result, errCode, err := controller.GetById(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -177,7 +177,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.RolesResponse
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

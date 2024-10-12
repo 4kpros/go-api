@@ -20,8 +20,8 @@ func NewPermissionService(repository *PermissionRepository) *PermissionService {
 // Create new permission
 func (service *PermissionService) Create(permission *model.Permission) (errCode int, err error) {
 	// Check if permission already exists(unique by group of "roleId" and "table")
-	var foundPermission, errFound = service.Repository.GetByRoleIdTable(permission.RoleId, permission.Table)
-	if errFound != nil {
+	foundPermission, err := service.Repository.GetByRoleIdTable(permission.RoleId, permission.Table)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get permission by roleId and table from database")
 		return
@@ -45,8 +45,8 @@ func (service *PermissionService) Create(permission *model.Permission) (errCode 
 // Update permission
 func (service *PermissionService) Update(id int64, input *data.UpdatePermissionRequest) (errCode int, err error) {
 	// Check if permission already exists(unique by group of "roleId" and "table")
-	var foundPermission, errFound = service.Repository.GetById(id)
-	if errFound != nil {
+	foundPermission, err := service.Repository.GetById(id)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get permission by roleId and table from database")
 		return
