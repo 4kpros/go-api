@@ -9,7 +9,7 @@ import (
 	"github.com/4kpros/go-api/common/constants"
 )
 
-// Validate the authentication provider (e.g., Google, Facebook)
+// Validate the authentication provider (e.g., Google, Facebook, ...)
 // and return a boolean indicating success or failure.
 func IsAuthProviderValid(provider string) bool {
 	return slices.Contains(constants.AUTH_PROVIDERS, provider)
@@ -28,9 +28,6 @@ func IsEmailValid(email string) bool {
 
 // Validate the password and return a boolean indicating success or failure,
 // along with a string listing all missing requirements.
-//
-// For the password 'simplePass123!', the missing requirements are:
-// [HAS_MIN_LENGTH, HAS_UPPERCASE_LETTER, HAS_LOWERCASE_LETTER, HAS_NUMBER, and HAS_SPECIAL_CHARACTER].
 func IsPasswordValid(password string) (bool, string) {
 	var (
 		hasMinLen  bool
@@ -61,8 +58,25 @@ func IsPasswordValid(password string) (bool, string) {
 	isValid := hasMinLen && hasUpper && hasLower && hasNumber && hasSpecial
 
 	if !isValid {
-		missing = fmt.Sprintf("HAS_MIN_LENGTH: %t, HAS_UPPERCASE_LETTER: %t, HAS_LOWERCASE_LETTER: %t, HAS_NUMBER: %t, HAS_SPECIAL_CHARACTER: %t]", hasMinLen, hasUpper, hasLower, hasNumber, hasSpecial)
+		missing = fmt.Sprintf(
+			"HAS_MIN_LENGTH: %t, HAS_UPPERCASE_LETTER: %t, HAS_LOWERCASE_LETTER: %t, HAS_NUMBER: %t, HAS_SPECIAL_CHARACTER: %t]",
+			hasMinLen, hasUpper, hasLower, hasNumber, hasSpecial,
+		)
 	}
 
 	return isValid, missing
+}
+
+// Validate the required scopes to allow login with Facebook
+func IsFacebookLoginScopesValid(scopes []string) bool {
+	counter := 0
+	for _, scope := range scopes {
+		if slices.Contains(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES, scope) {
+			counter++
+		}
+	}
+	if counter == len(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES) {
+		return true
+	}
+	return false
 }

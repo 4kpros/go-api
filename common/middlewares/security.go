@@ -85,6 +85,13 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 				config.CheckValueInRedisList(token),
 			)
 		} else if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION_API_KEY {
+			// TODO implements authentication for api keys
+			// TODO implements authentication for api keys
+			// TODO implements authentication for api keys
+			// TODO implements authentication for api keys
+			// TODO implements authentication for api keys
+			// TODO implements authentication for api keys
+		} else if slices.Contains(constants.JWT_ISSUER_AUTH, jwtDecoded.Issuer) {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
 				jwtDecoded,

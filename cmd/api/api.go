@@ -77,6 +77,6 @@ func Start() {
 	registerEndpoints(&humaApi)
 
 	// Start to listen
-	formattedPort := fmt.Sprintf(":%d", config.Env.ApiPort)
+	formattedPort := fmt.Sprintf(":%d", config.Env.AppPort)
 	engine.Run(formattedPort)
 }

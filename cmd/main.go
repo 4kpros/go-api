@@ -4,7 +4,6 @@ import (
 	"github.com/4kpros/go-api/cmd/api"
 	"github.com/4kpros/go-api/cmd/di"
 	"github.com/4kpros/go-api/cmd/migrate"
-	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/helpers"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/config"
@@ -43,12 +42,6 @@ func init() {
 			zap.String("Error", errEnv.Error()),
 		)
 	} else {
-		// Initialize the JWT issuer passphrase after the environment file is loaded
-		constants.InitializeJwtIssuerConst(
-			config.Env.JwtIssuerSessionPassphrase,
-			config.Env.JwtIssuerSessionApiKeyPassphrase,
-			config.Env.JwtIssuerAuthPassphrase,
-		)
 		helpers.Logger.Info("Env loaded!")
 	}
 

@@ -44,7 +44,7 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 	}
 
 	// Execute the service
-	accessToken, accessExpires, errCode, err := controller.Service.SignIn(
+	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
 			Email:         input.Email,
 			Password:      input.Password,
@@ -56,8 +56,9 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 		return
 	}
 	result = &data.SignInResponse{
-		AccessToken: accessToken,
-		Expires:     accessExpires,
+		AccessToken:          accessToken,
+		Expires:              accessExpires,
+		ActivateAccountToken: activateAccountToken,
 	}
 	return
 }
@@ -89,7 +90,7 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 	}
 
 	// Execute the service
-	accessToken, accessExpires, errCode, err := controller.Service.SignIn(
+	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
 			PhoneNumber:   input.PhoneNumber,
 			Password:      input.Password,
@@ -101,8 +102,9 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 		return
 	}
 	result = &data.SignInResponse{
-		AccessToken: accessToken,
-		Expires:     accessExpires,
+		AccessToken:          accessToken,
+		Expires:              accessExpires,
+		ActivateAccountToken: activateAccountToken,
 	}
 	return
 }
@@ -157,7 +159,8 @@ func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailReq
 	}
 
 	// Execute the service
-	errCode, err = controller.Service.SignUp(
+	var activateAccountToken string
+	activateAccountToken, errCode, err = controller.Service.SignUp(
 		&data.SignUpRequest{
 			Email:    input.Email,
 			Password: input.Password,
@@ -167,7 +170,8 @@ func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailReq
 		return
 	}
 	result = &data.SignUpResponse{
-		Message: "Account created! Please activate your account to start using your services.",
+		ActivateAccountToken: activateAccountToken,
+		Message:              "Account created! Please activate your account to start using your services.",
 	}
 	return
 }
@@ -199,7 +203,8 @@ func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPh
 	}
 
 	// Execute the service
-	errCode, err = controller.Service.SignUp(
+	var activateAccountToken string
+	activateAccountToken, errCode, err = controller.Service.SignUp(
 		&data.SignUpRequest{
 			PhoneNumber: input.PhoneNumber,
 			Password:    input.Password,
@@ -209,7 +214,8 @@ func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPh
 		return
 	}
 	result = &data.SignUpResponse{
-		Message: "Account created! Please activate your account to start using your services.",
+		ActivateAccountToken: activateAccountToken,
+		Message:              "Account created! Please activate your account to start using your services.",
 	}
 	return
 }

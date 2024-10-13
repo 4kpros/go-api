@@ -27,6 +27,8 @@ type GoogleUserProfileResponse struct {
 	FullName      string `json:"name"`
 	Language      string `json:"locale"`
 	Picture       string `json:"picture"`
+	Expires       int64  `json:"expires"`  // Unix time
+	IssuedAt      int64  `json:"issuedAt"` // Unix time
 }
 
 type FacebookAccessTokenResponse struct {
@@ -41,14 +43,14 @@ type FacebookDebugAccessTokenResponse struct {
 		Type              string   `json:"type"`
 		Application       string   `json:"application"`
 		DataAccessExpires int64    `json:"data_access_expires_at"`
-		Expires           int64    `json:"expires_at"`
+		Expires           int64    `json:"expires_at"` // Unix time
 		IsValid           bool     `json:"is_valid"`
 		Scopes            []string `json:"scopes"`
 	} `json:"data"`
 }
 
 type FacebookUserProfileResponse struct {
-	ID           string `json:"id"`
+	Id           string `json:"id"`
 	Email        string `json:"email"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
@@ -60,6 +62,8 @@ type FacebookUserProfileResponse struct {
 	PictureLarge *struct {
 		FacebookUserPictureResponse
 	} `json:"picture_large"`
+	DataAccessExpires int64 `json:"dataAccessExpires"` // Unix time
+	Expires           int64 `json:"expires"`           // Unix time
 }
 
 type FacebookUserPictureResponse struct {

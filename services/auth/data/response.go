@@ -4,13 +4,15 @@ import "time"
 
 // Login
 type SignInResponse struct {
-	AccessToken string     `json:"accessToken" required:"false" doc:"Access token" example:""`
-	Expires     *time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
+	AccessToken          string     `json:"accessToken" required:"false" doc:"Access token" example:""`
+	Expires              *time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
+	ActivateAccountToken string     `json:"activateAccountToken" required:"false" doc:"Activate account token" example:""`
 }
 
 // Register
 type SignUpResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+	ActivateAccountToken string `json:"activateAccountToken" required:"false" doc:"Activate account token" example:""`
+	Message              string `json:"message" required:"false" doc:"Message" example:""`
 }
 
 // Activate account

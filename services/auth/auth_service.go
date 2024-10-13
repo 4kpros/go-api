@@ -23,7 +23,7 @@ func NewAuthService(repository *AuthRepository) *AuthService {
 }
 
 // Login with email or phone number
-func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
+func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, activateAccountToken string, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
 	var errMessage string
@@ -47,73 +47,77 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 	}
 
 	// Check if account is activated
-	if !userFound.IsActivated {
-		randomCode := 0
-		randomCode, err = utils.GenerateRandomCode(5)
-		if err != nil {
-			errCode = http.StatusInternalServerError
-			err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
-			return
-		}
-		var jwtToken *types.JwtToken
-		token := ""
-		jwtToken, token, err = utils.EncodeJWTToken(
+	if userFound.IsActivated {
+		// Generate new token
+		var accessJwtToken *types.JwtToken
+		accessJwtToken, accessToken, err = utils.EncodeJWTToken(
 			&types.JwtToken{
 				UserId:   userFound.ID,
 				RoleId:   userFound.RoleId,
-				Platform: "*",
-				Device:   "*",
-				App:      "*",
-				Code:     randomCode,
+				Platform: device.Platform,
+				Device:   device.DeviceName,
+				App:      device.App,
 			},
-			constants.JWT_ISSUER_AUTH_ACTIVATE,
-			utils.NewExpiresDateDefault(),
+			constants.JWT_ISSUER_SESSION,
+			utils.NewExpiresDateSignIn(input.StayConnected),
 			config.Keys.JwtPrivateKey,
-			config.SetRedisString,
+			config.AppendToRedisStringList,
 		)
-		if err != nil || jwtToken == nil {
+		if err != nil || accessJwtToken == nil || len(accessToken) <= 0 {
 			errCode = http.StatusInternalServerError
 			err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
-			return
-		}
-		errCode = http.StatusForbidden
-		err = fmt.Errorf("%s", "Account found but not activated! Please activate your account to start using your services.")
-
-		fmt.Printf("\nGenerated code: %d \n", randomCode)
-		// Send code to email or phone number
-		if utils.IsEmailValid(input.Email) {
-			go utils.SendMail(
-				"Reset password",
-				fmt.Sprintf("Your code: %d \nYour token: %s", randomCode, token),
-				input.Email,
-			)
-		} else {
-			// TODO send code to phone number
 		}
 
+		accessExpires = &accessJwtToken.ExpiresAt.Time
+		return
+	}
+
+	// For non activated user account, generate new random code and token with
+	// issuer JWT_ISSUER_AUTH_ACTIVATE and send code to email or phone number
+	randomCode := 0
+	randomCode, err = utils.GenerateRandomCode(6)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
 		return
 	}
 
 	// Generate new token
-	jwtToken, token, err := utils.EncodeJWTToken(
+	var activateAccountJwtToken *types.JwtToken
+	activateAccountJwtToken, activateAccountToken, err = utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
-			Platform: device.Platform,
-			Device:   device.DeviceName,
-			App:      device.App,
+			Platform: "*",
+			Device:   "*",
+			App:      "*",
+			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_SESSION,
-		utils.NewExpiresDateSignIn(input.StayConnected),
+		constants.JWT_ISSUER_AUTH_ACTIVATE,
+		utils.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
-		config.AppendToRedisStringList,
+		config.SetRedisString,
 	)
-	if err != nil {
+	if err != nil || activateAccountJwtToken == nil || len(activateAccountToken) <= 0 {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
+		err = constants.HTTP_500_ERROR_MESSAGE("encode jwt token")
 	}
-	accessToken = token
-	accessExpires = &jwtToken.ExpiresAt.Time
+	errCode = http.StatusForbidden
+	err = fmt.Errorf("%s", "Account found but not activated! Please activate your account to start using your services.")
+
+	// Send code to email or phone number
+	if utils.IsEmailValid(input.Email) {
+		go utils.SendMail(
+			fmt.Sprintf("%s - Activate your account", config.Env.AppName),
+			fmt.Sprintf("The code to activate your account is %d", randomCode),
+			input.Email,
+		)
+	} else {
+		go utils.SendSMS(
+			fmt.Sprintf("The code to activate your account is %s.", randomCode, activateAccountJwtToken),
+			fmt.Sprintf("+%s", input.PhoneNumber),
+		)
+	}
 	return
 }
 
@@ -143,7 +147,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 	}
 
 	// Generate new token
-	jwtToken, token, err := utils.EncodeJWTToken(
+	jwtToken, accessToken, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -156,17 +160,16 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 		config.Keys.JwtPrivateKey,
 		config.AppendToRedisStringList,
 	)
-	if err != nil {
+	if err != nil || jwtToken == nil || len(accessToken) <= 0 {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
 	}
-	accessToken = token
 	accessExpires = &jwtToken.ExpiresAt.Time
 	return
 }
 
 // Register with email or phone number
-func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err error) {
+func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountToken string, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
 	var errMessage string
@@ -199,9 +202,19 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 		return
 	}
 
+	// Since the new user account is not activated, we generate code with
+	// issuer JWT_ISSUER_AUTH_ACTIVATE and send code to email or phone number
+	randomCode := 0
+	randomCode, err = utils.GenerateRandomCode(6)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		return
+	}
+
 	// Generate new token
-	randomCode, _ := utils.GenerateRandomCode(5)
-	jwtToken, token, err := utils.EncodeJWTToken(
+	var activateAccountJwtToken *types.JwtToken
+	activateAccountJwtToken, activateAccountToken, err = utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -215,21 +228,23 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (errCode int, err 
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
-	if err != nil || jwtToken == nil {
+	if err != nil || activateAccountJwtToken == nil || len(activateAccountToken) <= 0 {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		err = constants.HTTP_500_ERROR_MESSAGE("encode jwt token")
 	}
 
-	fmt.Printf("\nGenerated code: %d \n", randomCode)
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
 		go utils.SendMail(
-			"Reset password",
-			fmt.Sprintf("Your code: %d \nYour token: %s", randomCode, token),
+			fmt.Sprintf("%s - Activate your account", config.Env.AppName),
+			fmt.Sprintf("The code to activate your account is %d", randomCode),
 			input.Email,
 		)
 	} else {
-		// TODO send code to phone number
+		go utils.SendSMS(
+			fmt.Sprintf("The code to activate your account is %s.", randomCode, activateAccountJwtToken),
+			fmt.Sprintf("+%s", input.PhoneNumber),
+		)
 	}
 	return
 }
@@ -305,7 +320,13 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 
 	// Send welcome message
-	// TODO
+	if utils.IsEmailValid(userFound.Email) {
+		go utils.SendMail(
+			fmt.Sprintf("%s - Welcome", config.Env.AppName),
+			fmt.Sprintf("Welcome"),
+			userFound.Email,
+		)
+	}
 	return
 }
 
@@ -328,7 +349,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 	}
 
 	// Generate new random code
-	randomCode, err := utils.GenerateRandomCode(5)
+	randomCode, err := utils.GenerateRandomCode(6)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
@@ -355,16 +376,18 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 	}
 	token = newToken
 
-	fmt.Printf("\nGenerated code: %d \n", randomCode)
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
 		go utils.SendMail(
-			"Reset password",
-			fmt.Sprintf("Your code: %d", randomCode),
+			fmt.Sprintf("%s - Forgot your password", config.Env.AppName),
+			fmt.Sprintf("The code to reset your password is %d", randomCode),
 			input.Email,
 		)
 	} else {
-		// TODO send code to phone number
+		go utils.SendSMS(
+			fmt.Sprintf("The code to reset your password is %s.", randomCode, token),
+			fmt.Sprintf("+%s", input.PhoneNumber),
+		)
 	}
 	return
 }

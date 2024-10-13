@@ -23,8 +23,8 @@ func NewExpiresDateDefault() *time.Time {
 }
 
 // Returns the login expiration time for JWT.
-// With default ENV var, the JWT login expiration time is 24 hours
-// if stayConnected is true, otherwise it's 1 hour.
+// With default ENV var, the JWT login expiration time is
+// 30 days if stayConnected is true, otherwise it's 1 hour.
 func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
 	if stayConnected {
 		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresSignInStayConnected))

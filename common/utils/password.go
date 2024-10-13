@@ -20,14 +20,21 @@ const (
 
 // Generates a random numeric code of specified length.
 // Returns the generated code and an error if any.
-func GenerateRandomCode(length int) (code int, err error) {
-	code, err = strconv.Atoi(generateRandomValue(letterBytesCode, length))
-	return
+func GenerateRandomCode(length int) (int, error) {
+	safeLength := length
+	if safeLength <= 0 {
+		safeLength = 1
+	}
+	return strconv.Atoi(generateRandomValue(letterBytesCode, length))
 }
 
 // Returns a random password of the specified length.
 func GenerateRandomPassword(length int) string {
-	return generateRandomValue(letterBytes, length)
+	safeLength := length
+	if safeLength <= 0 {
+		safeLength = 1
+	}
+	return generateRandomValue(letterBytes, safeLength)
 }
 
 // Returns a random string of specified length, using provided characters.

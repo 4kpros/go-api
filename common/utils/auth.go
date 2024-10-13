@@ -46,6 +46,8 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	user.FullName, _ = payload.Claims["name"].(string)
 	user.Language, _ = payload.Claims["locale"].(string)
 	user.Picture, _ = payload.Claims["picture"].(string)
+	user.Expires = payload.Expires
+	user.IssuedAt = payload.IssuedAt
 	return user, nil
 }
 
@@ -55,11 +57,10 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 // Debug: https://graph.facebook.com/debug_token?input_token=YOUR_AUTH_TOKEN&access_token=YOUR_APP_ID|YOUR_CLIENT_SECRET
 // Profile: https://graph.facebook.com/me?fields=id,name,last_name,first_name,email,languages,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)&access_token=YOUR_AUT_TOKEN
 func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, error) {
+	// Retrieve token info
 	if len(token) <= 0 {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-
-	// Retrieve token info
 	debugResp := &types.FacebookDebugAccessTokenResponse{}
 	errDebug := HTTPGet(
 		fmt.Sprintf(
@@ -74,10 +75,16 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	if errDebug != nil {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-	// Validate claims
+
+	// Validate claims fields: AppId, Application, DataAccessExpires, Expires, IsValid
 	if !debugResp.Data.IsValid || debugResp.Data.AppId != config.Env.FacebookAppId || debugResp.Data.Application != config.Env.FacebookAppName {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
+	// Validate the scopes
+	if !IsFacebookLoginScopesValid(debugResp.Data.Scopes) {
+		return nil, fmt.Errorf("Invalid scopes! You need to enable these scopes: %s")
+	}
+
 	// Retrieve user info
 	userResp := &types.FacebookUserProfileResponse{}
 	secretProof, errSecretProof := EncodeHMAC_SHA256(token, config.Env.FacebookClientSecret)
@@ -96,5 +103,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	if errUser != nil {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
+	userResp.Expires = debugResp.Data.Expires
+	userResp.DataAccessExpires = debugResp.Data.DataAccessExpires
 	return userResp, nil
 }

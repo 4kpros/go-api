@@ -9,11 +9,11 @@ import (
 
 // Sends an email with the specified subject, message, and receiver.
 func SendMail(subject string, message string, receiver string) error {
-	return SendWithGmail(subject, message, receiver)
+	return sendMailWithGmail(subject, message, receiver)
 }
 
 // Sends an email using Gmail's SMTP server
-func SendWithGmail(subject string, message string, receiver string) error {
+func sendMailWithGmail(subject string, message string, receiver string) error {
 	to := []string{receiver}
 	msg := []byte(
 		fmt.Sprintf(
