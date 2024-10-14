@@ -12,7 +12,7 @@ type SignInWithEmailRequest struct {
 	StayConnected bool   `json:"stayConnected" required:"false" doc:"Stay connected" example:"false"`
 }
 type SignInWithPhoneNumberRequest struct {
-	PhoneNumber   uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber   uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 	Password      string `json:"password" required:"true" minLength:"8" maxLength:"30" doc:"Base64 encoded password" example:""`
 	StayConnected bool   `json:"stayConnected" required:"false" doc:"Stay connected" example:"false"`
 }
@@ -22,7 +22,7 @@ type SignInWithProviderRequest struct {
 }
 type SignInRequest struct {
 	Email         string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
-	PhoneNumber   uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber   uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 	Password      string `json:"password" required:"true" minLength:"8" maxLength:"30" doc:"Base64 encoded password" example:""`
 	StayConnected bool   `json:"stayConnected" required:"false" doc:"Stay connected" example:"false"`
 }
@@ -33,19 +33,19 @@ type SignUpWithEmailRequest struct {
 	Password string `json:"password" required:"true" minLength:"8" maxLength:"30" doc:"Base64 encoded password" example:""`
 }
 type SignUpWithPhoneNumberRequest struct {
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 	Password    string `json:"password" required:"true" minLength:"8" maxLength:"30" doc:"Base64 encoded password" example:""`
 }
 type SignUpRequest struct {
 	Email       string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 	Password    string `json:"password" required:"true" minLength:"8" maxLength:"30" doc:"Base64 encoded password" example:""`
 }
 
 // Activate account
 type ActivateAccountRequest struct {
 	Token string `json:"token" required:"true" minLength:"3" doc:"Received token on sign in or sign up" example:""`
-	Code  int    `json:"code" required:"true" minLength:"5" maxLength:"8" doc:"Received Code by email or phone number" example:""`
+	Code  int    `json:"code" required:"true" doc:"Received Code by email or phone number" example:""`
 }
 
 // Forgot password
@@ -53,15 +53,15 @@ type ForgotPasswordWithEmailInitRequest struct {
 	Email string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
 }
 type ForgotPasswordWithPhoneNumberInitRequest struct {
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 }
 type ForgotPasswordInitRequest struct {
 	Email       string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 }
 type ForgotPasswordCodeRequest struct {
 	Token string `json:"token" required:"true" minLength:"3" doc:"Received token on step 1" example:""`
-	Code  int    `json:"code" required:"true" minLength:"5" maxLength:"8" doc:"Received Code by email or phone number" example:""`
+	Code  int    `json:"code" required:"true" doc:"Received Code by email or phone number" example:""`
 }
 type ForgotPasswordNewPasswordRequest struct {
 	Token       string `json:"token" required:"true" minLength:"3" doc:"Received token on step 2" example:""`

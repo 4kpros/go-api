@@ -47,8 +47,15 @@ func Start() {
 	engine.ForwardedByClientIP = true
 	engine.SetTrustedProxies([]string{"127.0.0.1"})
 	ginGroup := engine.Group(config.Env.ApiGroup)
+
 	// OpenAPI documentation based on huma
 	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
+	// CUstom CreateHooks to remove $schema links
+	humaConfig.CreateHooks = []func(huma.Config) huma.Config{
+		func(c huma.Config) huma.Config {
+			return c
+		},
+	}
 	humaConfig.DocsPath = ""
 	humaConfig.Servers = []*huma.Server{
 		{URL: config.Env.ApiGroup},
@@ -68,12 +75,12 @@ func Start() {
 		middlewares.SecureHeadersMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
 	)
+
+	// Register endpoints
 	// Register endpoint for docs with support for custom template
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(*config.OpenAPITemplates.Scalar))
 	})
-
-	// Register endpoints
 	registerEndpoints(&humaApi)
 
 	// Start to listen

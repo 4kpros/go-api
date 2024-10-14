@@ -1,17 +1,17 @@
 package data
 
 type UserId struct {
-	Id int64 `json:"id" path:"id" required:"true" minLength:"1" doc:"User id" example:"1"`
+	Id int64 `json:"id" path:"id" required:"true" doc:"User id" example:"1"`
 }
 
 type CreateUserWithEmailRequest struct {
 	Email  string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
-	RoleId int64  `json:"roleId" required:"true" minLength:"3" doc:"RoleId id" example:"1"`
+	RoleId int64  `json:"roleId" required:"true" doc:"RoleId id" example:"1"`
 }
 
 type CreateUserWithPhoneNumberRequest struct {
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
-	RoleId      int64  `json:"roleId" required:"true" minLength:"3" doc:"RoleId id" example:"1"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
+	RoleId      int64  `json:"roleId" required:"true" doc:"RoleId id" example:"1"`
 }
 
 type UpdateUserInfoRequest struct {
@@ -23,7 +23,7 @@ type UpdateUserInfoRequest struct {
 
 type UpdateUserRequest struct {
 	Email       string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" minLength:"10" maxLength:"50" doc:"Phone number" example:"237690909090"`
-	RoleId      int64  `json:"roleId" required:"true" minLength:"3" doc:"RoleId id" example:"1"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
+	RoleId      int64  `json:"roleId" required:"true" doc:"RoleId id" example:"1"`
 	Language    string `json:"language" required:"false" minLength:"2" maxLength:"2" doc:"Language code with 2 letter" example:"en"`
 }
