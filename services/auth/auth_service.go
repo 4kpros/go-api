@@ -169,13 +169,19 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 			&model.User{
 				Provider:       input.Provider,
 				ProviderUserId: user.ProviderUserId,
+				SignInMethod:   constants.AUTH_LOGIN_METHOD_PROVIDER,
 			},
 		)
+		if err != nil {
+			errCode = http.StatusInternalServerError
+			err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
+			return
+		}
 		var userInfo *model.UserInfo
 		userInfo, err = service.Repository.CreateUserInfo(&user.UserInfo)
 		if err != nil {
 			errCode = http.StatusInternalServerError
-			err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
+			err = constants.HTTP_500_ERROR_MESSAGE("create user info on database")
 			return
 		}
 		userFound.UserInfo = *userInfo
@@ -231,6 +237,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 	userFound.Email = input.Email
 	userFound.PhoneNumber = input.PhoneNumber
 	userFound.Password = input.Password
+	userFound.SignInMethod = constants.AUTH_LOGIN_METHOD_DEFAULT
 	createdUser, err := service.Repository.Create(userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -315,26 +322,30 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		return
 	}
 
-	// Check if user exists
+	// Check if account is activated
 	userFound, err := service.Repository.GetById(jwtToken.UserId)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
 		return
 	}
-
-	// Check if account is activated
 	if userFound.IsActivated {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User account is already activated! Please sign in and start using our services.")
 		return
 	}
 
-	// Create user info
+	// Create user info and MFA
 	userInfo, err := service.Repository.CreateUserInfo(&model.UserInfo{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user")
+		err = constants.HTTP_500_ERROR_MESSAGE("create user info")
+		return
+	}
+	userMfa, err := service.Repository.CreateUserMfa(&model.UserMfa{})
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("create user MFA")
 		return
 	}
 
@@ -343,10 +354,13 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
 	userFound.UserInfoId = userInfo.ID
-	updatedUser, err := service.Repository.UpdateUser(userFound.ID, userFound)
+	userFound.UserInfo = *userInfo
+	userFound.UserMfaId = userMfa.ID
+	userFound.UserMfa = *userMfa
+	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update user")
+		err = constants.HTTP_500_ERROR_MESSAGE("update user" + err.Error())
 		return
 	}
 	activatedAt = updatedUser.ActivatedAt

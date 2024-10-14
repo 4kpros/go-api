@@ -17,7 +17,7 @@ func NewPermissionRepository(db *gorm.DB) *PermissionRepository {
 
 func (repository *PermissionRepository) Create(permission *model.Permission) (*model.Permission, error) {
 	result := *permission
-	return &result, repository.Db.Create(result).Error
+	return &result, repository.Db.Create(&result).Error
 }
 
 func (repository *PermissionRepository) Update(id int64, permission *model.Permission) (*model.Permission, error) {
@@ -39,29 +39,25 @@ func (repository *PermissionRepository) Update(id int64, permission *model.Permi
 }
 
 func (repository *PermissionRepository) Delete(id int64) (int64, error) {
-	permission := &model.Permission{}
-	result := repository.Db.Where("id = ?", id).Delete(permission)
+	result := repository.Db.Where("id = ?", id).Delete(&model.Permission{})
 	return result.RowsAffected, result.Error
 }
 
 func (repository *PermissionRepository) GetById(id int64) (*model.Permission, error) {
-	permission := &model.Permission{}
-	result := repository.Db.Where("id = ?", id).Limit(1).Find(permission)
-	return permission, result.Error
+	result := &model.Permission{}
+	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
 }
 
 func (repository *PermissionRepository) GetByRoleIdTable(roleId int64, table string) (*model.Permission, error) {
-	permission := &model.Permission{}
-	result := repository.Db.Where(
+	result := &model.Permission{}
+	return result, repository.Db.Where(
 		"role_id = ?", roleId,
 	).Where(
 		"table = ?", table,
-	).Limit(1).Find(permission)
-	return permission, result.Error
+	).Limit(1).Find(result).Error
 }
 
 func (repository *PermissionRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Permission, error) {
-	permissions := []model.Permission{}
-	result := repository.Db.Scopes(utils.PaginationScope(permissions, pagination, filter, repository.Db)).Find(permissions)
-	return permissions, result.Error
+	result := []model.Permission{}
+	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

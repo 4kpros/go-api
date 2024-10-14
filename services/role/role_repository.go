@@ -17,7 +17,7 @@ func NewRoleRepository(db *gorm.DB) *RoleRepository {
 
 func (repository *RoleRepository) Create(role *model.Role) (*model.Role, error) {
 	result := *role
-	return &result, repository.Db.Create(result).Error
+	return &result, repository.Db.Create(&result).Error
 }
 
 func (repository *RoleRepository) Update(id int64, role *model.Role) (*model.Role, error) {
@@ -31,25 +31,21 @@ func (repository *RoleRepository) Update(id int64, role *model.Role) (*model.Rol
 }
 
 func (repository *RoleRepository) Delete(id int64) (int64, error) {
-	role := &model.Role{}
-	result := repository.Db.Where("id = ?", id).Delete(role)
+	result := repository.Db.Where("id = ?", id).Delete(&model.Role{})
 	return result.RowsAffected, result.Error
 }
 
 func (repository *RoleRepository) GetById(id int64) (*model.Role, error) {
-	role := &model.Role{}
-	result := repository.Db.Where("id = ?", id).Limit(1).Find(role)
-	return role, result.Error
+	result := &model.Role{}
+	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
 }
 
 func (repository *RoleRepository) GetByName(name string) (*model.Role, error) {
-	role := &model.Role{}
-	result := repository.Db.Where("name = ?", name).Limit(1).Find(role)
-	return role, result.Error
+	result := &model.Role{}
+	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
 }
 
 func (repository *RoleRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
-	roleList := []model.Role{}
-	result := repository.Db.Scopes(utils.PaginationScope(roleList, pagination, filter, repository.Db)).Find(roleList)
-	return roleList, result.Error
+	result := []model.Role{}
+	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

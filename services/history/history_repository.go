@@ -17,11 +17,10 @@ func NewHistoryRepository(db *gorm.DB) *HistoryRepository {
 
 func (repository *HistoryRepository) Create(history *model.History) (*model.History, error) {
 	result := *history
-	return &result, repository.Db.Create(result).Error
+	return &result, repository.Db.Create(&result).Error
 }
 
 func (repository *HistoryRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
-	histories := []model.History{}
-	result := repository.Db.Scopes(utils.PaginationScope(histories, pagination, filter, repository.Db)).Find(histories)
-	return histories, result.Error
+	result := []model.History{}
+	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
