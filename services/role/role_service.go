@@ -99,8 +99,8 @@ func (service *RoleService) GetById(id int64) (role *model.Role, errCode int, er
 }
 
 // Return all roles with support for search, filter and pagination
-func (service *RoleService) GetAll(filter *types.Filter, pagination *types.Pagination) (roles []model.Role, errCode int, err error) {
-	roles, err = service.Repository.GetAll(filter, pagination)
+func (service *RoleService) GetAll(filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
+	roleList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get roles from database")

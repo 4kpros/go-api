@@ -56,14 +56,14 @@ func (controller *RoleController) GetById(input *data.RoleId) (result *model.Rol
 	return
 }
 
-func (controller *RoleController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.RolesResponse, errCode int, err error) {
+func (controller *RoleController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.RoleResponseList, errCode int, err error) {
 	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
-	roles, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
+	roleList, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.RolesResponse{
-		Data: roles,
+	result = &data.RoleResponseList{
+		Data: model.ToResponseList(roleList),
 	}
 	result.Filter = NewFilter
 	result.Pagination = newPagination

@@ -29,7 +29,7 @@ func RegisterEndpoints(
 			Summary:     "Create permission",
 			Description: "Create new permission for role. You will need the table name and set read, write, update and delete values",
 			Method:      http.MethodPost,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -150,11 +150,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-permissions",
+			OperationID: "get-permission-list",
 			Summary:     "Get all permissions",
 			Description: "Get all permissions with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -170,14 +170,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.PermissionsResponse
+			Body data.PermissionList
 		}, error) {
 			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.PermissionsResponse
+				Body data.PermissionList
 			}{Body: *result}, nil
 		},
 	)

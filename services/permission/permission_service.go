@@ -104,8 +104,8 @@ func (service *PermissionService) GetById(id int64) (permission *model.Permissio
 }
 
 // Return all permissions with support for search, filter and pagination
-func (service *PermissionService) GetAll(filter *types.Filter, pagination *types.Pagination) (permissions []model.Permission, errCode int, err error) {
-	permissions, err = service.Repository.GetAll(filter, pagination)
+func (service *PermissionService) GetAll(filter *types.Filter, pagination *types.Pagination) (permissionList []model.Permission, errCode int, err error) {
+	permissionList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get permissions from database")

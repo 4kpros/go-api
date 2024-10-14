@@ -42,7 +42,7 @@ func (repository *RoleRepository) GetByName(name string) (*model.Role, error) {
 }
 
 func (repository *RoleRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
-	roles := []model.Role{}
-	result := repository.Db.Scopes(utils.PaginationScope(roles, pagination, filter, repository.Db)).Find(roles)
-	return roles, result.Error
+	roleList := []model.Role{}
+	result := repository.Db.Scopes(utils.PaginationScope(roleList, pagination, filter, repository.Db)).Find(roleList)
+	return roleList, result.Error
 }

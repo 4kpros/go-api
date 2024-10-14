@@ -2,14 +2,38 @@ package model
 
 import (
 	"github.com/4kpros/go-api/common/types"
+	"github.com/4kpros/go-api/services/permission/data"
 )
 
 type Permission struct {
 	types.BaseGormModel
-	RoleId int64  `json:"roleId" doc:"Role id" example:"1"`
-	Table  string `json:"table" doc:"Table name" example:"history"`
-	Create bool   `json:"create" doc:"Create permission" example:""`
-	Read   bool   `json:"read" doc:"Read permission" example:""`
-	Update bool   `json:"update" doc:"Update permission" example:""`
-	Delete bool   `json:"delete" doc:"Delete permission" example:""`
+	RoleId int64  `gorm:"default:null"`
+	Table  string `gorm:"default:null"`
+	Create bool   `gorm:"default:false"`
+	Read   bool   `gorm:"default:false"`
+	Update bool   `gorm:"default:false"`
+	Delete bool   `gorm:"default:false"`
+}
+
+func (permission *Permission) ToResponse() *data.PermissionResponse {
+	resp := &data.PermissionResponse{}
+	resp.ID = permission.ID
+	resp.CreatedAt = permission.CreatedAt
+	resp.UpdatedAt = permission.UpdatedAt
+	resp.DeletedAt = permission.DeletedAt
+	resp.RoleId = permission.RoleId
+	resp.Table = permission.Table
+	resp.Create = permission.Create
+	resp.Read = permission.Read
+	resp.Update = permission.Update
+	resp.Delete = permission.Delete
+	return resp
+}
+
+func ToResponseList(permissionList []Permission) []data.PermissionResponse {
+	resp := make([]data.PermissionResponse, len(permissionList))
+	for index, permission := range permissionList {
+		resp[index] = *permission.ToResponse()
+	}
+	return resp
 }

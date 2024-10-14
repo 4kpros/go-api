@@ -67,14 +67,14 @@ func (controller *PermissionController) GetById(id int64) (result *model.Permiss
 	return
 }
 
-func (controller *PermissionController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.PermissionsResponse, errCode int, err error) {
+func (controller *PermissionController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.PermissionList, errCode int, err error) {
 	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
-	permissions, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
+	permissionList, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.PermissionsResponse{
-		Data: permissions,
+	result = &data.PermissionList{
+		Data: model.ToResponseList(permissionList),
 	}
 	result.Filter = NewFilter
 	result.Pagination = newPagination

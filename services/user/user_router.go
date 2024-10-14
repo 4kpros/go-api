@@ -41,14 +41,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.UserWithEmailRequest
+				Body data.CreateUserWithEmailRequest
 			},
-		) (*struct{ Body model.User }, error) {
+		) (*struct{ Body data.UserResponse }, error) {
 			result, errCode, err := controller.CreateWithEmail(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -72,14 +72,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.UserWithPhoneNumberRequest
+				Body data.CreateUserWithPhoneNumberRequest
 			},
-		) (*struct{ Body model.User }, error) {
+		) (*struct{ Body data.UserResponse }, error) {
 			result, errCode, err := controller.CreateWithPhoneNumber(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -104,9 +104,9 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.UserId
-				Body data.UserRequest
+				Body data.UpdateUserRequest
 			},
-		) (*struct{ Body model.User }, error) {
+		) (*struct{ Body data.UserResponse }, error) {
 			inputFormatted := &model.User{
 				Email:       input.Body.Email,
 				PhoneNumber: input.Body.PhoneNumber,
@@ -118,7 +118,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -143,9 +143,9 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.UserId
-				Body data.UserInfoRequest
+				Body data.UpdateUserInfoRequest
 			},
-		) (*struct{ Body model.UserInfo }, error) {
+		) (*struct{ Body data.UserInfoResponse }, error) {
 			inputFormatted := &model.UserInfo{
 				UserName:  input.Body.UserName,
 				FirstName: input.Body.FirstName,
@@ -157,7 +157,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.UserInfo }{Body: *result}, nil
+			return &struct{ Body data.UserInfoResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -214,12 +214,12 @@ func RegisterEndpoints(
 			input *struct {
 				data.UserId
 			},
-		) (*struct{ Body model.User }, error) {
+		) (*struct{ Body data.UserResponse }, error) {
 			result, errCode, err := controller.GetById(&input.UserId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -227,11 +227,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-users",
+			OperationID: "get-user-list",
 			Summary:     "Get all users",
 			Description: "Get all users with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -247,14 +247,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.UsersResponse
+			Body data.UserResponseList
 		}, error) {
 			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.UsersResponse
+				Body data.UserResponseList
 			}{Body: *result}, nil
 		},
 	)

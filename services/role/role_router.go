@@ -29,7 +29,7 @@ func RegisterEndpoints(
 			Summary:     "Create role",
 			Description: "Create new role by providing name and description and return created object. The name role should be unique.",
 			Method:      http.MethodPost,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -43,12 +43,12 @@ func RegisterEndpoints(
 			input *struct {
 				Body data.RoleRequest
 			},
-		) (*struct{ Body model.Role }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.Create(&input.Body)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -75,7 +75,7 @@ func RegisterEndpoints(
 				data.RoleId
 				Body data.RoleRequest
 			},
-		) (*struct{ Body model.Role }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			inputFormatted := &model.Role{
 				Name:        input.Body.Name,
 				Description: input.Body.Name,
@@ -85,7 +85,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -142,12 +142,12 @@ func RegisterEndpoints(
 			input *struct {
 				data.RoleId
 			},
-		) (*struct{ Body model.Role }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.GetById(&input.RoleId)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.Role }{Body: *result}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -155,11 +155,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-roles",
+			OperationID: "get-role-list",
 			Summary:     "Get all roles",
 			Description: "Get all roles with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -175,14 +175,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.RolesResponse
+			Body data.RoleResponseList
 		}, error) {
 			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.RolesResponse
+				Body data.RoleResponseList
 			}{Body: *result}, nil
 		},
 	)

@@ -132,8 +132,8 @@ func (service *UserService) GetUserInfoById(id int64) (userInfo *model.UserInfo,
 }
 
 // Return all users with support for search, filter and pagination
-func (service *UserService) GetAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error) {
-	users, err = service.Repository.GetAll(filter, pagination)
+func (service *UserService) GetAll(filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
+	userList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get users from database")

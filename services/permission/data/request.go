@@ -1,21 +1,21 @@
 package data
 
 type PermissionId struct {
-	Id int64 `json:"id" path:"id" doc:"Permission id" example:"1"`
+	Id int64 `json:"id" path:"id" required:"true" minLength:"1" doc:"Permission id" example:"1"`
 }
 
 type CreatePermissionRequest struct {
-	RoleId int64  `json:"roleId" doc:"Role id" example:"1"`
-	Table  string `json:"table" required:"true" doc:"Table name" example:"history"`
-	Create bool   `json:"create" required:"false" doc:"Create permission" example:""`
-	Read   bool   `json:"read" required:"false" doc:"Read permission" example:""`
-	Update bool   `json:"update" required:"false" doc:"Update permission" example:""`
-	Delete bool   `json:"delete" required:"false" doc:"Delete permission" example:""`
+	RoleId int64  `json:"roleId" required:"true" minLength:"1" doc:"Role id" example:"1"`
+	Table  string `json:"table" required:"true" minLength:"2" doc:"Table name" example:"history"`
+	Create bool   `json:"create" required:"true" doc:"Create permission" example:"false"`
+	Read   bool   `json:"read" required:"true" doc:"Read permission" example:"false"`
+	Update bool   `json:"update" required:"true" doc:"Update permission" example:"false"`
+	Delete bool   `json:"delete" required:"true" doc:"Delete permission" example:"false"`
 }
 
 type UpdatePermissionRequest struct {
-	Create bool `json:"create" required:"false" doc:"Create permission" example:""`
-	Read   bool `json:"read" required:"false" doc:"Read permission" example:""`
-	Update bool `json:"update" required:"false" doc:"Update permission" example:""`
-	Delete bool `json:"delete" required:"false" doc:"Delete permission" example:""`
+	Create bool `json:"create" required:"true" doc:"Create permission" example:"false"`
+	Read   bool `json:"read" required:"true" doc:"Read permission" example:"false"`
+	Update bool `json:"update" required:"true" doc:"Update permission" example:"false"`
+	Delete bool `json:"delete" required:"true" doc:"Delete permission" example:"false"`
 }

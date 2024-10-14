@@ -2,7 +2,6 @@ package history
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/4kpros/go-api/common/constants"
@@ -24,11 +23,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-history",
-			Summary:     "Get history",
-			Description: "Get history with support for search, filter and pagination",
+			OperationID: "get-history-list",
+			Summary:     "Get history list",
+			Description: "Get history list with support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s", endpointConfig.Group),
+			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -44,14 +43,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.HistoriesResponse
+			Body data.HistoryList
 		}, error) {
 			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.HistoriesResponse
+				Body data.HistoryList
 			}{Body: *result}, nil
 		},
 	)

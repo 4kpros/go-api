@@ -25,15 +25,15 @@ func (controller *HistoryController) Create(input *model.History) (result *model
 	return
 }
 
-func (controller *HistoryController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.HistoriesResponse, errCode int, err error) {
+func (controller *HistoryController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.HistoryList, errCode int, err error) {
 	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
 	var histories []model.History
 	histories, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.HistoriesResponse{
-		Data: histories,
+	result = &data.HistoryList{
+		Data: model.ToResponseList(histories),
 	}
 	result.Filter = NewFilter
 	result.Pagination = newPagination

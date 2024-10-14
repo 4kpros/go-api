@@ -4,34 +4,34 @@ import "time"
 
 // Login
 type SignInResponse struct {
-	AccessToken          string     `json:"accessToken" required:"false" doc:"Access token" example:""`
-	Expires              *time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
-	ActivateAccountToken string     `json:"activateAccountToken" required:"false" doc:"Activate account token" example:""`
+	AccessToken          string     `json:"accessToken" required:"false" doc:"Access token"`
+	Expires              *time.Time `json:"expires" required:"false" doc:"Access token expiration date time"`
+	ActivateAccountToken string     `json:"activateAccountToken" required:"false" doc:"Token to account token"`
 }
 
 // Register
 type SignUpResponse struct {
-	ActivateAccountToken string `json:"activateAccountToken" required:"false" doc:"Activate account token" example:""`
-	Message              string `json:"message" required:"false" doc:"Message" example:""`
+	ActivateAccountToken string `json:"activateAccountToken" required:"false" doc:"Token to account token"`
+	Message              string `json:"message" required:"false" doc:"Response message"`
 }
 
 // Activate account
 type ActivateAccountResponse struct {
-	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Account activation date time" example:""`
+	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Account activation date time"`
 }
 
 // Forgot password
 type ForgotPasswordInitResponse struct {
-	Token string `json:"token" required:"false" doc:"Token used to validate code" example:""`
+	Token string `json:"token" required:"false" doc:"Token used to validate code"`
 }
 type ForgotPasswordCodeResponse struct {
-	Token string `json:"token" required:"false" doc:"Token used to set new password" example:""`
+	Token string `json:"token" required:"false" doc:"Token used to set new password"`
 }
 type ForgotPasswordNewPasswordResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+	Message string `json:"message" required:"false" doc:"Response message"`
 }
 
 // Logout
 type SignOutResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+	Message string `json:"message" required:"false" doc:"Response message"`
 }

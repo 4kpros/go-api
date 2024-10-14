@@ -64,7 +64,7 @@ func (repository *UserRepository) GetByProvider(provider string, providerUserId 
 }
 
 func (repository *UserRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
-	users := []model.User{}
-	result := repository.Db.Scopes(utils.PaginationScope(users, pagination, filter, repository.Db)).Find(users)
-	return users, result.Error
+	userList := []model.User{}
+	result := repository.Db.Scopes(utils.PaginationScope(userList, pagination, filter, repository.Db)).Find(userList)
+	return userList, result.Error
 }

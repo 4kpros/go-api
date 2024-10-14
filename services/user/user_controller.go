@@ -15,7 +15,7 @@ func NewUserController(service *UserService) *UserController {
 	return &UserController{Service: service}
 }
 
-func (controller *UserController) CreateWithEmail(input *data.UserWithEmailRequest) (result *model.User, errCode int, err error) {
+func (controller *UserController) CreateWithEmail(input *data.CreateUserWithEmailRequest) (result *model.User, errCode int, err error) {
 	user := &model.User{
 		Email:  input.Email,
 		RoleId: input.RoleId,
@@ -24,7 +24,7 @@ func (controller *UserController) CreateWithEmail(input *data.UserWithEmailReque
 	return
 }
 
-func (controller *UserController) CreateWithPhoneNumber(input *data.UserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
+func (controller *UserController) CreateWithPhoneNumber(input *data.CreateUserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
 	user := &model.User{
 		PhoneNumber: input.PhoneNumber,
 		RoleId:      input.RoleId,
@@ -67,14 +67,14 @@ func (controller *UserController) GetById(input *data.UserId) (result *model.Use
 	return
 }
 
-func (controller *UserController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UsersResponse, errCode int, err error) {
+func (controller *UserController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.UserResponseList, errCode int, err error) {
 	newPagination, NewFilter := utils.GetPaginationFiltersFromQuery(filter, pagination)
-	users, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
+	userList, errCode, err := controller.Service.GetAll(NewFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.UsersResponse{
-		Data: users,
+	result = &data.UserResponseList{
+		Data: model.ToResponseList(userList),
 	}
 	result.Filter = NewFilter
 	result.Pagination = newPagination
