@@ -15,6 +15,12 @@ func IsAuthProviderValid(provider string) bool {
 	return slices.Contains(constants.AUTH_PROVIDERS, provider)
 }
 
+// Validate the multiple authentication method name (e.g., email, phone, authenticator)
+// and return a boolean indicating success or failure.
+func IsMfaMethodValid(mfaMethod string) bool {
+	return slices.Contains(constants.AUTH_MFA_METHODS, mfaMethod)
+}
+
 // Validate the phone number and return a boolean indicating success or failure.
 func IsPhoneNumberValid(phoneNumber uint64) bool {
 	return phoneNumber > 1000000

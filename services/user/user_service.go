@@ -48,37 +48,27 @@ func (service *UserService) Create(user *model.User) (result *model.User, errCod
 	// Create new user
 	randomPassword := utils.GenerateRandomPassword(8)
 	newUser := &model.User{
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		Password:    randomPassword,
-		RoleId:      user.RoleId,
+		Email:        user.Email,
+		PhoneNumber:  user.PhoneNumber,
+		RoleId:       user.RoleId,
+		Password:     randomPassword,
+		SignInMethod: constants.AUTH_LOGIN_METHOD_DEFAULT,
 	}
-	err = service.Repository.Create(newUser)
+	result, err = service.Repository.Create(newUser)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
 		return
 	}
-	result = newUser
 	return
 }
 
 // Update user
-func (service *UserService) UpdateUser(user *model.User) (errCode int, err error) {
-	err = service.Repository.UpdateUser(user)
+func (service *UserService) UpdateUser(user *model.User) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdateUser(user.ID, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update user from database")
-	}
-	return
-}
-
-// Update info
-func (service *UserService) UpdateUserInfo(userInfo *model.UserInfo) (errCode int, err error) {
-	err = service.Repository.UpdateUserInfo(userInfo)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update user info from database")
 	}
 	return
 }
@@ -110,22 +100,6 @@ func (service *UserService) GetById(id int64) (user *model.User, errCode int, er
 	if user == nil {
 		errCode = http.StatusNotFound
 		err = constants.HTTP_404_ERROR_MESSAGE("User")
-		return
-	}
-	return
-}
-
-// Return user info with matching id
-func (service *UserService) GetUserInfoById(id int64) (userInfo *model.UserInfo, errCode int, err error) {
-	userInfo, err = service.Repository.GetUserInfoById(id)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("get user info by id from database")
-		return
-	}
-	if userInfo == nil {
-		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE("User info")
 		return
 	}
 	return

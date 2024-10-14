@@ -70,7 +70,6 @@ type Environment struct {
 	FacebookAppName       string `mapstructure:"FACEBOOK_APP_NAME"`
 	FacebookAppId         string `mapstructure:"FACEBOOK_APP_ID"`
 	FacebookClientSecret  string `mapstructure:"FACEBOOK_CLIENT_SECRET"`
-	FacebookApiBaseUrl    string `mapstructure:"FACEBOOK_API_BASE_URL"`
 	FacebookDebugTokenUrl string `mapstructure:"FACEBOOK_DEBUG_TOKEN_URL"`
 	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`
 }

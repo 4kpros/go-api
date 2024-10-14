@@ -17,8 +17,8 @@ func NewHistoryService(repository *HistoryRepository) *HistoryService {
 }
 
 // Create new history entry
-func (service *HistoryService) Create(history *model.History) (errCode int, err error) {
-	err = service.Repository.Create(history)
+func (service *HistoryService) Create(history *model.History) (result *model.History, errCode int, err error) {
+	result, err = service.Repository.Create(history)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create history entry from database")

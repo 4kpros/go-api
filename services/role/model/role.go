@@ -7,8 +7,7 @@ import (
 
 type Role struct {
 	types.BaseGormModel
-
-	Name        string `gorm:"default:null"`
+	Name        string `gorm:"unique;not null"`
 	Description string `gorm:"default:null"`
 }
 

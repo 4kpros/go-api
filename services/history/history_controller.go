@@ -16,12 +16,7 @@ func NewHistoryController(service *HistoryService) *HistoryController {
 }
 
 func (controller *HistoryController) Create(input *model.History) (result *model.History, errCode int, err error) {
-	history := *input
-	errCode, err = controller.Service.Create(&history)
-	if err != nil {
-		return
-	}
-	result = &history
+	result, errCode, err = controller.Service.Create(input)
 	return
 }
 

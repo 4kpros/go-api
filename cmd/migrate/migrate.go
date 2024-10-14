@@ -17,7 +17,6 @@ func Start() {
 			&roleModel.Role{},
 			&permissionModel.Permission{},
 			&userModel.User{},
-			// Add others models here
 		),
 	)
 }

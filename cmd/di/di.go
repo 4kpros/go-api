@@ -6,16 +6,18 @@ import (
 	"github.com/4kpros/go-api/services/auth"
 	"github.com/4kpros/go-api/services/history"
 	"github.com/4kpros/go-api/services/permission"
+	"github.com/4kpros/go-api/services/profile"
 	"github.com/4kpros/go-api/services/role"
 	"github.com/4kpros/go-api/services/user"
 )
 
 // Inject all dependencies
 func InjectDependencies() {
+	var userRepo = user.NewUserRepository(config.DB)
 	// Auth
 	api.Controllers.AuthController = auth.NewAuthController(
 		auth.NewAuthService(
-			auth.NewAuthRepository(config.DB),
+			userRepo,
 		),
 	)
 	// History
@@ -39,7 +41,13 @@ func InjectDependencies() {
 	// User
 	api.Controllers.UserController = user.NewUserController(
 		user.NewUserService(
-			user.NewUserRepository(config.DB),
+			userRepo,
+		),
+	)
+	// Profile
+	api.Controllers.ProfileController = profile.NewProfileController(
+		profile.NewProfileService(
+			userRepo,
 		),
 	)
 }

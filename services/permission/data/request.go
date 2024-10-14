@@ -1,7 +1,7 @@
 package data
 
 type PermissionId struct {
-	Id int64 `json:"id" path:"id" required:"true" doc:"Permission id" example:"1"`
+	ID int64 `json:"id" path:"id" required:"true" doc:"Permission id" example:"1"`
 }
 
 type CreatePermissionRequest struct {

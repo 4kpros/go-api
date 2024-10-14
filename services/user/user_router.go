@@ -110,54 +110,14 @@ func RegisterEndpoints(
 			inputFormatted := &model.User{
 				Email:       input.Body.Email,
 				PhoneNumber: input.Body.PhoneNumber,
-				Language:    input.Body.Language,
 				RoleId:      input.Body.RoleId,
 			}
-			inputFormatted.ID = input.UserId.Id
+			inputFormatted.ID = input.UserId.ID
 			result, errCode, err := controller.UpdateUser(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
-		},
-	)
-
-	// Update user info with id
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID: "update-user-info",
-			Summary:     "Update user info",
-			Description: "Update existing user info with matching id and return the new user object.",
-			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/info/:id", endpointConfig.Group),
-			Tags:        endpointConfig.Tag,
-			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
-			},
-			MaxBodyBytes:  1024, // 1 KiB
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				data.UserId
-				Body data.UpdateUserInfoRequest
-			},
-		) (*struct{ Body data.UserInfoResponse }, error) {
-			inputFormatted := &model.UserInfo{
-				UserName:  input.Body.UserName,
-				FirstName: input.Body.FirstName,
-				LastName:  input.Body.LastName,
-				Address:   input.Body.Address,
-			}
-			inputFormatted.ID = input.UserId.Id
-			result, errCode, err := controller.UpdateUserInfo(inputFormatted)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body data.UserInfoResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -184,7 +144,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			result, errCode, err := controller.Delete(&input.UserId)
+			result, errCode, err := controller.Delete(input.UserId.ID)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -215,7 +175,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			result, errCode, err := controller.GetById(&input.UserId)
+			result, errCode, err := controller.GetById(input.UserId.ID)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

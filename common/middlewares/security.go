@@ -33,7 +33,7 @@ func SecureHeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)
 
 		// Check for allowed hosts
 		if !isOriginKnown(ctx.Host()) {
-			errMessage := "Our system detected your request as malicious! Please fix that before."
+			errMessage := config.Env.AllowedHosts + " Our system detected your request as malicious! Please fix that before."
 			huma.WriteErr(api, ctx, http.StatusForbidden, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}

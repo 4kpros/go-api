@@ -15,55 +15,36 @@ func NewUserController(service *UserService) *UserController {
 	return &UserController{Service: service}
 }
 
-func (controller *UserController) CreateWithEmail(input *data.CreateUserWithEmailRequest) (result *model.User, errCode int, err error) {
+func (controller *UserController) CreateWithEmail(data *data.CreateUserWithEmailRequest) (result *model.User, errCode int, err error) {
 	user := &model.User{
-		Email:  input.Email,
-		RoleId: input.RoleId,
+		Email:  data.Email,
+		RoleId: data.RoleId,
 	}
 	result, errCode, err = controller.Service.Create(user)
 	return
 }
 
-func (controller *UserController) CreateWithPhoneNumber(input *data.CreateUserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
+func (controller *UserController) CreateWithPhoneNumber(data *data.CreateUserWithPhoneNumberRequest) (result *model.User, errCode int, err error) {
 	user := &model.User{
-		PhoneNumber: input.PhoneNumber,
-		RoleId:      input.RoleId,
+		PhoneNumber: data.PhoneNumber,
+		RoleId:      data.RoleId,
 	}
 	result, errCode, err = controller.Service.Create(user)
 	return
 }
 
-func (controller *UserController) UpdateUser(input *model.User) (result *model.User, errCode int, err error) {
-	user := *input
-	errCode, err = controller.Service.UpdateUser(&user)
-	if err != nil {
-		return
-	}
-	result = &user
+func (controller *UserController) UpdateUser(user *model.User) (result *model.User, errCode int, err error) {
+	result, errCode, err = controller.Service.UpdateUser(user)
 	return
 }
 
-func (controller *UserController) UpdateUserInfo(input *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
-	userInfo := *input
-	errCode, err = controller.Service.UpdateUserInfo(&userInfo)
-	if err != nil {
-		return
-	}
-	result = &userInfo
+func (controller *UserController) Delete(id int64) (result int64, errCode int, err error) {
+	result, errCode, err = controller.Service.Delete(id)
 	return
 }
 
-func (controller *UserController) Delete(input *data.UserId) (result int64, errCode int, err error) {
-	result, errCode, err = controller.Service.Delete(input.Id)
-	return
-}
-
-func (controller *UserController) GetById(input *data.UserId) (result *model.User, errCode int, err error) {
-	user, errCode, err := controller.Service.GetById(input.Id)
-	if err != nil {
-		return
-	}
-	result = user
+func (controller *UserController) GetById(id int64) (result *model.User, errCode int, err error) {
+	result, errCode, err = controller.Service.GetById(id)
 	return
 }
 

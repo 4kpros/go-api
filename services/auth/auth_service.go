@@ -11,14 +11,15 @@ import (
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/config"
 	"github.com/4kpros/go-api/services/auth/data"
+	"github.com/4kpros/go-api/services/user"
 	"github.com/4kpros/go-api/services/user/model"
 )
 
 type AuthService struct {
-	Repository *AuthRepository
+	Repository *user.UserRepository
 }
 
-func NewAuthService(repository *AuthRepository) *AuthService {
+func NewAuthService(repository *user.UserRepository) *AuthService {
 	return &AuthService{Repository: repository}
 }
 
@@ -114,8 +115,8 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 		)
 	} else {
 		go utils.SendSMS(
-			fmt.Sprintf("The code to activate your account is %s.", randomCode, activateAccountJwtToken),
-			fmt.Sprintf("+%s", input.PhoneNumber),
+			fmt.Sprintf("The code to activate your account is %d.", randomCode),
+			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
 	}
 	return
@@ -124,29 +125,64 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 // Login with provider like Google and Facebook
 func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Validate provider token and update user
-	providerUserId := "Test"
-	if len(providerUserId) <= 0 {
+	var user = &model.User{}
+	var expires int64 = 0
+	if input.Provider == constants.AUTH_PROVIDER_GOOGLE {
+		googleUser, errGoogleUser := utils.VerifyGoogleIDToken(input.Token)
+		if errGoogleUser != nil || googleUser == nil || len(googleUser.ID) <= 0 {
+			errCode = http.StatusUnprocessableEntity
+			err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
+			return
+		}
+		if googleUser.Expires <= time.Now().Unix() {
+			errCode = http.StatusUnprocessableEntity
+			err = fmt.Errorf("%s", "Token already expired! Please enter valid information.")
+			return
+		}
+		expires = googleUser.Expires
+		user.FromGoogleUser(googleUser)
+	} else if input.Provider == constants.AUTH_PROVIDER_FACEBOOK {
+		facebookUser, errFacebookUser := utils.VerifyFacebookToken(input.Token)
+		if errFacebookUser != nil || facebookUser == nil || len(facebookUser.ID) <= 0 {
+			errCode = http.StatusUnprocessableEntity
+			err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
+			return
+		}
+		if facebookUser.Expires <= time.Now().Unix() {
+			errCode = http.StatusUnprocessableEntity
+			err = fmt.Errorf("%s", "Token already expired! Please enter valid information.")
+			return
+		}
+		expires = facebookUser.Expires
+		user.FromFacebookUser(facebookUser)
+	} else {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
 		return
 	}
+	user.Provider = input.Provider
 
 	// Save user if it's not in database
-	userFound, err := service.Repository.GetByProvider(input.Provider, providerUserId)
-	if err != nil || userFound == nil || userFound.Provider != input.Provider {
-		user := &model.User{
-			Provider:       input.Provider,
-			ProviderUserId: providerUserId,
-		}
-		err = service.Repository.Create(user)
+	userFound, err := service.Repository.GetByProvider(input.Provider, user.ProviderUserId)
+	if err != nil || userFound == nil {
+		userFound, err = service.Repository.Create(
+			&model.User{
+				Provider:       input.Provider,
+				ProviderUserId: user.ProviderUserId,
+			},
+		)
+		var userInfo *model.UserInfo
+		userInfo, err = service.Repository.CreateUserInfo(&user.UserInfo)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
 			return
 		}
+		userFound.UserInfo = *userInfo
 	}
 
 	// Generate new token
+	expiresTime := time.Unix(expires, 0)
 	jwtToken, accessToken, err := utils.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
@@ -156,7 +192,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 			App:      device.App,
 		},
 		constants.JWT_ISSUER_SESSION,
-		utils.NewExpiresDateSignIn(true),
+		&expiresTime,
 		config.Keys.JwtPrivateKey,
 		config.AppendToRedisStringList,
 	)
@@ -195,7 +231,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 	userFound.Email = input.Email
 	userFound.PhoneNumber = input.PhoneNumber
 	userFound.Password = input.Password
-	err = service.Repository.Create(userFound)
+	createdUser, err := service.Repository.Create(userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
@@ -216,8 +252,8 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 	var activateAccountJwtToken *types.JwtToken
 	activateAccountJwtToken, activateAccountToken, err = utils.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserId:   createdUser.ID,
+			RoleId:   createdUser.RoleId,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -242,8 +278,8 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 		)
 	} else {
 		go utils.SendSMS(
-			fmt.Sprintf("The code to activate your account is %s.", randomCode, activateAccountJwtToken),
-			fmt.Sprintf("+%s", input.PhoneNumber),
+			fmt.Sprintf("The code to activate your account is %d.", randomCode),
+			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
 	}
 	return
@@ -295,8 +331,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	}
 
 	// Create user info
-	userInfo := &model.UserInfo{}
-	err = service.Repository.CreateUserInfo(userInfo)
+	userInfo, err := service.Repository.CreateUserInfo(&model.UserInfo{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user")
@@ -308,23 +343,23 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
 	userFound.UserInfoId = userInfo.ID
-	err = service.Repository.Update(userFound)
+	updatedUser, err := service.Repository.UpdateUser(userFound.ID, userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update user")
 		return
 	}
-	activatedAt = userFound.ActivatedAt
+	activatedAt = updatedUser.ActivatedAt
 
 	// Invalidate token
 	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
 
 	// Send welcome message
-	if utils.IsEmailValid(userFound.Email) {
+	if utils.IsEmailValid(updatedUser.Email) {
 		go utils.SendMail(
 			fmt.Sprintf("%s - Welcome", config.Env.AppName),
 			fmt.Sprintf("Welcome"),
-			userFound.Email,
+			updatedUser.Email,
 		)
 	}
 	return
@@ -385,8 +420,8 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 		)
 	} else {
 		go utils.SendSMS(
-			fmt.Sprintf("The code to reset your password is %s.", randomCode, token),
-			fmt.Sprintf("+%s", input.PhoneNumber),
+			fmt.Sprintf("The code to reset your password is %d.", randomCode),
+			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
 	}
 	return
@@ -485,7 +520,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 	}
 
 	// Update user password
-	userUpdated, err := service.Repository.UpdatePasswordById(jwtToken.UserId, input.NewPassword)
+	userUpdated, err := service.Repository.UpdateUserPassword(jwtToken.UserId, input.NewPassword)
 	if err != nil || userUpdated == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update password")

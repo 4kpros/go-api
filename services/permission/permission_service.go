@@ -18,7 +18,7 @@ func NewPermissionService(repository *PermissionRepository) *PermissionService {
 }
 
 // Create new permission
-func (service *PermissionService) Create(permission *model.Permission) (errCode int, err error) {
+func (service *PermissionService) Create(permission *model.Permission) (result *model.Permission, errCode int, err error) {
 	// Check if permission already exists(unique by group of "roleId" and "table")
 	foundPermission, err := service.Repository.GetByRoleIdTable(permission.RoleId, permission.Table)
 	if err != nil {
@@ -33,7 +33,7 @@ func (service *PermissionService) Create(permission *model.Permission) (errCode 
 	}
 
 	// Insert permission
-	err = service.Repository.Create(permission)
+	result, err = service.Repository.Create(permission)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create permission from database")
@@ -43,7 +43,7 @@ func (service *PermissionService) Create(permission *model.Permission) (errCode 
 }
 
 // Update permission
-func (service *PermissionService) Update(id int64, input *data.UpdatePermissionRequest) (errCode int, err error) {
+func (service *PermissionService) Update(id int64, data *data.UpdatePermissionRequest) (result *model.Permission, errCode int, err error) {
 	// Check if permission already exists(unique by group of "roleId" and "table")
 	foundPermission, err := service.Repository.GetById(id)
 	if err != nil {
@@ -58,11 +58,11 @@ func (service *PermissionService) Update(id int64, input *data.UpdatePermissionR
 	}
 
 	// Update only necessary fields
-	foundPermission.Read = input.Read
-	foundPermission.Create = input.Create
-	foundPermission.Update = input.Update
-	foundPermission.Delete = input.Delete
-	err = service.Repository.Update(foundPermission)
+	foundPermission.Read = data.Read
+	foundPermission.Create = data.Create
+	foundPermission.Update = data.Update
+	foundPermission.Delete = data.Delete
+	result, err = service.Repository.Update(id, foundPermission)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update permission from database")
@@ -88,14 +88,14 @@ func (service *PermissionService) Delete(id int64) (affectedRows int64, errCode 
 }
 
 // Return permission with matching id
-func (service *PermissionService) GetById(id int64) (permission *model.Permission, errCode int, err error) {
-	permission, err = service.Repository.GetById(id)
+func (service *PermissionService) GetById(id int64) (result *model.Permission, errCode int, err error) {
+	result, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get permission by id from database")
 		return
 	}
-	if permission == nil {
+	if result == nil {
 		errCode = http.StatusNotFound
 		err = constants.HTTP_404_ERROR_MESSAGE("Permission")
 		return
@@ -104,8 +104,8 @@ func (service *PermissionService) GetById(id int64) (permission *model.Permissio
 }
 
 // Return all permissions with support for search, filter and pagination
-func (service *PermissionService) GetAll(filter *types.Filter, pagination *types.Pagination) (permissionList []model.Permission, errCode int, err error) {
-	permissionList, err = service.Repository.GetAll(filter, pagination)
+func (service *PermissionService) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Permission, errCode int, err error) {
+	result, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get permissions from database")

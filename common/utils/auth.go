@@ -38,7 +38,7 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 
 	// Extract info
 	user := &types.GoogleUserProfileResponse{}
-	user.Id, _ = payload.Claims["sub"].(string)
+	user.ID, _ = payload.Claims["sub"].(string)
 	user.Email, _ = payload.Claims["email"].(string)
 	user.EmailVerified, _ = payload.Claims["email_verified"].(bool)
 	user.LastName, _ = payload.Claims["family_name"].(string)

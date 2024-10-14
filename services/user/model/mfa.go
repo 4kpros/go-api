@@ -5,17 +5,17 @@ import (
 	"github.com/4kpros/go-api/services/user/data"
 )
 
-type MFA struct {
+type UserMfa struct {
 	types.BaseGormModel
 	Email         bool `gorm:"default:false"`
 	PhoneNumber   bool `gorm:"default:false"`
 	Authenticator bool `gorm:"default:false"`
 }
 
-func (mfa *MFA) ToResponse() *data.MFAResponse {
-	mfaResp := &data.MFAResponse{}
-	mfaResp.Email = mfa.Email
-	mfaResp.PhoneNumber = mfa.PhoneNumber
-	mfaResp.Authenticator = mfa.Authenticator
-	return mfaResp
+func (userMfa *UserMfa) ToResponse() *data.UserMfaResponse {
+	userMfaResp := &data.UserMfaResponse{}
+	userMfaResp.Email = userMfa.Email
+	userMfaResp.PhoneNumber = userMfa.PhoneNumber
+	userMfaResp.Authenticator = userMfa.Authenticator
+	return userMfaResp
 }

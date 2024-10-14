@@ -12,6 +12,7 @@ type UserInfo struct {
 	LastName  string `gorm:"default:null"`
 	Address   string `gorm:"default:null"`
 	Image     string `gorm:"default:null"`
+	Language  string `gorm:"default:en"`
 }
 
 func (userInfo *UserInfo) ToResponse() *data.UserInfoResponse {
@@ -21,5 +22,6 @@ func (userInfo *UserInfo) ToResponse() *data.UserInfoResponse {
 	userInfoResp.LastName = userInfo.LastName
 	userInfoResp.Address = userInfo.Address
 	userInfoResp.Image = userInfo.Image
+	userInfoResp.Language = userInfo.Language
 	return userInfoResp
 }

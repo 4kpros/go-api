@@ -80,7 +80,7 @@ func RegisterEndpoints(
 				Name:        input.Body.Name,
 				Description: input.Body.Name,
 			}
-			inputFormatted.ID = input.RoleId.Id
+			inputFormatted.ID = input.RoleId.ID
 			result, errCode, err := controller.Update(inputFormatted)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)

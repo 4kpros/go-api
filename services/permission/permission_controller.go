@@ -24,7 +24,7 @@ func (controller *PermissionController) Create(input *data.CreatePermissionReque
 		Update: (*input).Update,
 		Delete: (*input).Update,
 	}
-	errCode, err = controller.Service.Create(&permission)
+	result, errCode, err = controller.Service.Create(&permission)
 	if err != nil {
 		return
 	}
@@ -33,17 +33,7 @@ func (controller *PermissionController) Create(input *data.CreatePermissionReque
 }
 
 func (controller *PermissionController) Update(id int64, input *data.UpdatePermissionRequest) (result *model.Permission, errCode int, err error) {
-	permission := model.Permission{
-		Read:   (*input).Read,
-		Create: (*input).Create,
-		Update: (*input).Update,
-		Delete: (*input).Update,
-	}
-	errCode, err = controller.Service.Update(id, input)
-	if err != nil {
-		return
-	}
-	result = &permission
+	result, errCode, err = controller.Service.Update(id, input)
 	return
 }
 
@@ -58,12 +48,7 @@ func (controller *PermissionController) Delete(id int64) (result int64, errCode 
 }
 
 func (controller *PermissionController) GetById(id int64) (result *model.Permission, errCode int, err error) {
-	var permission *model.Permission
-	permission, errCode, err = controller.Service.GetById(id)
-	if err != nil {
-		return
-	}
-	result = permission
+	result, errCode, err = controller.Service.GetById(id)
 	return
 }
 

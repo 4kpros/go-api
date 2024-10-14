@@ -17,7 +17,7 @@ func NewRoleService(repository *RoleRepository) *RoleService {
 }
 
 // Create new role
-func (service *RoleService) Create(role *model.Role) (errCode int, err error) {
+func (service *RoleService) Create(role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -32,7 +32,7 @@ func (service *RoleService) Create(role *model.Role) (errCode int, err error) {
 	}
 
 	// Insert role
-	err = service.Repository.Create(role)
+	result, err = service.Repository.Create(role)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create role from database")
@@ -42,7 +42,7 @@ func (service *RoleService) Create(role *model.Role) (errCode int, err error) {
 }
 
 // Update role
-func (service *RoleService) Update(role *model.Role) (errCode int, err error) {
+func (service *RoleService) Update(role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -57,7 +57,7 @@ func (service *RoleService) Update(role *model.Role) (errCode int, err error) {
 	}
 
 	// Update role
-	err = service.Repository.Update(role)
+	result, err = service.Repository.Update(role.ID, role)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update role from database")

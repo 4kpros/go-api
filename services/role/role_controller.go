@@ -20,26 +20,17 @@ func (controller *RoleController) Create(input *data.RoleRequest) (result *model
 		Name:        (*input).Name,
 		Description: (*input).Description,
 	}
-	errCode, err = controller.Service.Create(&role)
-	if err != nil {
-		return
-	}
-	result = &role
+	result, errCode, err = controller.Service.Create(&role)
 	return
 }
 
 func (controller *RoleController) Update(input *model.Role) (result *model.Role, errCode int, err error) {
-	role := *input
-	errCode, err = controller.Service.Update(&role)
-	if err != nil {
-		return
-	}
-	result = &role
+	result, errCode, err = controller.Service.Update(input)
 	return
 }
 
 func (controller *RoleController) Delete(input *data.RoleId) (result int64, errCode int, err error) {
-	affectedRows, errCode, err := controller.Service.Delete(input.Id)
+	affectedRows, errCode, err := controller.Service.Delete(input.ID)
 	if err != nil {
 		return
 	}
@@ -48,7 +39,7 @@ func (controller *RoleController) Delete(input *data.RoleId) (result int64, errC
 }
 
 func (controller *RoleController) GetById(input *data.RoleId) (result *model.Role, errCode int, err error) {
-	role, errCode, err := controller.Service.GetById(input.Id)
+	role, errCode, err := controller.Service.GetById(input.ID)
 	if err != nil {
 		return
 	}

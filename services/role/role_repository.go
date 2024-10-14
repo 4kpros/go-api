@@ -15,12 +15,19 @@ func NewRoleRepository(db *gorm.DB) *RoleRepository {
 	return &RoleRepository{Db: db}
 }
 
-func (repository *RoleRepository) Create(role *model.Role) error {
-	return repository.Db.Create(role).Error
+func (repository *RoleRepository) Create(role *model.Role) (*model.Role, error) {
+	result := *role
+	return &result, repository.Db.Create(result).Error
 }
 
-func (repository *RoleRepository) Update(role *model.Role) error {
-	return repository.Db.Model(role).Updates(role).Error
+func (repository *RoleRepository) Update(id int64, role *model.Role) (*model.Role, error) {
+	result := &model.Role{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"name":        role.Name,
+			"description": role.Description,
+		},
+	).Error
 }
 
 func (repository *RoleRepository) Delete(id int64) (int64, error) {

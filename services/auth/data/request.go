@@ -18,7 +18,7 @@ type SignInWithPhoneNumberRequest struct {
 }
 type SignInWithProviderRequest struct {
 	Provider string `json:"provider" required:"true" doc:"Provider" minLength:"2" maxLength:"30" example:"google"`
-	Token    string `json:"token" required:"true" doc:"Token" minLength:"3" maxLength:"30" example:""`
+	Token    string `json:"token" required:"true" doc:"Token" minLength:"3" example:""`
 }
 type SignInRequest struct {
 	Email         string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`

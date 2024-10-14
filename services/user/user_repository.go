@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/user/model"
@@ -15,16 +16,20 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{Db: db}
 }
 
-func (repository *UserRepository) Create(user *model.User) error {
-	return repository.Db.Create(user).Error
+func (repository *UserRepository) Create(user *model.User) (*model.User, error) {
+	result := *user
+	return &result, repository.Db.Create(result).Error
 }
 
-func (repository *UserRepository) UpdateUser(user *model.User) error {
-	return repository.Db.Model(user).Updates(user).Error
-}
-
-func (repository *UserRepository) UpdateUserInfo(userInfo *model.UserInfo) error {
-	return repository.Db.Model(userInfo).Updates(userInfo).Error
+func (repository *UserRepository) UpdateUser(id int64, user *model.User) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"email":        user.Email,
+			"phone_number": user.PhoneNumber,
+			"role_id":      user.RoleId,
+		},
+	).Error
 }
 
 func (repository *UserRepository) Delete(id int64) (int64, error) {
@@ -35,36 +40,85 @@ func (repository *UserRepository) Delete(id int64) (int64, error) {
 
 func (repository *UserRepository) GetById(id int64) (*model.User, error) {
 	user := &model.User{}
-	result := repository.Db.Where("id = ?", id).Limit(1).Find(user)
-	return user, result.Error
-}
-
-func (repository *UserRepository) GetUserInfoById(id int64) (*model.UserInfo, error) {
-	userInfo := &model.UserInfo{}
-	result := repository.Db.Where("id = ?", id).Limit(1).Find(userInfo)
-	return userInfo, result.Error
+	return user, repository.Db.Where("id = ?", id).Limit(1).Find(user).Error
 }
 
 func (repository *UserRepository) GetByEmail(email string) (*model.User, error) {
 	user := &model.User{}
-	result := repository.Db.Where("email = ? AND (provider is null OR provider = '')", email).Limit(1).Find(user)
-	return user, result.Error
+	return user, repository.Db.Where(
+		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_DEFAULT,
+	).Where(
+		"email = ?", email,
+	).Limit(1).Find(user).Error
 }
 
 func (repository *UserRepository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
 	user := &model.User{}
-	result := repository.Db.Where("phoneNumber = ? AND (provider is null OR provider = '')", phoneNumber).Limit(1).Find(user)
-	return user, result.Error
+	return user, repository.Db.Where(
+		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_DEFAULT,
+	).Where(
+		"phone_number = ?", phoneNumber,
+	).Limit(1).Find(user).Error
 }
 
 func (repository *UserRepository) GetByProvider(provider string, providerUserId string) (*model.User, error) {
 	user := &model.User{}
-	result := repository.Db.Where("provider = ? AND providerUserId = ?", provider, providerUserId).Limit(1).Find(user)
-	return user, result.Error
+	return user, repository.Db.Where(
+		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_PROVIDER,
+	).Where(
+		"provider = ?", provider,
+	).Where(
+		"provider_user_id = ?", providerUserId,
+	).Limit(1).Find(user).Error
 }
 
 func (repository *UserRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
 	userList := []model.User{}
-	result := repository.Db.Scopes(utils.PaginationScope(userList, pagination, filter, repository.Db)).Find(userList)
-	return userList, result.Error
+	return userList, repository.Db.Scopes(utils.PaginationScope(userList, pagination, filter, repository.Db)).Find(userList).Error
+}
+
+// ----------------- Authentication service -----------------
+
+func (repository *UserRepository) CreateUserInfo(userInfo *model.UserInfo) (*model.UserInfo, error) {
+	result := *userInfo
+	return &result, repository.Db.Create(userInfo).Error
+}
+func (repository *UserRepository) UpdateUserPassword(id int64, password string) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Update("password", password).Error
+}
+
+// ----------------- Profile service -----------------
+func (repository *UserRepository) UpdateProfile(id int64, user *model.User) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"email":        user.Email,
+			"phone_number": user.PhoneNumber,
+			"password":     user.Password,
+		},
+	).Error
+}
+
+func (repository *UserRepository) UpdateProfileInfo(id int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
+	result := &model.UserInfo{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"user_name":  userInfo.UserName,
+			"first_name": userInfo.FirstName,
+			"last_name":  userInfo.LastName,
+			"address":    userInfo.Address,
+			"image":      userInfo.Image,
+			"language":   userInfo.Language,
+		},
+	).Error
+}
+
+func (repository *UserRepository) UpdateProfileMfa(id int64, column string, value bool) (*model.UserMfa, error) {
+	result := &model.UserMfa{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"" + column: value,
+		},
+	).Error
 }
