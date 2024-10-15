@@ -1,7 +1,7 @@
 package data
 
 //
-// ------------------ User ------------------
+// ------------------ Profile ------------------
 //
 
 type UpdateProfileRequest struct {
@@ -25,7 +25,7 @@ type UpdateProfileMfaRequest struct {
 }
 
 //
-// ------------------ Admin ------------------
+// ------------------ User ------------------
 //
 type UserId struct {
 	ID int64 `json:"id" path:"id" required:"true" doc:"User id" example:"1"`

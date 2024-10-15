@@ -20,6 +20,7 @@ var contextGoogle = context.Background()
 // Refer to the official Google documentation for more details on token validation
 // https://developers.google.com/identity/openid-connect/openid-connect#discovery
 func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error) {
+	// Validate the token
 	if len(token) <= 0 {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
@@ -31,12 +32,11 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	if err != nil {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-	// Validate token expires time
 	if payload.Expires <= time.Now().Unix() {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 
-	// Extract info
+	// Retrieve info from claims
 	user := &types.GoogleUserProfileResponse{}
 	user.ID, _ = payload.Claims["sub"].(string)
 	user.Email, _ = payload.Claims["email"].(string)
@@ -76,13 +76,13 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 
-	// Validate claims fields: AppId, Application, DataAccessExpires, Expires, IsValid
+	// Validate AppId, Application, DataAccessExpires, Expires, IsValid
 	if !debugResp.Data.IsValid || debugResp.Data.AppId != config.Env.FacebookAppId || debugResp.Data.Application != config.Env.FacebookAppName {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-	// Validate the scopes
+	// Validate scopes
 	if !IsFacebookLoginScopesValid(debugResp.Data.Scopes) {
-		return nil, fmt.Errorf("Invalid scopes! You need to enable these scopes: %s")
+		return nil, fmt.Errorf("Invalid scopes! You need to enable these scopes: %v", constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES)
 	}
 
 	// Retrieve user info

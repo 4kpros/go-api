@@ -6,6 +6,7 @@ import (
 	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/middlewares"
 	"github.com/4kpros/go-api/config"
+	"github.com/4kpros/go-api/services/admin"
 	"github.com/4kpros/go-api/services/auth"
 	"github.com/4kpros/go-api/services/history"
 	"github.com/4kpros/go-api/services/permission"
@@ -25,6 +26,7 @@ type APIControllers struct {
 	PermissionController *permission.PermissionController
 	UserController       *user.UserController
 	ProfileController    *profile.ProfileController
+	AdminController      *admin.AdminController
 }
 
 var Controllers = &APIControllers{}
@@ -37,6 +39,7 @@ func registerEndpoints(humaApi *huma.API) {
 	permission.RegisterEndpoints(humaApi, Controllers.PermissionController)
 	user.RegisterEndpoints(humaApi, Controllers.UserController)
 	profile.RegisterEndpoints(humaApi, Controllers.ProfileController)
+	admin.RegisterEndpoints(humaApi, Controllers.AdminController)
 }
 
 // Set up and start the API: set up API documentation,

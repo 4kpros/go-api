@@ -18,18 +18,18 @@ func checkUserPermissions(repository *permission.PermissionRepository, jwtToken 
 	}
 
 	if jwtToken.Issuer == constants.JWT_ISSUER_SESSION {
-		foundedPermission, _ := repository.GetByRoleIdTable(jwtToken.RoleId, table)
-		if foundedPermission != nil && (foundedPermission.Table == "*" || foundedPermission.Table == table) && foundedPermission.RoleId == jwtToken.RoleId {
-			if permissionType == constants.PERMISSION_CREATE && foundedPermission.Create {
+		foundPermission, _ := repository.GetByRoleIdTable(jwtToken.RoleId, table)
+		if foundPermission != nil && (foundPermission.Table == "*" || foundPermission.Table == table) && foundPermission.RoleId == jwtToken.RoleId {
+			if permissionType == constants.PERMISSION_CREATE && foundPermission.Create {
 				return true
 			}
-			if permissionType == constants.PERMISSION_READ && foundedPermission.Read {
+			if permissionType == constants.PERMISSION_READ && foundPermission.Read {
 				return true
 			}
-			if permissionType == constants.PERMISSION_UPDATE && foundedPermission.Update {
+			if permissionType == constants.PERMISSION_UPDATE && foundPermission.Update {
 				return true
 			}
-			if permissionType == constants.PERMISSION_DELETE && foundedPermission.Delete {
+			if permissionType == constants.PERMISSION_DELETE && foundPermission.Delete {
 				return true
 			}
 		}
