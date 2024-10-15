@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/4kpros/go-api/common/constants"
+	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/user"
-	"github.com/4kpros/go-api/services/user/data"
 	"github.com/4kpros/go-api/services/user/model"
 )
 
@@ -20,12 +20,8 @@ func NewProfileService(repository *user.UserRepository) *ProfileService {
 }
 
 // Update profile
-func (service *ProfileService) UpdateProfile(id int64, data *data.UpdateProfileRequest) (result *model.User, errCode int, err error) {
-	result, err = service.Repository.UpdateProfile(id, &model.User{
-		Email:       data.Email,
-		PhoneNumber: data.PhoneNumber,
-		Password:    data.Password,
-	})
+func (service *ProfileService) UpdateProfile(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdateProfile(jwtToken.UserId, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update user from database")
@@ -34,16 +30,8 @@ func (service *ProfileService) UpdateProfile(id int64, data *data.UpdateProfileR
 }
 
 // Update profile info
-func (service *ProfileService) UpdateProfileInfo(id int64, data *data.UpdateProfileInfoRequest) (result *model.UserInfo, errCode int, err error) {
-	result, err = service.Repository.UpdateProfileInfo(id, &model.UserInfo{
-		UserName:  data.UserName,
-		FirstName: data.FirstName,
-		LastName:  data.LastName,
-		Address:   data.Address,
-		Image:     data.Image,
-		Language:  data.Language,
-	})
-
+func (service *ProfileService) UpdateProfileInfo(jwtToken *types.JwtToken, userInfo *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
+	result, err = service.Repository.UpdateProfileInfo(jwtToken.UserId, userInfo)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update profile info from database")
@@ -52,13 +40,13 @@ func (service *ProfileService) UpdateProfileInfo(id int64, data *data.UpdateProf
 }
 
 // Update profile MFA
-func (service *ProfileService) UpdateProfileMfa(id int64, data *data.UpdateProfileMfaRequest) (result *model.UserMfa, errCode int, err error) {
-	if !utils.IsMfaMethodValid(data.Method) {
+func (service *ProfileService) UpdateProfileMfa(jwtToken *types.JwtToken, method string, value bool) (result *model.UserMfa, errCode int, err error) {
+	if !utils.IsMfaMethodValid(method) {
 		errCode = http.StatusUnprocessableEntity
-		err = fmt.Errorf("Invalid MFA method! Please enter valid method.")
+		err = fmt.Errorf("%s", "Invalid MFA method! Please enter valid method.")
 		return
 	}
-	result, err = service.Repository.UpdateProfileMfa(id, data.Method, data.Value)
+	result, err = service.Repository.UpdateProfileMfa(jwtToken.UserId, method, value)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update profile MFA from database")
@@ -67,8 +55,8 @@ func (service *ProfileService) UpdateProfileMfa(id int64, data *data.UpdateProfi
 }
 
 // Delete user account
-func (service *ProfileService) Delete(id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id)
+func (service *ProfileService) DeleteProfile(jwtToken *types.JwtToken) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(jwtToken.UserId)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("delete account from database")
@@ -82,9 +70,9 @@ func (service *ProfileService) Delete(id int64) (affectedRows int64, errCode int
 	return
 }
 
-// Return profile info
-func (service *ProfileService) GetById(id int64) (user *model.User, errCode int, err error) {
-	user, err = service.Repository.GetById(id)
+// Return profile information
+func (service *ProfileService) GetProfile(jwtToken *types.JwtToken) (user *model.User, errCode int, err error) {
+	user, err = service.Repository.GetById(jwtToken.UserId)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get profile from database")

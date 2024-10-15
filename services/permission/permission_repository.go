@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/permission/model"
@@ -8,11 +9,12 @@ import (
 )
 
 type PermissionRepository struct {
-	Db *gorm.DB
+	Db                  *gorm.DB
+	PermissionTableName string
 }
 
 func NewPermissionRepository(db *gorm.DB) *PermissionRepository {
-	return &PermissionRepository{Db: db}
+	return &PermissionRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_PERMISSION}
 }
 
 func (repository *PermissionRepository) Create(permission *model.Permission) (*model.Permission, error) {
@@ -36,11 +38,6 @@ func (repository *PermissionRepository) Update(id int64, permission *model.Permi
 			"delete": permission.Delete,
 		},
 	).Error
-}
-
-func (repository *PermissionRepository) Delete(id int64) (int64, error) {
-	result := repository.Db.Where("id = ?", id).Delete(&model.Permission{})
-	return result.RowsAffected, result.Error
 }
 
 func (repository *PermissionRepository) GetById(id int64) (*model.Permission, error) {

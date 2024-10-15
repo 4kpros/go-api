@@ -82,7 +82,7 @@ func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 	} else if claims, ok := jwtToken.Claims.(*types.JwtToken); ok && jwtToken.Valid {
 		return claims, nil
 	}
-	return nil, constants.HTTP_401_ERROR_MESSAGE()
+	return nil, constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
 }
 
 // Validate the token by checking if it is cached.

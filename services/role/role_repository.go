@@ -1,6 +1,7 @@
 package role
 
 import (
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/role/model"
@@ -8,11 +9,12 @@ import (
 )
 
 type RoleRepository struct {
-	Db *gorm.DB
+	Db                  *gorm.DB
+	PermissionTableName string
 }
 
 func NewRoleRepository(db *gorm.DB) *RoleRepository {
-	return &RoleRepository{Db: db}
+	return &RoleRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_ROLE}
 }
 
 func (repository *RoleRepository) Create(role *model.Role) (*model.Role, error) {

@@ -77,6 +77,7 @@ func Start() {
 	humaApi.UseMiddleware(
 		middlewares.SecureHeadersMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
+		middlewares.PermissionMiddleware(humaApi, Controllers.PermissionController.Service.Repository),
 	)
 
 	// Register endpoints

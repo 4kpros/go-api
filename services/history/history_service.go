@@ -16,20 +16,9 @@ func NewHistoryService(repository *HistoryRepository) *HistoryService {
 	return &HistoryService{Repository: repository}
 }
 
-// Create new history entry
-func (service *HistoryService) Create(history *model.History) (result *model.History, errCode int, err error) {
-	result, err = service.Repository.Create(history)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create history entry from database")
-		return
-	}
-	return
-}
-
 // Return all history with support for search, filter and pagination
-func (service *HistoryService) GetAll(filter *types.Filter, pagination *types.Pagination) (histories []model.History, errCode int, err error) {
-	histories, err = service.Repository.GetAll(filter, pagination)
+func (service *HistoryService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (result []model.History, errCode int, err error) {
+	result, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("get all history from database")

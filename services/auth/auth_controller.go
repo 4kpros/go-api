@@ -1,10 +1,12 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/4kpros/go-api/common/helpers"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/auth/data"
 )
@@ -17,10 +19,16 @@ func NewAuthController(service *AuthService) *AuthController {
 	return &AuthController{Service: service}
 }
 
-func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithEmail(
+	ctx *context.Context,
+	input *struct {
+		data.SignInDevice
+		Body data.SignInWithEmailRequest
+	},
+) (result *data.SignInResponse, errCode int, err error) {
 	// Check input
-	isEmailValid := utils.IsEmailValid(input.Email)
-	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
+	isEmailValid := utils.IsEmailValid(input.Body.Email)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
 	if !isEmailValid && !isPasswordValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s %s",
@@ -46,11 +54,11 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 	// Execute the service
 	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
-			Email:         input.Email,
-			Password:      input.Password,
-			StayConnected: input.StayConnected,
+			Email:         input.Body.Email,
+			Password:      input.Body.Password,
+			StayConnected: input.Body.StayConnected,
 		},
-		device,
+		&input.SignInDevice,
 	)
 	if err != nil {
 		return
@@ -63,10 +71,16 @@ func (controller *AuthController) SignInWithEmail(input *data.SignInWithEmailReq
 	return
 }
 
-func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPhoneNumberRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithPhoneNumber(
+	ctx *context.Context,
+	input *struct {
+		data.SignInDevice
+		Body data.SignInWithPhoneNumberRequest
+	},
+) (result *data.SignInResponse, errCode int, err error) {
 	// Check input
-	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
-	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
 	if !isPhoneNumberValid && !isPasswordValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s %s",
@@ -92,11 +106,11 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 	// Execute the service
 	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
 		&data.SignInRequest{
-			PhoneNumber:   input.PhoneNumber,
-			Password:      input.Password,
-			StayConnected: input.StayConnected,
+			PhoneNumber:   input.Body.PhoneNumber,
+			Password:      input.Body.Password,
+			StayConnected: input.Body.StayConnected,
 		},
-		device,
+		&input.SignInDevice,
 	)
 	if err != nil {
 		return
@@ -109,9 +123,15 @@ func (controller *AuthController) SignInWithPhoneNumber(input *data.SignInWithPh
 	return
 }
 
-func (controller *AuthController) SignInWithProvider(input *data.SignInWithProviderRequest, device *data.SignInDevice) (result *data.SignInResponse, errCode int, err error) {
+func (controller *AuthController) SignInWithProvider(
+	ctx *context.Context,
+	input *struct {
+		data.SignInDevice
+		Body data.SignInWithProviderRequest
+	},
+) (result *data.SignInResponse, errCode int, err error) {
 	// Check input
-	isProviderValid := utils.IsAuthProviderValid(input.Provider)
+	isProviderValid := utils.IsAuthProviderValid(input.Body.Provider)
 	if !isProviderValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s", "Invalid or empty provider! Please enter valid information.")
@@ -121,7 +141,7 @@ func (controller *AuthController) SignInWithProvider(input *data.SignInWithProvi
 	// Execute the service
 	accessToken := ""
 	var accessExpires *time.Time
-	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(input, device)
+	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(&input.Body, &input.SignInDevice)
 	if err != nil {
 		return
 	}
@@ -132,10 +152,15 @@ func (controller *AuthController) SignInWithProvider(input *data.SignInWithProvi
 	return
 }
 
-func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailRequest) (result *data.SignUpResponse, errCode int, err error) {
+func (controller *AuthController) SignUpWithEmail(
+	ctx *context.Context,
+	input *struct {
+		Body data.SignUpWithEmailRequest
+	},
+) (result *data.SignUpResponse, errCode int, err error) {
 	// Check input
-	isEmailValid := utils.IsEmailValid(input.Email)
-	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
+	isEmailValid := utils.IsEmailValid(input.Body.Email)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
 	if !isEmailValid && !isPasswordValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s %s",
@@ -162,8 +187,8 @@ func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailReq
 	var activateAccountToken string
 	activateAccountToken, errCode, err = controller.Service.SignUp(
 		&data.SignUpRequest{
-			Email:    input.Email,
-			Password: input.Password,
+			Email:    input.Body.Email,
+			Password: input.Body.Password,
 		},
 	)
 	if err != nil {
@@ -176,10 +201,15 @@ func (controller *AuthController) SignUpWithEmail(input *data.SignUpWithEmailReq
 	return
 }
 
-func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPhoneNumberRequest) (result *data.SignUpResponse, errCode int, err error) {
+func (controller *AuthController) SignUpWithPhoneNumber(
+	ctx *context.Context,
+	input *struct {
+		Body data.SignUpWithPhoneNumberRequest
+	},
+) (result *data.SignUpResponse, errCode int, err error) {
 	// Check input
-	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
-	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Password)
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
+	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
 	if !isPhoneNumberValid && !isPasswordValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s %s",
@@ -206,8 +236,8 @@ func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPh
 	var activateAccountToken string
 	activateAccountToken, errCode, err = controller.Service.SignUp(
 		&data.SignUpRequest{
-			PhoneNumber: input.PhoneNumber,
-			Password:    input.Password,
+			PhoneNumber: input.Body.PhoneNumber,
+			Password:    input.Body.Password,
 		},
 	)
 	if err != nil {
@@ -220,8 +250,13 @@ func (controller *AuthController) SignUpWithPhoneNumber(input *data.SignUpWithPh
 	return
 }
 
-func (controller *AuthController) ActivateAccount(input *data.ActivateAccountRequest) (result *data.ActivateAccountResponse, errCode int, err error) {
-	activatedAt, errCode, err := controller.Service.ActivateAccount(input)
+func (controller *AuthController) ActivateAccount(
+	ctx *context.Context,
+	input *struct {
+		Body data.ActivateAccountRequest
+	},
+) (result *data.ActivateAccountResponse, errCode int, err error) {
+	activatedAt, errCode, err := controller.Service.ActivateAccount(&input.Body)
 	if err != nil {
 		return
 	}
@@ -231,18 +266,17 @@ func (controller *AuthController) ActivateAccount(input *data.ActivateAccountReq
 	return
 }
 
-func (controller *AuthController) ForgotPasswordEmailInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
-	// Check input
-	isEmailValid := utils.IsEmailValid(input.Email)
-	if !isEmailValid {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s", "Invalid email! Please enter valid information.")
-		return
-	}
-
-	// Execute the service
-	token := ""
-	token, errCode, err = controller.Service.ForgotPasswordInit(input)
+func (controller *AuthController) ForgotPasswordEmailInit(
+	ctx *context.Context,
+	input *struct {
+		Body data.ForgotPasswordWithEmailInitRequest
+	},
+) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
+	token, errCode, err := controller.Service.ForgotPasswordInit(
+		&data.ForgotPasswordInitRequest{
+			Email: input.Body.Email,
+		},
+	)
 	if err != nil {
 		return
 	}
@@ -257,9 +291,14 @@ func (controller *AuthController) ForgotPasswordEmailInit(input *data.ForgotPass
 	return
 }
 
-func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.ForgotPasswordInitRequest) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
+func (controller *AuthController) ForgotPasswordPhoneNumberInit(
+	ctx *context.Context,
+	input *struct {
+		Body data.ForgotPasswordWithPhoneNumberInitRequest
+	},
+) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
 	// Check input
-	isPhoneNumberValid := utils.IsPhoneNumberValid(input.PhoneNumber)
+	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
 	if !isPhoneNumberValid {
 		errCode = http.StatusBadRequest
 		err = fmt.Errorf("%s", "Invalid phone number! Please enter valid information.")
@@ -267,8 +306,11 @@ func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.Forg
 	}
 
 	// Execute the service
-	token := ""
-	token, errCode, err = controller.Service.ForgotPasswordInit(input)
+	token, errCode, err := controller.Service.ForgotPasswordInit(
+		&data.ForgotPasswordInitRequest{
+			PhoneNumber: input.Body.PhoneNumber,
+		},
+	)
 	if err != nil {
 		return
 	}
@@ -283,27 +325,13 @@ func (controller *AuthController) ForgotPasswordPhoneNumberInit(input *data.Forg
 	return
 }
 
-func (controller *AuthController) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest) (result *data.ForgotPasswordCodeResponse, errCode int, err error) {
-	// Check input
-	if len(input.Token) <= 0 && input.Code < 10000 {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s", "Invalid token and code! Please enter valid information.")
-		return
-	}
-	if len(input.Token) <= 0 {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s", "Invalid token! Please enter valid information.")
-		return
-	}
-	if input.Code < 10000 {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s", "Invalid code! Please enter valid information.")
-		return
-	}
-
-	// Execute the service
-	token := ""
-	token, errCode, err = controller.Service.ForgotPasswordCode(input)
+func (controller *AuthController) ForgotPasswordCode(
+	ctx *context.Context,
+	input *struct {
+		Body data.ForgotPasswordCodeRequest
+	},
+) (result *data.ForgotPasswordCodeResponse, errCode int, err error) {
+	token, errCode, err := controller.Service.ForgotPasswordCode(&input.Body)
 	if err != nil {
 		return
 	}
@@ -313,33 +341,13 @@ func (controller *AuthController) ForgotPasswordCode(input *data.ForgotPasswordC
 	return
 }
 
-func (controller *AuthController) ForgotPasswordNewPassword(input *data.ForgotPasswordNewPasswordRequest) (result *data.ForgotPasswordNewPasswordResponse, errCode int, err error) {
-	// Check input
-	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.NewPassword)
-	if len(input.Token) <= 0 && !isPasswordValid {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s %s",
-			"Invalid token and password! Password missing",
-			missingPasswordChars,
-		)
-		return
-	}
-	if len(input.Token) <= 0 {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s", "Invalid token! Please enter valid information.")
-		return
-	}
-	if !isPasswordValid {
-		errCode = http.StatusBadRequest
-		err = fmt.Errorf("%s %s",
-			"Invalid password! Password missing",
-			missingPasswordChars,
-		)
-		return
-	}
-
-	// Execute the service
-	errCode, err = controller.Service.ForgotPasswordNewPassword(input)
+func (controller *AuthController) ForgotPasswordNewPassword(
+	ctx *context.Context,
+	input *struct {
+		Body data.ForgotPasswordNewPasswordRequest
+	},
+) (result *data.ForgotPasswordNewPasswordResponse, errCode int, err error) {
+	errCode, err = controller.Service.ForgotPasswordNewPassword(&input.Body)
 	if err != nil {
 		return
 	}
@@ -349,8 +357,13 @@ func (controller *AuthController) ForgotPasswordNewPassword(input *data.ForgotPa
 	return
 }
 
-func (controller *AuthController) SignOut(token string) (result *data.SignOutResponse, errCode int, err error) {
-	errCode, err = controller.Service.SignOut(token)
+func (controller *AuthController) SignOut(
+	ctx *context.Context,
+	input *struct {
+		data.SignOutRequest
+	},
+) (result *data.SignOutResponse, errCode int, err error) {
+	errCode, err = controller.Service.SignOut(helpers.GetJwtContext(ctx), helpers.GetBearerContext(ctx))
 	if err != nil {
 		return
 	}

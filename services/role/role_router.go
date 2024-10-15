@@ -8,7 +8,6 @@ import (
 	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/role/data"
-	"github.com/4kpros/go-api/services/role/model"
 	"github.com/danielgtaylor/huma/v2"
 )
 
@@ -44,7 +43,7 @@ func RegisterEndpoints(
 				Body data.RoleRequest
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
-			result, errCode, err := controller.Create(&input.Body)
+			result, errCode, err := controller.Create(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -76,12 +75,7 @@ func RegisterEndpoints(
 				Body data.RoleRequest
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
-			inputFormatted := &model.Role{
-				Name:        input.Body.Name,
-				Description: input.Body.Name,
-			}
-			inputFormatted.ID = input.RoleId.ID
-			result, errCode, err := controller.Update(inputFormatted)
+			result, errCode, err := controller.Update(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -112,7 +106,7 @@ func RegisterEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			result, errCode, err := controller.Delete(&input.RoleId)
+			result, errCode, err := controller.Delete(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -143,7 +137,7 @@ func RegisterEndpoints(
 				data.RoleId
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
-			result, errCode, err := controller.GetById(&input.RoleId)
+			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -177,7 +171,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.RoleResponseList
 		}, error) {
-			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

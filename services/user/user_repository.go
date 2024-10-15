@@ -9,11 +9,12 @@ import (
 )
 
 type UserRepository struct {
-	Db *gorm.DB
+	Db                  *gorm.DB
+	PermissionTableName string
 }
 
 func NewUserRepository(db *gorm.DB) *UserRepository {
-	return &UserRepository{Db: db}
+	return &UserRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_USER}
 }
 
 func (repository *UserRepository) Create(user *model.User) (*model.User, error) {
@@ -95,8 +96,8 @@ func (repository *UserRepository) UpdateUserActivation(id int64, user *model.Use
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
-			// "user_info_id": user.UserInfoId,
-			// "user_mfa_id":  user.UserMfaId,
+			"user_info_id": user.UserInfoId,
+			"user_mfa_id":  user.UserMfaId,
 			"is_activated": user.IsActivated,
 			"activated_at": user.ActivatedAt,
 		},

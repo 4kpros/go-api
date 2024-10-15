@@ -43,8 +43,7 @@ func RegisterEndpoints(
 				Body data.UpdateProfileRequest
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			var id int64
-			result, errCode, err := controller.UpdateProfile(id, &input.Body)
+			result, errCode, err := controller.UpdateProfile(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -75,8 +74,7 @@ func RegisterEndpoints(
 				Body data.UpdateProfileInfoRequest
 			},
 		) (*struct{ Body data.UserInfoResponse }, error) {
-			var id int64
-			result, errCode, err := controller.UpdateProfileInfo(id, &input.Body)
+			result, errCode, err := controller.UpdateProfileInfo(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -107,8 +105,7 @@ func RegisterEndpoints(
 				Body data.UpdateProfileMfaRequest
 			},
 		) (*struct{ Body data.UserMfaResponse }, error) {
-			var id int64
-			result, errCode, err := controller.UpdateProfileMfa(id, &input.Body)
+			result, errCode, err := controller.UpdateProfileMfa(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -137,8 +134,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct{},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			var id int64
-			result, errCode, err := controller.Delete(id)
+			result, errCode, err := controller.DeleteProfile(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -167,8 +163,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct{},
 		) (*struct{ Body data.UserResponse }, error) {
-			var id int64
-			result, errCode, err := controller.GetById(id)
+			result, errCode, err := controller.GetProfile(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

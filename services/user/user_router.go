@@ -8,7 +8,6 @@ import (
 	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/services/user/data"
-	"github.com/4kpros/go-api/services/user/model"
 	"github.com/danielgtaylor/huma/v2"
 )
 
@@ -44,7 +43,7 @@ func RegisterEndpoints(
 				Body data.CreateUserWithEmailRequest
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			result, errCode, err := controller.CreateWithEmail(&input.Body)
+			result, errCode, err := controller.CreateWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -75,7 +74,7 @@ func RegisterEndpoints(
 				Body data.CreateUserWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			result, errCode, err := controller.CreateWithPhoneNumber(&input.Body)
+			result, errCode, err := controller.CreateWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -107,13 +106,7 @@ func RegisterEndpoints(
 				Body data.UpdateUserRequest
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			inputFormatted := &model.User{
-				Email:       input.Body.Email,
-				PhoneNumber: input.Body.PhoneNumber,
-				RoleId:      input.Body.RoleId,
-			}
-			inputFormatted.ID = input.UserId.ID
-			result, errCode, err := controller.UpdateUser(inputFormatted)
+			result, errCode, err := controller.UpdateUser(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -144,7 +137,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			result, errCode, err := controller.Delete(input.UserId.ID)
+			result, errCode, err := controller.Delete(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -175,7 +168,7 @@ func RegisterEndpoints(
 				data.UserId
 			},
 		) (*struct{ Body data.UserResponse }, error) {
-			result, errCode, err := controller.GetById(input.UserId.ID)
+			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -194,8 +187,17 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{
+					constants.SECURITY_AUTH_NAME: { // Used for authentication
+						constants.PERMISSION_TABLE_NAME_USER, // Used for permission table name
+						constants.PERMISSION_READ,            // Used for permission type
+					},
+				},
 			},
+			// Metadata: map[string]any{
+			// 	"permissionTable": constants.PERMISSION_TABLE_NAME_USER,
+			// 	"permissionName":  constants.PERMISSION_READ,
+			// },
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
@@ -209,7 +211,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.UserResponseList
 		}, error) {
-			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

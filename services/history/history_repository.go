@@ -1,6 +1,7 @@
 package history
 
 import (
+	"github.com/4kpros/go-api/common/constants"
 	"github.com/4kpros/go-api/common/types"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/services/history/model"
@@ -8,11 +9,12 @@ import (
 )
 
 type HistoryRepository struct {
-	Db *gorm.DB
+	Db                  *gorm.DB
+	PermissionTableName string
 }
 
 func NewHistoryRepository(db *gorm.DB) *HistoryRepository {
-	return &HistoryRepository{Db: db}
+	return &HistoryRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_HISTORY}
 }
 
 func (repository *HistoryRepository) Create(history *model.History) (*model.History, error) {

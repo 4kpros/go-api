@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/4kpros/go-api/common/constants"
+	"github.com/4kpros/go-api/common/helpers"
 	"github.com/4kpros/go-api/common/utils"
 	"github.com/4kpros/go-api/config"
 	"github.com/danielgtaylor/huma/v2"
@@ -71,7 +72,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			tempErr := constants.HTTP_401_ERROR_MESSAGE()
+			tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
 			huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}
@@ -84,13 +85,6 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 				jwtDecoded,
 				config.CheckValueInRedisList(token),
 			)
-		} else if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION_API_KEY {
-			// TODO implements authentication for api keys
-			// TODO implements authentication for api keys
-			// TODO implements authentication for api keys
-			// TODO implements authentication for api keys
-			// TODO implements authentication for api keys
-			// TODO implements authentication for api keys
 		} else if slices.Contains(constants.JWT_ISSUER_AUTH, jwtDecoded.Issuer) {
 			isTokenCached = utils.ValidateJWTToken(
 				token,
@@ -99,11 +93,11 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			)
 		}
 		if isTokenCached {
-			next(ctx)
+			next(*helpers.SetAuthContext(&ctx, token, jwtDecoded))
 			return
 		}
 
-		tempErr := constants.HTTP_401_ERROR_MESSAGE()
+		tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
 		huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }

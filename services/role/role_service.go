@@ -17,7 +17,7 @@ func NewRoleService(repository *RoleRepository) *RoleService {
 }
 
 // Create new role
-func (service *RoleService) Create(role *model.Role) (result *model.Role, errCode int, err error) {
+func (service *RoleService) Create(jwtToken *types.JwtToken, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -42,7 +42,7 @@ func (service *RoleService) Create(role *model.Role) (result *model.Role, errCod
 }
 
 // Update role
-func (service *RoleService) Update(role *model.Role) (result *model.Role, errCode int, err error) {
+func (service *RoleService) Update(jwtToken *types.JwtToken, id int64, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -57,7 +57,7 @@ func (service *RoleService) Update(role *model.Role) (result *model.Role, errCod
 	}
 
 	// Update role
-	result, err = service.Repository.Update(role.ID, role)
+	result, err = service.Repository.Update(id, role)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("update role from database")
@@ -67,7 +67,7 @@ func (service *RoleService) Update(role *model.Role) (result *model.Role, errCod
 }
 
 // Delete role with matching id and return affected rows
-func (service *RoleService) Delete(id int64) (affectedRows int64, errCode int, err error) {
+func (service *RoleService) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -83,7 +83,7 @@ func (service *RoleService) Delete(id int64) (affectedRows int64, errCode int, e
 }
 
 // Return role with matching id
-func (service *RoleService) GetById(id int64) (role *model.Role, errCode int, err error) {
+func (service *RoleService) Get(jwtToken *types.JwtToken, id int64) (role *model.Role, errCode int, err error) {
 	role, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -99,7 +99,7 @@ func (service *RoleService) GetById(id int64) (role *model.Role, errCode int, er
 }
 
 // Return all roles with support for search, filter and pagination
-func (service *RoleService) GetAll(filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
+func (service *RoleService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
 	roleList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError

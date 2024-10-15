@@ -41,7 +41,7 @@ func RegisterEndpoints(
 				Body data.SignInWithEmailRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithEmail(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -70,7 +70,7 @@ func RegisterEndpoints(
 				Body data.SignInWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithPhoneNumber(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -99,7 +99,7 @@ func RegisterEndpoints(
 				Body data.SignInWithProviderRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithProvider(&input.Body, &input.SignInDevice)
+			result, errCode, err := controller.SignInWithProvider(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -127,7 +127,7 @@ func RegisterEndpoints(
 				Body data.SignUpWithEmailRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithEmail(&input.Body)
+			result, errCode, err := controller.SignUpWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -155,7 +155,7 @@ func RegisterEndpoints(
 				Body data.SignUpWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithPhoneNumber(&input.Body)
+			result, errCode, err := controller.SignUpWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -183,7 +183,7 @@ func RegisterEndpoints(
 				Body data.ActivateAccountRequest
 			},
 		) (*struct{ Body data.ActivateAccountResponse }, error) {
-			result, errCode, err := controller.ActivateAccount(&input.Body)
+			result, errCode, err := controller.ActivateAccount(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -213,11 +213,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordInitResponse
 		}, error) {
-			result, errCode, err := controller.ForgotPasswordEmailInit(
-				&data.ForgotPasswordInitRequest{
-					Email: input.Body.Email,
-				},
-			)
+			result, errCode, err := controller.ForgotPasswordEmailInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -249,11 +245,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordInitResponse
 		}, error) {
-			result, errCode, err := controller.ForgotPasswordPhoneNumberInit(
-				&data.ForgotPasswordInitRequest{
-					PhoneNumber: input.Body.PhoneNumber,
-				},
-			)
+			result, errCode, err := controller.ForgotPasswordPhoneNumberInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -285,7 +277,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordCodeResponse
 		}, error) {
-			result, errCode, err := controller.ForgotPasswordCode(&input.Body)
+			result, errCode, err := controller.ForgotPasswordCode(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -317,7 +309,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.ForgotPasswordNewPasswordResponse
 		}, error) {
-			result, errCode, err := controller.ForgotPasswordNewPassword(&input.Body)
+			result, errCode, err := controller.ForgotPasswordNewPassword(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -350,7 +342,7 @@ func RegisterEndpoints(
 				data.SignOutRequest
 			},
 		) (*struct{ Body data.SignOutResponse }, error) {
-			result, errCode, err := controller.SignOut(input.Token)
+			result, errCode, err := controller.SignOut(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

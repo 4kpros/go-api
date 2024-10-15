@@ -3,6 +3,7 @@ package data
 //
 // ------------------ User ------------------
 //
+
 type UpdateProfileRequest struct {
 	Email       string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`
 	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`

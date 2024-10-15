@@ -21,46 +21,15 @@ func RegisterEndpoints(
 		Tag:   []string{"Permissions"},
 	}
 
-	// Create permission
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID: "post-permission",
-			Summary:     "Create permission",
-			Description: "Create new permission for role. You will need the table name and set read, write, update and delete values",
-			Method:      http.MethodPost,
-			Path:        endpointConfig.Group,
-			Tags:        endpointConfig.Tag,
-			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
-			},
-			MaxBodyBytes:  1024, // 1 KiB
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				Body data.CreatePermissionRequest
-			},
-		) (*struct{ Body model.Permission }, error) {
-			result, errCode, err := controller.Create(&input.Body)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body model.Permission }{Body: *result}, nil
-		},
-	)
-
-	// Update permission with id
+	// Update permission
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-permission",
 			Summary:     "Update permission",
-			Description: "Update existing permission with matching id and return the new permission object.",
+			Description: "Update existing role permission.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -72,46 +41,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.PermissionId
 				Body data.UpdatePermissionRequest
 			},
 		) (*struct{ Body model.Permission }, error) {
-			result, errCode, err := controller.Update(input.PermissionId.ID, &input.Body)
+			result, errCode, err := controller.Update(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct{ Body model.Permission }{Body: *result}, nil
-		},
-	)
-
-	// Delete permission with id
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID: "delete-permission",
-			Summary:     "Delete permission",
-			Description: "Delete existing permission with matching id and return affected rows in database.",
-			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Tags:        endpointConfig.Tag,
-			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
-			},
-			MaxBodyBytes:  1024, // 1 KiB
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				data.PermissionId
-			},
-		) (*struct{ Body types.DeletedResponse }, error) {
-			result, errCode, err := controller.Delete(input.ID)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
 		},
 	)
 
@@ -119,7 +56,7 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-permission-id",
+			OperationID: "get-permission",
 			Summary:     "Get permission by id",
 			Description: "Return one permission with matching id",
 			Method:      http.MethodGet,
@@ -138,7 +75,7 @@ func RegisterEndpoints(
 				data.PermissionId
 			},
 		) (*struct{ Body model.Permission }, error) {
-			result, errCode, err := controller.GetById(input.ID)
+			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -172,7 +109,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.PermissionList
 		}, error) {
-			result, errCode, err := controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
