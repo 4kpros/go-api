@@ -83,11 +83,15 @@ make scan
 
 - [x] Permissions
 
-- [x] Authentication(2FA and passKey). [TODO] Google reCAPTCHA all endpoints starting with /auth
+- [x] Authentication
 
 - [x] Users
 
-- [TODO] Api key(useful to grant access to third party tools)
+- [...] Add 2FA and passKey, add Google reCAPTCHA to all endpoints starting with /auth
+
+- [...] Add tests
+
+- [...] Update GitHub workflow(build image)
 
 
 Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
