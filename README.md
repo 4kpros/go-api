@@ -15,21 +15,13 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 **- Reusable:** The API can be easily integrated into multiple projects, reducing development time and effort.
 
-
-# Use cases
-
-**- Web applications:** The API can be used to power web applications that need to access and manage data efficiently.
-
-**- Mobile applications:** The API can be used to develop mobile applications that need to interact with a backend server.
-
-
 # To get started with the API, follow these steps:
 
 ### 1. Requirements
 
   - Make installed for shortcuts
 
-  - Docker installed if you want to build and start postgres and redis containers
+  - Docker installed if you want to build and start postgres or redis containers
 
   - Build and start Redis container with the command ```make docker-redis```
 
@@ -37,8 +29,11 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
   - Rename .env.example to ```app.env```
 
-  - JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
+  - JWT .pem files with ES212(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
     You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/) 
+
+  - Password is hashed using Argon2id algorithm. If you want to customize salinity, you can edit the .env.example file
+
 
   Others information such configurations are on ```app.env```
 
@@ -75,6 +70,11 @@ API docs with openAPI v3.1(latest) is on
 /api/v1/docs
 ```
 
+If you want to scan vulnerabilities(security issues)
+```go
+make scan
+```
+
 # Features
 
 - [x] History
@@ -83,11 +83,11 @@ API docs with openAPI v3.1(latest) is on
 
 - [x] Permissions
 
-- [x] Authentication(2FA and passKey)
+- [x] Authentication(2FA and passKey). [TODO] Google reCAPTCHA all endpoints starting with /auth
 
 - [x] Users
 
-- [...] Api key(useful to grant access to third party tools or t)
+- [TODO] Api key(useful to grant access to third party tools)
 
 
 Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
