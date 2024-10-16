@@ -6,7 +6,7 @@ import (
 	"slices"
 	"unicode"
 
-	"github.com/4kpros/go-api/common/constants"
+	"api/common/constants"
 )
 
 // Validate the authentication provider (e.g., Google, Facebook, ...)

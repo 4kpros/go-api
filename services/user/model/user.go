@@ -3,9 +3,10 @@ package model
 import (
 	"time"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/user/data"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/user/data"
+
 	"gorm.io/gorm"
 )
 

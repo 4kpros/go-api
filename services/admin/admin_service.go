@@ -1,10 +1,10 @@
 package admin
 
 import (
-	"github.com/4kpros/go-api/services/permission"
-	"github.com/4kpros/go-api/services/role"
-	"github.com/4kpros/go-api/services/user"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/services/permission"
+	"api/services/role"
+	"api/services/user"
+	"api/services/user/model"
 )
 
 type AdminService struct {

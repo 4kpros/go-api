@@ -6,13 +6,13 @@ import (
 	"slices"
 	"time"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/config"
-	"github.com/4kpros/go-api/services/auth/data"
-	"github.com/4kpros/go-api/services/user"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/common/utils"
+	"api/config"
+	"api/services/auth/data"
+	"api/services/user"
+	"api/services/user/model"
 )
 
 type AuthService struct {

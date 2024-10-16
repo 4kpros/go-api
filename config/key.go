@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/4kpros/go-api/common/helpers"
+	"api/common/helpers"
+
 	"go.uber.org/zap"
 )
 

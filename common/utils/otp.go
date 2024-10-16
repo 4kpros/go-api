@@ -3,8 +3,9 @@ package utils
 import (
 	"fmt"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/config"
+	"api/common/constants"
+	"api/config"
+
 	"github.com/pquerna/otp/totp"
 )
 

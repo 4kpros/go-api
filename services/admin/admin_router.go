@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/admin/data"
+	"api/common/types"
+	"api/services/admin/data"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/4kpros/go-api/common/types"
+	"api/common/types"
+
 	"gorm.io/gorm"
 )
 

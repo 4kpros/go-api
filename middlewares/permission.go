@@ -3,10 +3,11 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/permission"
+	"api/common/constants"
+	"api/common/helpers"
+	"api/common/types"
+	"api/services/permission"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

@@ -1,17 +1,18 @@
 package main
 
 import (
-	"github.com/4kpros/go-api/cmd/api"
-	"github.com/4kpros/go-api/cmd/di"
-	"github.com/4kpros/go-api/cmd/migrate"
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/config"
+	"api/cmd/api"
+	"api/cmd/di"
+	"api/cmd/migrate"
+	"api/common/helpers"
+	"api/common/utils"
+	"api/config"
+
 	"go.uber.org/zap"
 )
 
 // Contains all errors during init() execution
-var errInit error = nil
+var errInit error
 
 func main() {
 	// Check if there are any errors when initializing the app
@@ -34,7 +35,7 @@ func init() {
 	helpers.EnableLogger()
 
 	// Load env
-	errEnv := config.LoadEnv(".")
+	errEnv := config.LoadEnv()
 	if errEnv != nil {
 		errInit = errEnv
 		helpers.Logger.Error(

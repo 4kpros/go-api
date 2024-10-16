@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/4kpros/go-api/config"
+	"api/config"
+
 	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 

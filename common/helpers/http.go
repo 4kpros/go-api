@@ -3,7 +3,8 @@ package helpers
 import (
 	"context"
 
-	"github.com/4kpros/go-api/common/types"
+	"api/common/types"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

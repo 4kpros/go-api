@@ -1,12 +1,12 @@
 package migrate
 
 import (
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/config"
-	historyModel "github.com/4kpros/go-api/services/history/model"
-	permissionModel "github.com/4kpros/go-api/services/permission/model"
-	roleModel "github.com/4kpros/go-api/services/role/model"
-	userModel "github.com/4kpros/go-api/services/user/model"
+	"api/common/helpers"
+	"api/config"
+	historyModel "api/services/history/model"
+	permissionModel "api/services/permission/model"
+	roleModel "api/services/role/model"
+	userModel "api/services/user/model"
 )
 
 // Loads and applies all migrations.

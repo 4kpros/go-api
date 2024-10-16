@@ -6,10 +6,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/config"
+	"api/common/constants"
+	"api/common/helpers"
+	"api/common/utils"
+	"api/config"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

@@ -4,9 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/history/data"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/history/data"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

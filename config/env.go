@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/4kpros/go-api/common/constants"
+	"api/common/constants"
+
 	"github.com/spf13/viper"
 )
 
@@ -76,9 +77,9 @@ type Environment struct {
 
 var Env = &Environment{}
 
-// Loads environment variables from the specified file.
-func LoadEnv(path string) error {
-	viper.AddConfigPath(path)
+// Loads environment variables.
+func LoadEnv() error {
+	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 

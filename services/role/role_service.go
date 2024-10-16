@@ -3,9 +3,9 @@ package role
 import (
 	"net/http"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/role/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/role/model"
 )
 
 type RoleService struct {

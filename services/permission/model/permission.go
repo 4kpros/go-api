@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/permission/data"
+	"api/common/types"
+	"api/services/permission/data"
 )
 
 type Permission struct {

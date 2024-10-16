@@ -1,15 +1,15 @@
 package di
 
 import (
-	"github.com/4kpros/go-api/cmd/api"
-	"github.com/4kpros/go-api/config"
-	"github.com/4kpros/go-api/services/admin"
-	"github.com/4kpros/go-api/services/auth"
-	"github.com/4kpros/go-api/services/history"
-	"github.com/4kpros/go-api/services/permission"
-	"github.com/4kpros/go-api/services/profile"
-	"github.com/4kpros/go-api/services/role"
-	"github.com/4kpros/go-api/services/user"
+	"api/cmd/api"
+	"api/config"
+	"api/services/admin"
+	"api/services/auth"
+	"api/services/history"
+	"api/services/permission"
+	"api/services/profile"
+	"api/services/role"
+	"api/services/user"
 )
 
 // Inject all dependencies

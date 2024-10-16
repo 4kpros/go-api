@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/smtp"
 
-	"github.com/4kpros/go-api/config"
+	"api/config"
 )
 
 // Sends an email with the specified subject, message, and receiver.

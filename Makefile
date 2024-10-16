@@ -1,5 +1,5 @@
 # ------------------ Golang commands ------------------
-.PHONY: clean install update test build run
+.PHONY: clean install update test build build-container run
 clean:
 	@go clean -cache
 	@go clean -testcache
@@ -11,9 +11,9 @@ update:
 test:
 	@go test -v ./tests/...
 build:
-	@cd cmd/ ;\
-	go build -o ../.build/main ;\
-	cd ../
+	@go build -o ./.build/main ./cmd/main.go
+build-container:
+	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./.build/main ./cmd/main.go
 run:
 	@./.build/main
 

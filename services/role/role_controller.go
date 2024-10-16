@@ -3,11 +3,11 @@ package role
 import (
 	"context"
 
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/role/data"
-	"github.com/4kpros/go-api/services/role/model"
+	"api/common/helpers"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/role/data"
+	"api/services/role/model"
 )
 
 type RoleController struct {

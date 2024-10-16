@@ -47,11 +47,12 @@ services:
       dockerfile: ./docker/api/Dockerfile
     restart: on-failure
     environment:
+      APP_PORT: ${APP_PORT:-3100}
       GIN_MODE: ${GIN_MODE:-debug} # debug, release
     depends_on:
       - postgres
     ports:
-      - ${API_PORT:-3100}:3100
+      - ${APP_PORT:-3100}:3100
     networks:
       - internal-network
 

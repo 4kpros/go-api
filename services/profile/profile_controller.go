@@ -3,9 +3,9 @@ package profile
 import (
 	"context"
 
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/services/user/data"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/helpers"
+	"api/services/user/data"
+	"api/services/user/model"
 )
 
 type ProfileController struct {

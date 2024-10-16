@@ -9,9 +9,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/config"
+	"api/common/constants"
+	"api/common/types"
+	"api/config"
+
 	"github.com/alexedwards/argon2id"
 	"github.com/golang-jwt/jwt/v5"
 )

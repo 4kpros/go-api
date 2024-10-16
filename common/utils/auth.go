@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/config"
+	"api/common/constants"
+	"api/common/types"
+	"api/config"
+
 	googleIdToken "google.golang.org/api/idtoken"
 )
 

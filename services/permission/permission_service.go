@@ -3,9 +3,9 @@ package permission
 import (
 	"net/http"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/permission/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/permission/model"
 )
 
 type PermissionService struct {

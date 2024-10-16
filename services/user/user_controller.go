@@ -3,11 +3,11 @@ package user
 import (
 	"context"
 
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/user/data"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/helpers"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/user/data"
+	"api/services/user/model"
 )
 
 type UserController struct {

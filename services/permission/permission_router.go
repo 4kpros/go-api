@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/permission/data"
-	"github.com/4kpros/go-api/services/permission/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/permission/data"
+	"api/services/permission/model"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 

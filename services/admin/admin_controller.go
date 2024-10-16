@@ -3,8 +3,8 @@ package admin
 import (
 	"context"
 
-	"github.com/4kpros/go-api/services/admin/data"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/services/admin/data"
+	"api/services/user/model"
 )
 
 type AdminController struct {

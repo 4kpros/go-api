@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/history/data"
+	"api/common/types"
+	"api/services/history/data"
 )
 
 type History struct {

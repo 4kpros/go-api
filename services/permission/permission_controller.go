@@ -3,11 +3,11 @@ package permission
 import (
 	"context"
 
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/permission/data"
-	"github.com/4kpros/go-api/services/permission/model"
+	"api/common/helpers"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/permission/data"
+	"api/services/permission/model"
 )
 
 type PermissionController struct {

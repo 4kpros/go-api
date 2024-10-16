@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/auth/data"
+	"api/common/helpers"
+	"api/common/utils"
+	"api/services/auth/data"
 )
 
 type AuthController struct {

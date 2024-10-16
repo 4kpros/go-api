@@ -3,7 +3,7 @@ package data
 import (
 	"time"
 
-	"github.com/4kpros/go-api/common/types"
+	"api/common/types"
 )
 
 type UserResponse struct {

@@ -1,4 +1,4 @@
-module github.com/4kpros/go-api
+module api
 
 go 1.23.2
 

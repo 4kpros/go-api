@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/4kpros/go-api/common/types"
+	"api/common/types"
 )
 
 type RoleResponse struct {

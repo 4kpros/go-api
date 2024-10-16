@@ -1,27 +1,33 @@
-FROM golang:1.23.2 as builder
+# ----------------------- Stage building -----------------------
+
+FROM golang:1.23.2 AS builder
 
 ENV LANG=C.UTF-8
 
 WORKDIR /app
 
-# Installing packages
+# Install linux packages
 RUN apt-get -y install bash make
 
 COPY . .
 
-# Build app
-RUN make clean-cache
+# Install go packages
 RUN make install
-RUN make build
+# Build app
+RUN make build-container
 
-FROM alpine:latest as api
+
+# ----------------------- Stage serve -----------------------
+
+FROM alpine:latest AS api
+
+ENV LANG=C.UTF-8
 
 WORKDIR /app
 
-# Copy app
-COPY FROM builder ./docker/api/entrypoint.sh ./
-RUN chmod +x ./app/.build/main
+COPY --from=builder /app/.build/ ./
+RUN chmod +x /app/main
 
-EXPOSE 9000
+EXPOSE 3100
 
-ENTRYPOINT ["make run"]
+ENTRYPOINT ["/app/main"]

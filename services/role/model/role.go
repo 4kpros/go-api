@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/role/data"
+	"api/common/types"
+	"api/services/role/data"
 )
 
 type Role struct {

@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/4kpros/go-api/common/constants"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/user/model"
+
 	"gorm.io/gorm"
 )
 
