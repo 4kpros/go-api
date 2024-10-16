@@ -102,6 +102,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 	if err != nil || activateAccountJwtToken == nil || len(activateAccountToken) <= 0 {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("encode jwt token")
+		return
 	}
 	errCode = http.StatusForbidden
 	err = fmt.Errorf("%s", "Account found but not activated! Please activate your account to start using your services.")
@@ -366,13 +367,13 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	activatedAt = updatedUser.ActivatedAt
 
 	// Invalidate token
-	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
+	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 
 	// Send welcome message
 	if utils.IsEmailValid(updatedUser.Email) {
 		go utils.SendMail(
 			fmt.Sprintf("%s - Welcome", config.Env.AppName),
-			fmt.Sprintf("Welcome"),
+			"Welcome",
 			updatedUser.Email,
 		)
 	}
@@ -418,6 +419,7 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		return
 	}
 	expires := utils.NewExpiresDateDefault()
 	newJwtToken, newToken, err := utils.EncodeJWTToken(
@@ -512,7 +514,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 	}
 
 	// Invalidate token
-	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
+	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 
 	// Generate new token
 	newJwtToken, newToken, err := utils.EncodeJWTToken(
@@ -599,7 +601,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 	}
 
 	// Invalidate token
-	_, err = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken))
+	_, err = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
@@ -611,7 +613,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 // Logout user with provided token
 func (service *AuthService) SignOut(jwtToken *types.JwtToken, bearerToken string) (errCode int, err error) {
 	// Invalidate the token
-	sessions, err := config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken))
+	sessions, err := config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()

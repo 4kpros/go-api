@@ -82,7 +82,10 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	}
 	// Validate scopes
 	if !IsFacebookLoginScopesValid(debugResp.Data.Scopes) {
-		return nil, fmt.Errorf("Invalid scopes! You need to enable these scopes: %v", constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES)
+		return nil, fmt.Errorf("%s%v",
+			"Invalid scopes! You need to enable these scopes: ",
+			constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES,
+		)
 	}
 
 	// Retrieve user info

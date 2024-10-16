@@ -81,8 +81,5 @@ func IsFacebookLoginScopesValid(scopes []string) bool {
 			counter++
 		}
 	}
-	if counter == len(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES) {
-		return true
-	}
-	return false
+	return counter == len(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES)
 }
