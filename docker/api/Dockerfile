@@ -1,33 +1,38 @@
 # ----------------------- Stage building -----------------------
-
-FROM golang:1.23.2 AS builder
-
+FROM golang:alpine AS builder
 ENV LANG=C.UTF-8
 
 WORKDIR /app
 
-# Install linux packages
-RUN apt-get -y install bash make
+# Install packages
+RUN apk update &&\
+    apk add --update --no-cache bash make
 
+# Copy the project files
 COPY . .
 
-# Install go packages
-RUN make install
-# Build app
-RUN make build-container
+# Install dependencies and build the app
+RUN go mod download
+RUN GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./.build/main ./cmd/main.go
 
 
 # ----------------------- Stage serve -----------------------
 
 FROM alpine:latest AS api
-
 ENV LANG=C.UTF-8
 
 WORKDIR /app
 
+# Install packages
+RUN apk add bash
+
+# Copy the binary and assets to the container
 COPY --from=builder /app/.build/ ./
+COPY --from=builder /app/assets ./assets
+COPY --from=builder /app/.env.xample ./app.env
 RUN chmod +x /app/main
 
 EXPOSE 3100
 
-ENTRYPOINT ["/app/main"]
+#ENTRYPOINT ["/app/main"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]

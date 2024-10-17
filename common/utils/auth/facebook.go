@@ -4,7 +4,6 @@ import (
 	"api/common/constants"
 	"api/common/types"
 	"api/common/utils"
-	"api/common/utils/http"
 	"api/common/utils/security"
 	"api/config"
 	"fmt"
@@ -21,7 +20,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 	debugResp := &types.FacebookDebugAccessTokenResponse{}
-	errDebug := http.HTTPGet(
+	errDebug := utils.HTTP_GET(
 		fmt.Sprintf(
 			"%s%s&access_token=%s|%s",
 			config.Env.FacebookDebugTokenUrl,
@@ -53,7 +52,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	if errSecretProof != nil {
 		return nil, constants.HTTP_500_ERROR_MESSAGE("encode Facebook HMAC HS256 secret proof")
 	}
-	errUser := http.HTTPGet(
+	errUser := utils.HTTP_GET(
 		fmt.Sprintf(
 			"%s%s&appsecret_proof=%s",
 			config.Env.FacebookProfileUrl,

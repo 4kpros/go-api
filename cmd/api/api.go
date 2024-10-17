@@ -52,7 +52,10 @@ func Start() {
 	engine := gin.Default()
 	engine.HandleMethodNotAllowed = true
 	engine.ForwardedByClientIP = true
-	engine.SetTrustedProxies([]string{"127.0.0.1"})
+	err := engine.SetTrustedProxies([]string{"127.0.0.1"})
+	if err != nil {
+		panic(err)
+	}
 	ginGroup := engine.Group(config.Env.ApiGroup)
 
 	// OpenAPI documentation based on huma
@@ -79,7 +82,8 @@ func Start() {
 	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
 	// Register middlewares
 	humaApi.UseMiddleware(
-		middlewares.SecureHeadersMiddleware(humaApi),
+		middlewares.HeadersMiddleware(humaApi),
+		middlewares.CorsMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
 		middlewares.PermissionMiddleware(humaApi, Controllers.PermissionController.Service.Repository),
 	)
@@ -93,5 +97,8 @@ func Start() {
 
 	// Start to listen
 	formattedPort := fmt.Sprintf(":%d", config.Env.AppPort)
-	engine.Run(formattedPort)
+	err = engine.Run(formattedPort)
+	if err != nil {
+		panic(err)
+	}
 }
