@@ -2,8 +2,8 @@ package history
 
 import (
 	"api/common/constants"
+	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/history/model"
 
 	"gorm.io/gorm"
@@ -25,5 +25,5 @@ func (repository *HistoryRepository) Create(history *model.History) (*model.Hist
 
 func (repository *HistoryRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
 	result := []model.History{}
-	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

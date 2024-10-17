@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"context"
+	"strings"
 
 	"api/common/types"
 
@@ -14,6 +15,11 @@ const (
 	issuerKey = "issuer"
 	roleIdKey = "roleId"
 )
+
+// Retrieves the bearer token from the current request context.
+func ExtractBearerTokenHeader(ctx *huma.Context) string {
+	return strings.TrimPrefix((*ctx).Header("Authorization"), "Bearer ")
+}
 
 // Add information such as JWT token and bearer token to context in order
 // to pass information to middleware, operation and handler func

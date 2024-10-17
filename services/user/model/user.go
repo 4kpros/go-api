@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"api/common/types"
-	"api/common/utils"
+	"api/common/utils/security"
 	"api/services/user/data"
 
 	"gorm.io/gorm"
@@ -31,12 +31,12 @@ type User struct {
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) (err error) {
-	user.Password, err = utils.EncodeArgon2id(user.Password)
+	user.Password, err = security.EncodeArgon2id(user.Password)
 	return
 }
 
 func (user *User) BeforeUpdate(db *gorm.DB) (err error) {
-	user.Password, err = utils.EncodeArgon2id(user.Password)
+	user.Password, err = security.EncodeArgon2id(user.Password)
 	return
 }
 func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {

@@ -5,7 +5,7 @@ import (
 	"api/cmd/di"
 	"api/cmd/migrate"
 	"api/common/helpers"
-	"api/common/utils"
+	"api/common/utils/security"
 	"api/config"
 
 	"go.uber.org/zap"
@@ -47,7 +47,7 @@ func init() {
 	}
 
 	// Test Argon2id with an empty password to ensure that everything works as expected
-	_, errArgon2id := utils.EncodeArgon2id("")
+	_, errArgon2id := security.CheckArgon2id()
 	if errArgon2id != nil {
 		errInit = errArgon2id
 		helpers.Logger.Error(

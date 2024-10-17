@@ -1,8 +1,6 @@
-package helpers
+package io
 
-import (
-	"os"
-)
+import "os"
 
 // Reads the entire contents of a file into a string.
 //

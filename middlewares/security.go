@@ -8,7 +8,7 @@ import (
 
 	"api/common/constants"
 	"api/common/helpers"
-	"api/common/utils"
+	"api/common/utils/security"
 	"api/config"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -62,13 +62,13 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		}
 
 		// Parse and decode the token
-		token := utils.ExtractBearerTokenHeader(&ctx)
+		token := helpers.ExtractBearerTokenHeader(&ctx)
 		if len(token) < 1 {
 			errMessage = "Missing or bad authorization header! Please enter valid information."
 			huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
-		jwtDecoded, errDecoded := utils.DecodeJWTToken(
+		jwtDecoded, errDecoded := security.DecodeJWTToken(
 			token,
 			config.Keys.JwtPublicKey,
 		)
@@ -81,13 +81,13 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		// Validate the token by checking if it's cached
 		isTokenCached := false
 		if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION {
-			isTokenCached = utils.ValidateJWTToken(
+			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
 				config.CheckValueInRedisList(token),
 			)
 		} else if slices.Contains(constants.JWT_ISSUER_AUTH, jwtDecoded.Issuer) {
-			isTokenCached = utils.ValidateJWTToken(
+			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
 				config.GetRedisString,

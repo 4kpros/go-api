@@ -9,6 +9,10 @@ import (
 	"api/common/constants"
 	"api/common/types"
 	"api/common/utils"
+	"api/common/utils/auth"
+	"api/common/utils/mail"
+	"api/common/utils/security"
+	"api/common/utils/sms"
 	"api/config"
 	"api/services/auth/data"
 	"api/services/user"
@@ -40,7 +44,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	isPasswordMatches, err := utils.CompareArgon2id(input.Password, userFound.Password)
+	isPasswordMatches, err := security.CompareArgon2id(input.Password, userFound.Password)
 	if err != nil || !isPasswordMatches {
 		errCode = http.StatusNotFound
 		err = fmt.Errorf("%s", errMsg)
@@ -51,7 +55,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 	if userFound.IsActivated {
 		// Generate new token
 		var accessJwtToken *types.JwtToken
-		accessJwtToken, accessToken, err = utils.EncodeJWTToken(
+		accessJwtToken, accessToken, err = security.EncodeJWTToken(
 			&types.JwtToken{
 				UserId:   userFound.ID,
 				RoleId:   userFound.RoleId,
@@ -60,7 +64,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 				App:      device.App,
 			},
 			constants.JWT_ISSUER_SESSION,
-			utils.NewExpiresDateSignIn(input.StayConnected),
+			security.NewExpiresDateSignIn(input.StayConnected),
 			config.Keys.JwtPrivateKey,
 			config.AppendToRedisStringList,
 		)
@@ -85,7 +89,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 
 	// Generate new token
 	var activateAccountJwtToken *types.JwtToken
-	activateAccountJwtToken, activateAccountToken, err = utils.EncodeJWTToken(
+	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -95,7 +99,7 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 			Code:     randomCode,
 		},
 		constants.JWT_ISSUER_AUTH_ACTIVATE,
-		utils.NewExpiresDateDefault(),
+		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
@@ -109,13 +113,13 @@ func (service *AuthService) SignIn(input *data.SignInRequest, device *data.SignI
 
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
-		go utils.SendMail(
+		go mail.SendMail(
 			fmt.Sprintf("%s - Activate your account", config.Env.AppName),
 			fmt.Sprintf("The code to activate your account is %d", randomCode),
 			input.Email,
 		)
 	} else {
-		go utils.SendSMS(
+		go sms.SendSMS(
 			fmt.Sprintf("The code to activate your account is %d.", randomCode),
 			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
@@ -129,7 +133,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 	var user = &model.User{}
 	var expires int64 = 0
 	if input.Provider == constants.AUTH_PROVIDER_GOOGLE {
-		googleUser, errGoogleUser := utils.VerifyGoogleIDToken(input.Token)
+		googleUser, errGoogleUser := auth.VerifyGoogleIDToken(input.Token)
 		if errGoogleUser != nil || googleUser == nil || len(googleUser.ID) <= 0 {
 			errCode = http.StatusUnprocessableEntity
 			err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
@@ -143,7 +147,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 		expires = googleUser.Expires
 		user.FromGoogleUser(googleUser)
 	} else if input.Provider == constants.AUTH_PROVIDER_FACEBOOK {
-		facebookUser, errFacebookUser := utils.VerifyFacebookToken(input.Token)
+		facebookUser, errFacebookUser := auth.VerifyFacebookToken(input.Token)
 		if errFacebookUser != nil || facebookUser == nil || len(facebookUser.ID) <= 0 {
 			errCode = http.StatusUnprocessableEntity
 			err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
@@ -190,7 +194,7 @@ func (service *AuthService) SignInWithProvider(input *data.SignInWithProviderReq
 
 	// Generate new token
 	expiresTime := time.Unix(expires, 0)
-	jwtToken, accessToken, err := utils.EncodeJWTToken(
+	jwtToken, accessToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -258,7 +262,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 
 	// Generate new token
 	var activateAccountJwtToken *types.JwtToken
-	activateAccountJwtToken, activateAccountToken, err = utils.EncodeJWTToken(
+	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   createdUser.ID,
 			RoleId:   createdUser.RoleId,
@@ -268,7 +272,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 			Code:     randomCode,
 		},
 		constants.JWT_ISSUER_AUTH_ACTIVATE,
-		utils.NewExpiresDateDefault(),
+		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
@@ -279,13 +283,13 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
-		go utils.SendMail(
+		go mail.SendMail(
 			fmt.Sprintf("%s - Activate your account", config.Env.AppName),
 			fmt.Sprintf("The code to activate your account is %d", randomCode),
 			input.Email,
 		)
 	} else {
-		go utils.SendSMS(
+		go sms.SendSMS(
 			fmt.Sprintf("The code to activate your account is %d.", randomCode),
 			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
@@ -297,7 +301,7 @@ func (service *AuthService) SignUp(input *data.SignUpRequest) (activateAccountTo
 func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) (activatedAt *time.Time, errCode int, err error) {
 	// Extract token information and validate the token
 	errMsg := "Invalid or expired token! Please enter valid information."
-	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	jwtToken, err := security.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -308,7 +312,7 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := security.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -367,11 +371,11 @@ func (service *AuthService) ActivateAccount(input *data.ActivateAccountRequest) 
 	activatedAt = updatedUser.ActivatedAt
 
 	// Invalidate token
-	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 
 	// Send welcome message
 	if utils.IsEmailValid(updatedUser.Email) {
-		go utils.SendMail(
+		go mail.SendMail(
 			fmt.Sprintf("%s - Welcome", config.Env.AppName),
 			"Welcome",
 			updatedUser.Email,
@@ -421,8 +425,8 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
 		return
 	}
-	expires := utils.NewExpiresDateDefault()
-	newJwtToken, newToken, err := utils.EncodeJWTToken(
+	expires := security.NewExpiresDateDefault()
+	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -445,13 +449,13 @@ func (service *AuthService) ForgotPasswordInit(input *data.ForgotPasswordInitReq
 
 	// Send code to email or phone number
 	if utils.IsEmailValid(input.Email) {
-		go utils.SendMail(
+		go mail.SendMail(
 			fmt.Sprintf("%s - Forgot your password", config.Env.AppName),
 			fmt.Sprintf("The code to reset your password is %d", randomCode),
 			input.Email,
 		)
 	} else {
-		go utils.SendSMS(
+		go sms.SendSMS(
 			fmt.Sprintf("The code to reset your password is %d.", randomCode),
 			fmt.Sprintf("+%d", input.PhoneNumber),
 		)
@@ -480,7 +484,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 
 	// Extract token information and validate the token
 	errMsg := "Invalid or expired token! Please enter valid information."
-	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	jwtToken, err := security.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -491,7 +495,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := security.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -514,10 +518,10 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 	}
 
 	// Invalidate token
-	config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 
 	// Generate new token
-	newJwtToken, newToken, err := utils.EncodeJWTToken(
+	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserId:   userFound.ID,
 			RoleId:   userFound.RoleId,
@@ -526,7 +530,7 @@ func (service *AuthService) ForgotPasswordCode(input *data.ForgotPasswordCodeReq
 			App:      "*",
 		},
 		constants.JWT_ISSUER_SESSION,
-		utils.NewExpiresDateDefault(),
+		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
@@ -566,7 +570,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 
 	// Extract token information and validate the token
 	errMsg := "Invalid or expired token! Please enter valid information."
-	jwtToken, err := utils.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
+	jwtToken, err := security.DecodeJWTToken(input.Token, config.Keys.JwtPublicKey)
 	if err != nil {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -577,7 +581,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	isTokenValid := utils.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
+	isTokenValid := security.ValidateJWTToken(input.Token, jwtToken, config.GetRedisString)
 	if !isTokenValid {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
@@ -601,7 +605,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 	}
 
 	// Invalidate token
-	_, err = config.DeleteRedisString(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	_, err = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
@@ -613,7 +617,7 @@ func (service *AuthService) ForgotPasswordNewPassword(input *data.ForgotPassword
 // Logout user with provided token
 func (service *AuthService) SignOut(jwtToken *types.JwtToken, bearerToken string) (errCode int, err error) {
 	// Invalidate the token
-	sessions, err := config.GetRedisStringList(utils.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	sessions, err := config.GetRedisStringList(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusUnauthorized
 		err = constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()

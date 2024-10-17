@@ -7,8 +7,9 @@ import (
 	"time"
 )
 
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-=_+"
-const letterBytesCode = "1234567890"
+const letterAlphaNumericSymbol = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-=_+"
+const letterAlphaNumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+const letterNumeric = "1234567890"
 
 var src = rand.NewSource(time.Now().UnixNano())
 
@@ -25,7 +26,7 @@ func GenerateRandomCode(length int) (int, error) {
 	if safeLength <= 0 {
 		safeLength = 1
 	}
-	return strconv.Atoi(generateRandomValue(letterBytesCode, length))
+	return strconv.Atoi(generateRandomValue(letterNumeric, safeLength))
 }
 
 // Returns a random password of the specified length.
@@ -34,7 +35,16 @@ func GenerateRandomPassword(length int) string {
 	if safeLength <= 0 {
 		safeLength = 1
 	}
-	return generateRandomValue(letterBytes, safeLength)
+	return generateRandomValue(letterAlphaNumericSymbol, safeLength)
+}
+
+// Returns the generated alpha numeric with the specified length.
+func GenerateRandomAlphaNumeric(length int) string {
+	safeLength := length
+	if safeLength <= 0 {
+		safeLength = 1
+	}
+	return generateRandomValue(letterAlphaNumeric, safeLength)
 }
 
 // Returns a random string of specified length, using provided characters.

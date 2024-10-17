@@ -2,6 +2,7 @@ package config
 
 import (
 	"api/common/helpers"
+	"api/common/utils/io"
 
 	"go.uber.org/zap"
 )
@@ -18,7 +19,7 @@ func LoadKeys() error {
 	var err error
 	var errRead error
 	// JWT private key
-	Keys.JwtPrivateKey, errRead = helpers.ReadFileContentToString("keys/jwt/private.pem")
+	Keys.JwtPrivateKey, errRead = io.ReadFileContentToString("keys/jwt/private.pem")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Error(
@@ -30,7 +31,7 @@ func LoadKeys() error {
 	}
 
 	// JWT public key
-	Keys.JwtPublicKey, errRead = helpers.ReadFileContentToString("keys/jwt/public.pem")
+	Keys.JwtPublicKey, errRead = io.ReadFileContentToString("keys/jwt/public.pem")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Error(

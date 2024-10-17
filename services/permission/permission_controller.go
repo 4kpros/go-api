@@ -5,7 +5,6 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/permission/data"
 	"api/services/permission/model"
 )
@@ -55,7 +54,7 @@ func (controller *PermissionController) GetAll(
 		types.PaginationRequest
 	},
 ) (result *data.PermissionList, errCode int, err error) {
-	newPagination, newFilter := utils.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	permissionList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return

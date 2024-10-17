@@ -5,7 +5,6 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/role/data"
 	"api/services/role/model"
 )
@@ -86,7 +85,7 @@ func (controller *RoleController) GetAll(
 		types.PaginationRequest
 	},
 ) (result *data.RoleResponseList, errCode int, err error) {
-	newPagination, newFilter := utils.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	roleList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return

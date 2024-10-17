@@ -1,16 +1,10 @@
-package utils
+package mail
 
 import (
+	"api/config"
 	"fmt"
 	"net/smtp"
-
-	"api/config"
 )
-
-// Sends an email with the specified subject, message, and receiver.
-func SendMail(subject string, message string, receiver string) error {
-	return sendMailWithGmail(subject, message, receiver)
-}
 
 // Sends an email using Gmail's SMTP server
 func sendMailWithGmail(subject string, message string, receiver string) error {

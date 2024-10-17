@@ -1,19 +1,12 @@
-package utils
+package security
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	base64 "encoding/base64"
-	"encoding/hex"
-	"fmt"
-	"runtime"
-	"time"
-
 	"api/common/constants"
 	"api/common/types"
 	"api/config"
+	"fmt"
+	"time"
 
-	"github.com/alexedwards/argon2id"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -93,62 +86,4 @@ func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc fun
 		return false
 	}
 	return true
-}
-
-// Apply the Argon2id hashing algorithm to the password and return the resulting hashed string.
-func EncodeArgon2id(password string) (string, error) {
-	params := &argon2id.Params{
-		Memory:      uint32(config.Env.ArgonMemoryLeft * config.Env.ArgonMemoryRight),
-		Iterations:  uint32(config.Env.ArgonIterations),
-		Parallelism: uint8(runtime.NumCPU()),
-		SaltLength:  uint32(config.Env.ArgonSaltLength),
-		KeyLength:   uint32(config.Env.ArgonKeyLength),
-	}
-	tempHash, tempErr := argon2id.CreateHash(password, params)
-	if tempErr != nil {
-		return "", tempErr
-	}
-	return EncodeBase64(tempHash), nil
-}
-
-// Verify if the Argon2id password matches the string.
-func CompareArgon2id(password string, hashedPassword string) (bool, error) {
-	initialHashedPassword, _ := DecodeBase64(hashedPassword)
-	return argon2id.ComparePasswordAndHash(password, initialHashedPassword)
-}
-
-// Encodes the input string into Base64 format.
-func EncodeBase64(data string) string {
-	return base64.StdEncoding.EncodeToString([]byte(data))
-}
-
-// Decodes a Base64-encoded string and returns an error if the input is invalid.
-func DecodeBase64(data string) (string, error) {
-	base64Text := make([]byte, base64.StdEncoding.DecodedLen(len(data)))
-	n, err := base64.StdEncoding.Decode(base64Text, []byte(data))
-	return string(base64Text[:n]), err
-}
-
-// Generates an HMAC-SHA256 signature for the given message using the provided private key.
-// Returns the hex-encoded signature as a string and any error encountered.
-func EncodeHMAC_SHA256(message string, privateKey string) (string, error) {
-	mac := hmac.New(sha256.New, []byte(privateKey))
-	_, err := mac.Write([]byte(message))
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(mac.Sum(nil)), nil
-}
-
-// Verifies the HMAC-SHA256 signature of a message using the provided private key.
-// Returns true if the signature is valid, false otherwise.
-func VerifyHMAC_SHA256(message string, privateKey string, hash string) (bool, error) {
-	sig, err := hex.DecodeString(hash)
-	if err != nil {
-		return false, err
-	}
-	mac := hmac.New(sha256.New, []byte(privateKey))
-	mac.Write([]byte(message))
-
-	return hmac.Equal(sig, mac.Sum(nil)), nil
 }

@@ -2,6 +2,7 @@ package config
 
 import (
 	"api/common/helpers"
+	"api/common/utils/io"
 
 	"go.uber.org/zap"
 )
@@ -21,7 +22,7 @@ func LoadOpenAPITemplates() error {
 	var errRead error
 
 	// Redocly
-	OpenAPITemplates.Redocly, errRead = helpers.ReadFileContentToString("templates/openapi/redocly.html")
+	OpenAPITemplates.Redocly, errRead = io.ReadFileContentToString("templates/openapi/redocly.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(
@@ -33,7 +34,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Scalar
-	OpenAPITemplates.Scalar, err = helpers.ReadFileContentToString("templates/openapi/scalar.html")
+	OpenAPITemplates.Scalar, err = io.ReadFileContentToString("templates/openapi/scalar.html")
 	if errRead != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Scalar template",
@@ -44,7 +45,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Stoplight
-	OpenAPITemplates.Stoplight, errRead = helpers.ReadFileContentToString("templates/openapi/stoplight.html")
+	OpenAPITemplates.Stoplight, errRead = io.ReadFileContentToString("templates/openapi/stoplight.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(
@@ -56,7 +57,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Swagger
-	OpenAPITemplates.Swagger, errRead = helpers.ReadFileContentToString("templates/openapi/swagger.html")
+	OpenAPITemplates.Swagger, errRead = io.ReadFileContentToString("templates/openapi/swagger.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(

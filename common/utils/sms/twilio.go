@@ -1,28 +1,12 @@
-package utils
+package sms
 
 import (
+	"api/config"
 	"encoding/json"
 	"fmt"
 
-	"api/config"
-
 	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
 )
-
-const unavailableErrMsg = "is not available! Please try again later."
-const emptyMessageErrMsg = "Empty message! Please add message content."
-const emptyReceiverErrMsg = "Empty receiver! Please add receiver."
-const emptyRecipientsErrMsg = "Empty recipients! Please add least one receiver."
-
-// Sends a SMS to a specified receiver
-func SendSMS(message string, receiver string) error {
-	return sendSMSWithTwilio(message, receiver)
-}
-
-// Send a SMS to multiple recipients
-func SendBulkSMS(message string, recipients []string) error {
-	return sendBulkSMSWithTwilio(message, recipients)
-}
 
 // Sends a SMS to a specific receiver using Twilio API
 func sendSMSWithTwilio(message string, receiver string) error {

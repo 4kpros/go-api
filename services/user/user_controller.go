@@ -5,7 +5,6 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/user/data"
 	"api/services/user/model"
 )
@@ -101,7 +100,7 @@ func (controller *UserController) GetAll(
 		types.PaginationRequest
 	},
 ) (result *data.UserResponseList, errCode int, err error) {
-	newPagination, newFilter := utils.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	userList, errCode, err := controller.Service.GetAll(
 		helpers.GetJwtContext(ctx),
 		newFilter,

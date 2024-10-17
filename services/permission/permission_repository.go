@@ -2,8 +2,8 @@ package permission
 
 import (
 	"api/common/constants"
+	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/permission/model"
 
 	"gorm.io/gorm"
@@ -57,5 +57,5 @@ func (repository *PermissionRepository) GetByRoleIdTable(roleId int64, table str
 
 func (repository *PermissionRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Permission, error) {
 	result := []model.Permission{}
-	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

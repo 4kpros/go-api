@@ -2,8 +2,8 @@ package role
 
 import (
 	"api/common/constants"
+	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/role/model"
 
 	"gorm.io/gorm"
@@ -50,5 +50,5 @@ func (repository *RoleRepository) GetByName(name string) (*model.Role, error) {
 
 func (repository *RoleRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
 	result := []model.Role{}
-	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

@@ -5,7 +5,6 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/history/data"
 	"api/services/history/model"
 )
@@ -25,7 +24,7 @@ func (controller *HistoryController) GetAll(
 		types.PaginationRequest
 	},
 ) (result *data.HistoryList, errCode int, err error) {
-	newPagination, newFilter := utils.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	historyList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return

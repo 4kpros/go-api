@@ -2,8 +2,8 @@ package user
 
 import (
 	"api/common/constants"
+	"api/common/helpers"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/user/model"
 
 	"gorm.io/gorm"
@@ -75,7 +75,7 @@ func (repository *UserRepository) GetByProvider(provider string, providerUserId 
 
 func (repository *UserRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
 	result := []model.User{}
-	return result, repository.Db.Scopes(utils.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
 
 // ----------------- Authentication service -----------------
