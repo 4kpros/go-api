@@ -47,7 +47,7 @@ This repository contains a simple API written in Go, designed to be reusable and
 ### 2. Clone the repository
 
 ```
-git clone https://github.com/your-username/go-api.git
+git clone https://github.com/4kpros/go-api.git
 ```
 
 ```
