@@ -39,7 +39,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 2. Clone the repository
 
-``
+```
 git clone https://github.com/your-username/go-api.git
 ```
 
@@ -87,11 +87,13 @@ make scan
 
 - [x] Users
 
-- [...] Add 2FA and passKey, add Google reCAPTCHA to all endpoints starting with /auth
+# TODO
 
-- [...] Add tests
+- Add 2FA and passKey, and add Google reCAPTCHA to all endpoints starting with /auth
 
-- [...] Update GitHub workflow(build image)
+- Add testing
+
+- Add CI pipeline with GitHub actions(build image)
 
 
 Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
@@ -111,6 +113,3 @@ Amazing API documentation. You can choose between 4 templates: Scalar(Default), 
 
 # Contributing
 
-We welcome contributions to this project. If you have any ideas or improvements, please feel free to open an issue or pull request.
-
-We believe that this API can be a valuable tool for developers who need to build high-performance, scalable, and maintainable applications. We encourage you to try it out and let us know what you think.
