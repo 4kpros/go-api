@@ -11,7 +11,7 @@ const letterAlphaNumericSymbol = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST
 const letterAlphaNumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 const letterNumeric = "1234567890"
 
-var src = rand.NewSource(time.Now().UnixNano())
+var src = rand.NewSource(time.Now().Unix())
 
 const (
 	letterIdxBits = 6                    // 6 bits to represent a letter index
@@ -19,7 +19,7 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
-// Generates a random numeric code of specified length.
+// GenerateRandomCode Generates a random numeric code of specified length.
 // Returns the generated code and an error if any.
 func GenerateRandomCode(length int) (int, error) {
 	safeLength := length
@@ -29,7 +29,7 @@ func GenerateRandomCode(length int) (int, error) {
 	return strconv.Atoi(generateRandomValue(letterNumeric, safeLength))
 }
 
-// Returns a random password of the specified length.
+// GenerateRandomPassword Returns a random password of the specified length.
 func GenerateRandomPassword(length int) string {
 	safeLength := length
 	if safeLength <= 0 {
@@ -38,7 +38,8 @@ func GenerateRandomPassword(length int) string {
 	return generateRandomValue(letterAlphaNumericSymbol, safeLength)
 }
 
-// Returns the generated alpha numeric with the specified length.
+// GenerateRandomAlphaNumeric Returns a generated alphanumeric
+// string with the specified length.
 func GenerateRandomAlphaNumeric(length int) string {
 	safeLength := length
 	if safeLength <= 0 {

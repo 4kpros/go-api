@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// ReadMultipartFile Reads multipart(form) file and returns the buffer
 func ReadMultipartFile(file multipart.File) ([]byte, error) {
 	defer func(File multipart.File) {
 		err := File.Close()
@@ -23,6 +24,19 @@ func ReadMultipartFile(file multipart.File) ([]byte, error) {
 	return buffer, nil
 }
 
+// ReadFileToString Reads the contents of a file into a string.
+//
+// It returns a pointer to the string for potential performance
+// optimization when dealing with large files content.
+func ReadFileToString(path string) (*string, error) {
+	buffer, err := ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	result := string(buffer)
+	return &result, nil
+}
+
 func ReadFile(path string) (result []byte, err error) {
 	absPath, _ := filepath.Abs(path)
 	result, err = os.ReadFile(absPath)
@@ -30,20 +44,6 @@ func ReadFile(path string) (result []byte, err error) {
 		return
 	}
 	return
-}
-
-// Reads the entire contents of a file into a string.
-//
-// It returns a pointer to the string for potential performance
-// optimization when dealing with large files content.
-func ReadFileToString(path string) (*string, error) {
-	absPath, _ := filepath.Abs(path)
-	content, errRead := os.ReadFile(absPath)
-	if errRead != nil {
-		return nil, errRead
-	}
-	result := string(content)
-	return &result, nil
 }
 
 func DeleteFile(path string) (isDeleted bool, err error) {
@@ -59,11 +59,11 @@ func DeleteFile(path string) (isDeleted bool, err error) {
 
 func SaveFile(buffer []byte, path string) (fileName string, err error) {
 	// Encode file name
-	fileName = fmt.Sprintf("%d_%s", time.Now().Unix(), GenerateRandomAlphaNumeric(20))
+	initialFileName := fmt.Sprintf("%d_%s", time.Now().Unix(), GenerateRandomAlphaNumeric(20))
 
 	// Create temp file
 	absPath, _ := filepath.Abs(path)
-	tempFile, err := os.CreateTemp(absPath, fileName)
+	tempFile, err := os.CreateTemp(absPath, initialFileName)
 	if err != nil {
 		return
 	}
@@ -79,5 +79,8 @@ func SaveFile(buffer []byte, path string) (fileName string, err error) {
 	if err != nil {
 		return
 	}
+
+	// Retrieve the new file name
+	fileName = tempFile.Name()[len(absPath)+1:]
 	return
 }

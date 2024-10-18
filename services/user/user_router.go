@@ -91,7 +91,7 @@ func RegisterEndpoints(
 			Summary:     "Update user",
 			Description: "Update existing user with matching id and return the new user object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -123,7 +123,7 @@ func RegisterEndpoints(
 			Summary:     "Delete user",
 			Description: "Delete existing user with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
@@ -154,7 +154,7 @@ func RegisterEndpoints(
 			Summary:     "Get user by id",
 			Description: "Return one user with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication

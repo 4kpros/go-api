@@ -61,7 +61,7 @@ func RegisterEndpoints(
 			Summary:     "Get permission by id",
 			Description: "Return one permission with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/:id", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication

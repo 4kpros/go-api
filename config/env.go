@@ -8,8 +8,9 @@ import (
 
 type Environment struct {
 	// Application config
-	AppPort int    `mapstructure:"APP_PORT"`
-	AppName string `mapstructure:"APP_NAME"`
+	AppPort  int    `mapstructure:"APP_PORT"`
+	AppName  string `mapstructure:"APP_NAME"`
+	Hostname string `mapstructure:"HOST_NAME"`
 
 	// API config
 	ApiGroup     string `mapstructure:"API_GROUP"`
