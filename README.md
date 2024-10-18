@@ -54,7 +54,7 @@ git clone https://github.com/your-username/go-api.git
 cd go-api/
 ```
 
-The entry point of the project is `cmd/` folder. In this folder the is a `main.go` file.
+The entry point of the project is `cmd/` folder. In this folder the is the `main.go` file.
 
 ### 3. Install dependencies
 
@@ -94,6 +94,3 @@ You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger
 
 <ins>Swagger template screenshot</ins>
 ![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
-
-# Contributing
-
