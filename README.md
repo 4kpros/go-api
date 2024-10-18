@@ -39,11 +39,11 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 2. Clone the repository
 
-```go
+``
 git clone https://github.com/your-username/go-api.git
 ```
 
-```go
+```
 cd go-api/
 ```
 
@@ -51,27 +51,27 @@ The entry point of the project is `cmd/` folder. In this folder the is a `main.g
 
 ### 3. Install dependencies
 
-```go
+```
 make install
 ```
 
 ### 4. Run the API
 
-```go
+```
 make build
 ```
 
-```go
+```
 make run
 ```
 
 API docs with openAPI v3.1(latest) is on 
-```go
+```
 /api/v1/docs
 ```
 
 If you want to scan vulnerabilities(security issues)
-```go
+```
 make scan
 ```
 
