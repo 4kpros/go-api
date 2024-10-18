@@ -7,6 +7,7 @@
 *.dll
 *.so
 *.dylib
+*.idea
 
 # Test binary, built with `go test -c`
 *.test
@@ -23,10 +24,10 @@ go.work.sum
 
 # env, keys, and others sensibles files
 *.env
+*.env.*
 !.env.example
 *.pem
 
 /build
 /bin
 /.build
-
