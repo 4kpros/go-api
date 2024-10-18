@@ -2,18 +2,25 @@
 
 This repository contains a simple API written in Go, designed to be reusable and easily integrated into multiple projects. The API is built with a focus on performance, scalability, and maintainability. 
 
-It provides a clean and consistent interface for accessing and managing data, making it an ideal choice for a variety of applications.
+# Features
 
+- [x] History
 
-# Key features
+- [x] Roles
 
-**- Good performance:** The API is designed to handle a high volume of requests with low latency.
+- [x] Permissions
 
-**- Scalable:** The API can be easily scaled to accommodate increasing workloads.
+- [x] Authentication
 
-**- Well-structured:** The API is well-documented and easy to use, with a consistent and intuitive interface.
+- [x] Users
 
-**- Reusable:** The API can be easily integrated into multiple projects, reducing development time and effort.
+# TODO
+
+- Add 2FA and passKey, and add Google reCAPTCHA to all endpoints starting with /auth
+
+- Add testing
+
+- Add CI pipeline with GitHub actions(build image)
 
 # To get started with the API, follow these steps:
 
@@ -74,29 +81,7 @@ If you want to scan vulnerabilities(security issues)
 ```
 make scan
 ```
-
-# Features
-
-- [x] History
-
-- [x] Roles
-
-- [x] Permissions
-
-- [x] Authentication
-
-- [x] Users
-
-# TODO
-
-- Add 2FA and passKey, and add Google reCAPTCHA to all endpoints starting with /auth
-
-- Add testing
-
-- Add CI pipeline with GitHub actions(build image)
-
-
-Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
+You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger.
 
 <ins>Scalar(default) template screenshot</ins>
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
@@ -109,7 +94,6 @@ Amazing API documentation. You can choose between 4 templates: Scalar(Default), 
 
 <ins>Swagger template screenshot</ins>
 ![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
-
 
 # Contributing
 
