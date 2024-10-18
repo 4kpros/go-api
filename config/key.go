@@ -1,45 +1,45 @@
 package config
 
 import (
-	"github.com/4kpros/go-api/common/helpers"
+	"api/common/constants"
+	"api/common/helpers"
+	"api/common/utils"
 	"go.uber.org/zap"
 )
 
 type Key struct {
-	JwtPrivateKey string
-	JwtPublicKey  string
+	JwtPrivateKey *string
+	JwtPublicKey  *string
 }
 
 var Keys = &Key{}
 
-func LoadKeys() (err error) {
-	var errTemp error
+// Loads the necessary cryptographic keys.
+func LoadKeys() error {
+	var err error
+	var errRead error
 	// JWT private key
-	Keys.JwtPrivateKey, errTemp = helpers.ReadFileContentToString("keys/jwt/private.pem")
-	if errTemp != nil {
+	Keys.JwtPrivateKey, errRead = utils.ReadFileToString(constants.ASSET_KEYS_PATH + "/jwt/private.pem")
+	if errRead != nil {
+		err = errRead
 		helpers.Logger.Error(
 			"Failed to load jwt/private.pem",
-			zap.String("Error", errTemp.Error()),
+			zap.String("Error", errRead.Error()),
 		)
-		err = errTemp
 	} else {
-		helpers.Logger.Info(
-			"Key jwt/private.pem loaded!",
-		)
+		helpers.Logger.Info("Key jwt/private.pem loaded!")
 	}
 
 	// JWT public key
-	Keys.JwtPublicKey, errTemp = helpers.ReadFileContentToString("keys/jwt/public.pem")
-	if errTemp != nil {
+	Keys.JwtPublicKey, errRead = utils.ReadFileToString(constants.ASSET_KEYS_PATH + "/jwt/public.pem")
+	if errRead != nil {
+		err = errRead
 		helpers.Logger.Error(
 			"Failed to load jwt/public.pem",
-			zap.String("Error", errTemp.Error()),
+			zap.String("Error", errRead.Error()),
 		)
-		err = errTemp
 	} else {
-		helpers.Logger.Info(
-			"Key jwt/public.pem loaded!",
-		)
+		helpers.Logger.Info("Key jwt/public.pem loaded!")
 	}
-	return
+	return err
 }

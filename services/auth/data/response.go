@@ -2,34 +2,36 @@ package data
 
 import "time"
 
-// Sign in
+// Login
 type SignInResponse struct {
-	AccessToken string    `json:"accessToken" required:"false" doc:"Access token" example:""`
-	Expires     time.Time `json:"expires" required:"false" doc:"Token expiration date time" example:""`
+	AccessToken          string     `json:"accessToken" required:"false" doc:"Access token"`
+	Expires              *time.Time `json:"expires" required:"false" doc:"Access token expiration date time"`
+	ActivateAccountToken string     `json:"activateAccountToken" required:"false" doc:"Token to account token"`
 }
 
-// Sign up
+// Register
 type SignUpResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+	ActivateAccountToken string `json:"activateAccountToken" required:"false" doc:"Token to account token"`
+	Message              string `json:"message" required:"false" doc:"Response message"`
 }
 
 // Activate account
 type ActivateAccountResponse struct {
-	ActivatedAt time.Time `json:"activatedAt" required:"false" doc:"Activation date" example:""`
+	ActivatedAt *time.Time `json:"activatedAt" required:"false" doc:"Account activation date time"`
 }
 
-// Reset password
-type ResetPasswordInitResponse struct {
-	Token string `json:"token" required:"false" doc:"Token" example:""`
+// Forgot password
+type ForgotPasswordInitResponse struct {
+	Token string `json:"token" required:"false" doc:"Token used to validate code"`
 }
-type ResetPasswordCodeResponse struct {
-	Token string `json:"token" required:"false" doc:"Token" example:""`
+type ForgotPasswordCodeResponse struct {
+	Token string `json:"token" required:"false" doc:"Token used to set new password"`
 }
-type ResetPasswordNewPasswordResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+type ForgotPasswordNewPasswordResponse struct {
+	Message string `json:"message" required:"false" doc:"Response message"`
 }
 
-// Sign out
+// Logout
 type SignOutResponse struct {
-	Message string `json:"message" required:"false" doc:"Message" example:""`
+	Message string `json:"message" required:"false" doc:"Response message"`
 }

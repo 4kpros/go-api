@@ -5,25 +5,23 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
-	"github.com/4kpros/go-api/services/auth/data"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/auth/data"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 
-func SetupEndpoints(
+func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *AuthController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	endpointConfig := types.APIEndpointConfig{
 		Group: "/auth",
 		Tag:   []string{"Authentication"},
 	}
-	const requireAuth = false
 
-	// Sign in with email
+	// Login with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -32,8 +30,8 @@ func SetupEndpoints(
 			Description:   "Login user with email and password. Account need to be activated to retrieve OK response.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -44,7 +42,7 @@ func SetupEndpoints(
 				Body data.SignInWithEmailRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithEmail(input.DeviceName, &input.Body)
+			result, errCode, err := controller.SignInWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -52,7 +50,7 @@ func SetupEndpoints(
 		},
 	)
 
-	// Sign in with phone number
+	// Login with phone number
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -61,8 +59,8 @@ func SetupEndpoints(
 			Description:   "Login user with phone number and password. Account need to be activated to retrieve OK response.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -73,7 +71,7 @@ func SetupEndpoints(
 				Body data.SignInWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithPhoneNumber(input.DeviceName, &input.Body)
+			result, errCode, err := controller.SignInWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -81,17 +79,17 @@ func SetupEndpoints(
 		},
 	)
 
-	// Sign in with provider
+	// Login with provider
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID:   "login-provider",
 			Summary:       "Login with provider",
-			Description:   "Login user with provider and and token.",
+			Description:   "Login user with a provider(Google, Facebook, ...) and token.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/provider", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -102,7 +100,7 @@ func SetupEndpoints(
 				Body data.SignInWithProviderRequest
 			},
 		) (*struct{ Body data.SignInResponse }, error) {
-			var result, errCode, err = controller.SignInWithProvider(input.DeviceName, &input.Body)
+			result, errCode, err := controller.SignInWithProvider(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -110,7 +108,7 @@ func SetupEndpoints(
 		},
 	)
 
-	// Sign up with email
+	// Register with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -119,8 +117,8 @@ func SetupEndpoints(
 			Description:   "Register new user with email and password.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -130,7 +128,7 @@ func SetupEndpoints(
 				Body data.SignUpWithEmailRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			var result, errCode, err = controller.SignUpWithEmail(&input.Body)
+			result, errCode, err := controller.SignUpWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -138,7 +136,7 @@ func SetupEndpoints(
 		},
 	)
 
-	// Sign up with phone
+	// Register with phone
 	huma.Register(
 		*humaApi,
 		huma.Operation{
@@ -147,8 +145,8 @@ func SetupEndpoints(
 			Description:   "Register new user with phone number and password.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -158,7 +156,7 @@ func SetupEndpoints(
 				Body data.SignUpWithPhoneNumberRequest
 			},
 		) (*struct{ Body data.SignUpResponse }, error) {
-			var result, errCode, err = controller.SignUpWithPhoneNumber(&input.Body)
+			result, errCode, err := controller.SignUpWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -175,8 +173,8 @@ func SetupEndpoints(
 			Description:   "Activate user account.",
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/activate", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -186,7 +184,7 @@ func SetupEndpoints(
 				Body data.ActivateAccountRequest
 			},
 		) (*struct{ Body data.ActivateAccountResponse }, error) {
-			var result, errCode, err = controller.ActivateAccount(&input.Body)
+			result, errCode, err := controller.ActivateAccount(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -194,138 +192,130 @@ func SetupEndpoints(
 		},
 	)
 
-	// Reset password step 1 with email
+	// Forgot password step 1 with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-init-email",
-			Summary:       "Reset step 1 - email",
-			Description:   "Reset user password, step 1 with email.",
+			OperationID:   "forgot-password-init-email",
+			Summary:       "Forgot step 1 - email",
+			Description:   "Forgot password step 1 initialize request with email.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/init/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
+			Path:          fmt.Sprintf("%s/forgot/init/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordWithEmailInitRequest
+				Body data.ForgotPasswordWithEmailInitRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordEmailInit(
-				&data.ResetPasswordInitRequest{
-					Email: input.Body.Email,
-				},
-			)
+			result, errCode, err := controller.ForgotPasswordEmailInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
 
-	// Reset password step 1 with phone
+	// Forgot password step 1 with phone
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-init-phone",
-			Summary:       "Reset step 1 - phone",
-			Description:   "Reset user password, step 1 with phone number.",
+			OperationID:   "forgot-password-init-phone",
+			Summary:       "Forgot step 1 - phone",
+			Description:   "Forgot password step 1 initialize request with phone number.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/init/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
+			Path:          fmt.Sprintf("%s/forgot/init/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordWithPhoneNumberInitRequest
+				Body data.ForgotPasswordWithPhoneNumberInitRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordPhoneNumberInit(
-				&data.ResetPasswordInitRequest{
-					PhoneNumber: input.Body.PhoneNumber,
-				},
-			)
+			result, errCode, err := controller.ForgotPasswordPhoneNumberInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
 
-	// Reset password step 2
+	// Forgot password step 2
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-code",
-			Summary:       "Reset step 2",
-			Description:   "Reset user password, step 2 need your code received from step 1.",
+			OperationID:   "forgot-password-code",
+			Summary:       "Forgot step 2",
+			Description:   "Forgot password step 2 validate your request with your received(email/phone) code and token from step 1.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/code", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
+			Path:          fmt.Sprintf("%s/forgot/code", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordCodeRequest
+				Body data.ForgotPasswordCodeRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordCodeResponse
+			Body data.ForgotPasswordCodeResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordCode(&input.Body)
+			result, errCode, err := controller.ForgotPasswordCode(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordCodeResponse
+				Body data.ForgotPasswordCodeResponse
 			}{Body: *result}, nil
 		},
 	)
 
-	// Reset password step 3
+	// Forgot password step 3
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "reset-password",
-			Summary:       "Reset step 3",
-			Description:   "Reset user password, step 3 to set your new password by providing a token received from step 2.",
+			OperationID:   "forgot-password-new-password",
+			Summary:       "Forgot step 3",
+			Description:   "Forgot password step 3 set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/reset/password", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
+			Path:          fmt.Sprintf("%s/forgot/password", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.ResetPasswordNewPasswordRequest
+				Body data.ForgotPasswordNewPasswordRequest
 			},
 		) (*struct {
-			Body data.ResetPasswordNewPasswordResponse
+			Body data.ForgotPasswordNewPasswordResponse
 		}, error) {
-			var result, errCode, err = controller.ResetPasswordNewPassword(&input.Body)
+			result, errCode, err := controller.ForgotPasswordNewPassword(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.ResetPasswordNewPasswordResponse
+				Body data.ForgotPasswordNewPasswordResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -334,13 +324,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "logout",
-			Summary:       "Logout",
-			Description:   "Logout user with provided token.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/logout", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "logout",
+			Summary:     "Logout",
+			Description: "Logout user with provided token.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/logout", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -350,7 +343,7 @@ func SetupEndpoints(
 				data.SignOutRequest
 			},
 		) (*struct{ Body data.SignOutResponse }, error) {
-			var result, errCode, err = controller.SignOut(input.Token)
+			result, errCode, err := controller.SignOut(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

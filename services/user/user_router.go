@@ -5,51 +5,50 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/user/data"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/user/data"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 
-func SetupEndpoints(
+func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *UserController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	var endpointConfig = types.APIEndpointConfig{
 		Group: "/users",
 		Tag:   []string{"Users"},
 	}
-	const requireAuth = true
 
 	// Create user with email
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "post-user-email",
-			Summary:       "Create user with email",
-			Description:   "Create new user by providing email and user and return created object.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/email", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "post-user-email",
+			Summary:     "Create user with email",
+			Description: "Create new user by providing email and user and return created object.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/email", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.UserWithEmailRequest
+				Body data.CreateUserWithEmailRequest
 			},
-		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.CreateWithEmail(&input.Body)
+		) (*struct{ Body data.UserResponse }, error) {
+			result, errCode, err := controller.CreateWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -57,27 +56,30 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "create-user-phone",
-			Summary:       "Create user with phone",
-			Description:   "Create new user by providing phone number and role and return created object.",
-			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/phone", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "create-user-phone",
+			Summary:     "Create user with phone",
+			Description: "Create new user by providing phone number and role and return created object.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/phone", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.UserWithPhoneNumberRequest
+				Body data.CreateUserWithPhoneNumberRequest
 			},
-		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.CreateWithPhoneNumber(&input.Body)
+		) (*struct{ Body data.UserResponse }, error) {
+			result, errCode, err := controller.CreateWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -85,13 +87,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "update-user",
-			Summary:       "Update user",
-			Description:   "Update existing user with matching id and return the new user object.",
-			Method:        http.MethodPut,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "update-user",
+			Summary:     "Update user",
+			Description: "Update existing user with matching id and return the new user object.",
+			Method:      http.MethodPut,
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -99,57 +104,14 @@ func SetupEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.UserId
-				Body data.UserRequest
+				Body data.UpdateUserRequest
 			},
-		) (*struct{ Body model.User }, error) {
-			var inputFormatted = &model.User{
-				Email:       input.Body.Email,
-				PhoneNumber: input.Body.PhoneNumber,
-				Language:    input.Body.Language,
-				Role:        input.Body.Role,
-			}
-			inputFormatted.ID = uint(input.UserId.Id)
-			var result, errCode, err = controller.UpdateUser(inputFormatted)
+		) (*struct{ Body data.UserResponse }, error) {
+			result, errCode, err := controller.UpdateUser(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
-		},
-	)
-
-	// Update user info with id
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID:   "update-user-info",
-			Summary:       "Update user info",
-			Description:   "Update existing user info with matching id and return the new user object.",
-			Method:        http.MethodPut,
-			Path:          fmt.Sprintf("%s/info/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				data.UserId
-				Body data.UserInfoRequest
-			},
-		) (*struct{ Body model.UserInfo }, error) {
-			var inputFormatted = &model.UserInfo{
-				UserName:  input.Body.UserName,
-				FirstName: input.Body.FirstName,
-				LastName:  input.Body.LastName,
-				Address:   input.Body.Address,
-			}
-			inputFormatted.ID = uint(input.UserId.Id)
-			var result, errCode, err = controller.UpdateUserInfo(inputFormatted)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body model.UserInfo }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -157,13 +119,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "delete-user",
-			Summary:       "Delete user",
-			Description:   "Delete existing user with matching id and return affected rows in database.",
-			Method:        http.MethodDelete,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "delete-user",
+			Summary:     "Delete user",
+			Description: "Delete existing user with matching id and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -172,12 +137,12 @@ func SetupEndpoints(
 			input *struct {
 				data.UserId
 			},
-		) (*struct{ Body types.DeleteResponse }, error) {
-			var result, errCode, err = controller.Delete(&input.UserId)
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.Delete(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body types.DeleteResponse }{Body: types.DeleteResponse{AffectedRows: result}}, nil
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
 		},
 	)
 
@@ -185,13 +150,16 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "get-user-id",
-			Summary:       "Get user by id",
-			Description:   "Return one user with matching id",
-			Method:        http.MethodGet,
-			Path:          fmt.Sprintf("%s/:id", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "get-user-id",
+			Summary:     "Get user by id",
+			Description: "Return one user with matching id",
+			Method:      http.MethodGet,
+			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -200,12 +168,12 @@ func SetupEndpoints(
 			input *struct {
 				data.UserId
 			},
-		) (*struct{ Body model.User }, error) {
-			var result, errCode, err = controller.GetById(&input.UserId)
+		) (*struct{ Body data.UserResponse }, error) {
+			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body model.User }{Body: *result}, nil
+			return &struct{ Body data.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -213,13 +181,25 @@ func SetupEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "get-users",
-			Summary:       "Get all users",
-			Description:   "Get all users with support for search, filter and pagination",
-			Method:        http.MethodGet,
-			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "get-user-list",
+			Summary:     "Get all users",
+			Description: "Get all users with support for search, filter and pagination",
+			Method:      http.MethodGet,
+			Path:        endpointConfig.Group,
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SECURITY_AUTH_NAME: { // Used for authentication
+						constants.PERMISSION_TABLE_NAME_USER, // Used for permission table name
+						constants.PERMISSION_READ,            // Used for permission type
+					},
+				},
+			},
+			// Metadata: map[string]any{
+			// 	"permissionTable": constants.PERMISSION_TABLE_NAME_USER,
+			// 	"permissionName":  constants.PERMISSION_READ,
+			// },
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
@@ -230,14 +210,14 @@ func SetupEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.UsersResponse
+			Body data.UserResponseList
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.UsersResponse
+				Body data.UserResponseList
 			}{Body: *result}, nil
 		},
 	)

@@ -15,31 +15,27 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 **- Reusable:** The API can be easily integrated into multiple projects, reducing development time and effort.
 
-
-# Use cases
-
-**- Web applications:** The API can be used to power web applications that need to access and manage data efficiently.
-
-**- Mobile applications:** The API can be used to develop mobile applications that need to interact with a backend server.
-
-
 # To get started with the API, follow these steps:
 
 ### 1. Requirements
 
-Make installed for shortcuts
+  - Make installed for shortcuts
 
-Docker installed if you want to build and start postgres and redis containers
+  - Docker installed if you want to build and start postgres or redis containers
 
-Build and start Redis container with the command ```make docker-redis```
+  - Build and start Redis container with the command ```make docker-redis```
 
-Build and start postgres container with the command ```make docker-postgres```
+  - Build and start postgres container with the command ```make docker-postgres```
 
-Rename .env.example to ```app.env```
+  - Rename .env.example to ```app.env```
 
-JWT .pem files with EC521 algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem``` 
+  - JWT .pem files with ES212(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
+    You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/) 
 
-Others information such configurations are on ```app.env```
+  - Password is hashed using Argon2id algorithm. If you want to customize salinity, you can edit the .env.example file
+
+
+  Others information such configurations are on ```app.env```
 
 ### 2. Clone the repository
 
@@ -74,7 +70,31 @@ API docs with openAPI v3.1(latest) is on
 /api/v1/docs
 ```
 
-Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, Stoplight, Swagger). 
+If you want to scan vulnerabilities(security issues)
+```go
+make scan
+```
+
+# Features
+
+- [x] History
+
+- [x] Roles
+
+- [x] Permissions
+
+- [x] Authentication
+
+- [x] Users
+
+- [...] Add 2FA and passKey, add Google reCAPTCHA to all endpoints starting with /auth
+
+- [...] Add tests
+
+- [...] Update GitHub workflow(build image)
+
+
+Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
 
 <ins>Scalar(default) template screenshot</ins>
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
@@ -87,30 +107,6 @@ Amazing API documentation(you can choose between 4 templates: Redocly, Scalar, S
 
 <ins>Swagger template screenshot</ins>
 ![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
-
-
-# Features
-
-- [x] History
-  - Get history with search, filter and pagination
-
-- [x] Role
-  - CRUD operations
-
-- [x] Role-permission
-  - Create and Get all with search, filter and pagination
-
-- [x] Auth
-  - Login (📩Email, 📲Phone number, ☁️Provider['Google', 'Facebook']),
-  
-  - Register (📩Email, 📲Phone number),
-  
-  - Activate account,
-    
-  - Reset password.
-
-- [x] Users
-  - CRUD operations
 
 
 # Contributing

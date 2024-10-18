@@ -1,11 +1,22 @@
 package migrate
 
 import (
-	roleMigrate "github.com/4kpros/go-api/services/role/migrate"
-	userMigrate "github.com/4kpros/go-api/services/user/migrate"
+	"api/common/helpers"
+	"api/config"
+	historyModel "api/services/history/model"
+	permissionModel "api/services/permission/model"
+	roleModel "api/services/role/model"
+	userModel "api/services/user/model"
 )
 
+// Loads and applies all migrations.
 func Start() {
-	roleMigrate.Migrate() // User migrations
-	userMigrate.Migrate() // User migrations
+	helpers.LogMigrations(
+		config.DB.AutoMigrate(
+			&historyModel.History{},
+			&roleModel.Role{},
+			&permissionModel.Permission{},
+			&userModel.User{},
+		),
+	)
 }

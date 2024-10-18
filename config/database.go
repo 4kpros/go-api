@@ -9,7 +9,8 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDatabase() (err error) {
+// Establishes a connection to the database.
+func ConnectDatabase() error {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
 		Env.PostGresHost,
@@ -20,11 +21,12 @@ func ConnectDatabase() (err error) {
 		Env.PostGresSslMode,
 		Env.PostGresTimeZone,
 	)
+	var err error
 	DB, err = gorm.Open(
 		postgres.New(postgres.Config{
 			DSN: dsn,
 		}),
 		&gorm.Config{},
 	)
-	return
+	return err
 }

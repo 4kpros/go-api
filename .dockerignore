@@ -21,10 +21,12 @@
 go.work
 go.work.sum
 
-# env file
+# env, keys, and others sensibles files
 *.env
+!.env.example
 *.pem
 
 /build
 /bin
 /.build
+

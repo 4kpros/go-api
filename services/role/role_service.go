@@ -1,93 +1,109 @@
 package role
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/role/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/role/model"
 )
 
-type RoleService interface {
-	Create(role *model.Role) (errCode int, err error)
-	Update(role *model.Role) (errCode int, err error)
-	Delete(id string) (affectedRows int64, errCode int, err error)
-	GetById(id string) (role *model.Role, errCode int, err error)
-	GetAll(filter *types.Filter, pagination *types.Pagination) (roles []model.Role, errCode int, err error)
+type RoleService struct {
+	Repository *RoleRepository
 }
 
-type RoleServiceImpl struct {
-	Repository RoleRepository
+func NewRoleService(repository *RoleRepository) *RoleService {
+	return &RoleService{Repository: repository}
 }
 
-func NewRoleServiceImpl(repository RoleRepository) RoleService {
-	return &RoleServiceImpl{Repository: repository}
-}
-
-func (service *RoleServiceImpl) Create(role *model.Role) (errCode int, err error) {
+// Create new role
+func (service *RoleService) Create(jwtToken *types.JwtToken, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
-	var foundRole, errFound = service.Repository.GetByName(role.Name)
-	if errFound != nil {
+	foundRole, err := service.Repository.GetByName(role.Name)
+	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = errFound
+		err = constants.HTTP_500_ERROR_MESSAGE("get role by name from database")
 		return
 	}
-	if foundRole != nil && foundRole.Name == role.Name {
-		var message = "This role already exists! Please enter anther one."
+	if foundRole != nil {
 		errCode = http.StatusFound
-		err = fmt.Errorf("%s", message)
+		err = constants.HTTP_302_ERROR_MESSAGE("role")
 		return
 	}
 
-	// Create new role
-	err = service.Repository.Create(role)
+	// Insert role
+	result, err = service.Repository.Create(role)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("create role from database")
 		return
 	}
 	return
 }
 
-func (service *RoleServiceImpl) Update(role *model.Role) (errCode int, err error) {
-	err = service.Repository.Update(role)
+// Update role
+func (service *RoleService) Update(jwtToken *types.JwtToken, id int64, role *model.Role) (result *model.Role, errCode int, err error) {
+	// Check if role already exists
+	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get role by name from database")
+		return
+	}
+	if foundRole != nil {
+		errCode = http.StatusFound
+		err = constants.HTTP_302_ERROR_MESSAGE("role")
+		return
+	}
+
+	// Update role
+	result, err = service.Repository.Update(id, role)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("update role from database")
+		return
 	}
 	return
 }
 
-func (service *RoleServiceImpl) Delete(id string) (affectedRows int64, errCode int, err error) {
+// Delete role with matching id and return affected rows
+func (service *RoleService) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("delete role from database")
+		return
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		var message = "Could not delete role that doesn't exists! Please enter valid id."
-		err = fmt.Errorf("%s", message)
+		err = constants.HTTP_404_ERROR_MESSAGE("Role")
 		return
 	}
 	return
 }
 
-func (service *RoleServiceImpl) GetById(id string) (role *model.Role, errCode int, err error) {
+// Return role with matching id
+func (service *RoleService) Get(jwtToken *types.JwtToken, id int64) (role *model.Role, errCode int, err error) {
 	role, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get role by id from database")
 		return
 	}
 	if role == nil {
 		errCode = http.StatusNotFound
-		var message = "Role not found! Please enter valid id."
-		err = fmt.Errorf("%s", message)
+		err = constants.HTTP_404_ERROR_MESSAGE("Role")
+		return
 	}
 	return
 }
 
-func (service *RoleServiceImpl) GetAll(filter *types.Filter, pagination *types.Pagination) (roles []model.Role, errCode int, err error) {
-	roles, err = service.Repository.GetAll(filter, pagination)
+// Return all roles with support for search, filter and pagination
+func (service *RoleService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
+	roleList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get roles from database")
 	}
 	return
 }

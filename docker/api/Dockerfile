@@ -1,33 +1,37 @@
-FROM golang:1.22.3
-
+# ----------------------- Stage building -----------------------
+FROM golang:alpine AS builder
 ENV LANG=C.UTF-8
 
 WORKDIR /app
 
-# Installing packages
-RUN apt-get -y install bash make
+# Install packages
+RUN apk update &&\
+    apk add --update --no-cache bash make
 
-# Copy project files
+# Copy the project files
 COPY . .
 
-# Install dependencies
-RUN make go-install
-# Generate swagger docs
-RUN make go-swagger
-# Build
-RUN make go-build
+# Install dependencies and build the app
+RUN go mod download
+RUN GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./.build/main ./cmd/main.go
 
-# Run
-CMD ["/go-api/build/main"]
 
+# ----------------------- Stage serve -----------------------
+
+FROM alpine:latest AS api
+ENV LANG=C.UTF-8
 
 WORKDIR /app
 
+# Install packages
+RUN apk add bash
 
-# Copy and add permissions to entrypoint script
-RUN cp ./docker/api/entrypoint.sh ./
-RUN chmod +x ./entrypoint.sh
+# Copy the binary and assets to the container
+COPY --from=builder /app/.build/ ./
+COPY --from=builder /app/assets ./assets
+COPY --from=builder /app/.env.example ./app.env
+RUN chmod +x /app/main
 
-EXPOSE 9000
+EXPOSE 3100
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/main"]

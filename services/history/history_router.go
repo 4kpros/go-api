@@ -2,39 +2,38 @@ package history
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/middleware"
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/history/data"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/history/data"
+
 	"github.com/danielgtaylor/huma/v2"
 )
 
-func SetupEndpoints(
+func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *HistoryController,
 ) {
-	var endpointConfig = struct {
-		Group string
-		Tag   []string
-	}{
+	var endpointConfig = types.APIEndpointConfig{
 		Group: "/history",
 		Tag:   []string{"History"},
 	}
-	const requireAuth = true
 
 	// Get all history
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID:   "get-history",
-			Summary:       "Get history",
-			Description:   "Get history with support for search, filter and pagination",
-			Method:        http.MethodGet,
-			Path:          fmt.Sprintf("%s ", endpointConfig.Group),
-			Middlewares:   *middleware.GenerateMiddlewares(requireAuth),
-			Tags:          endpointConfig.Tag,
+			OperationID: "get-history-list",
+			Summary:     "Get history list",
+			Description: "Get history list with support for search, filter and pagination",
+			Method:      http.MethodGet,
+			Path:        endpointConfig.Group,
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+			},
+			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
@@ -45,14 +44,14 @@ func SetupEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.HistoriesResponse
+			Body data.HistoryList
 		}, error) {
-			var result, errCode, err = controller.GetAll(&input.Filter, &input.PaginationRequest)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.HistoriesResponse
+				Body data.HistoryList
 			}{Body: *result}, nil
 		},
 	)

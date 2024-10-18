@@ -1,13 +1,35 @@
 package model
 
 import (
-	"github.com/4kpros/go-api/common/types"
+	"api/common/types"
+	"api/services/history/data"
 )
 
 type History struct {
 	types.BaseGormModel
-	Action string `json:"action" doc:"User action" example:"r"`
-	UserId int    `json:"userId" doc:"User id" example:"1"`
-	Table  string `json:"table" doc:"Table name" example:"user"`
-	RowId  int    `json:"rowId" doc:"Affected row inside table" example:"1"`
+	Action string `gorm:"default:null"`
+	UserId int64  `gorm:"default:null"`
+	Table  string `gorm:"default:null"`
+	RowId  int64  `gorm:"default:null"`
+}
+
+func (history *History) ToResponse() *data.HistoryResponse {
+	resp := &data.HistoryResponse{}
+	resp.ID = history.ID
+	resp.CreatedAt = history.CreatedAt
+	resp.UpdatedAt = history.UpdatedAt
+	resp.DeletedAt = history.DeletedAt
+	resp.Action = history.Action
+	resp.UserId = history.UserId
+	resp.Table = history.Table
+	resp.RowId = history.RowId
+	return resp
+}
+
+func ToResponseList(historyList []History) []data.HistoryResponse {
+	resp := make([]data.HistoryResponse, len(historyList))
+	for index, history := range historyList {
+		resp[index] = *history.ToResponse()
+	}
+	return resp
 }

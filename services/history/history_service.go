@@ -3,36 +3,25 @@ package history
 import (
 	"net/http"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/services/history/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/services/history/model"
 )
 
-type HistoryService interface {
-	Create(history *model.History) (errCode int, err error)
-	GetAll(filter *types.Filter, pagination *types.Pagination) (histories []model.History, errCode int, err error)
+type HistoryService struct {
+	Repository *HistoryRepository
 }
 
-type HistoryServiceImpl struct {
-	Repository HistoryRepository
+func NewHistoryService(repository *HistoryRepository) *HistoryService {
+	return &HistoryService{Repository: repository}
 }
 
-func NewHistoryServiceImpl(repository HistoryRepository) HistoryService {
-	return &HistoryServiceImpl{Repository: repository}
-}
-
-func (service *HistoryServiceImpl) Create(history *model.History) (errCode int, err error) {
-	err = service.Repository.Create(history)
+// Return all history with support for search, filter and pagination
+func (service *HistoryService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (result []model.History, errCode int, err error) {
+	result, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		return
-	}
-	return
-}
-
-func (service *HistoryServiceImpl) GetAll(filter *types.Filter, pagination *types.Pagination) (histories []model.History, errCode int, err error) {
-	histories, err = service.Repository.GetAll(filter, pagination)
-	if err != nil {
-		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get all history from database")
 	}
 	return
 }

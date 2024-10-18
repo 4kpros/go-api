@@ -1,22 +1,41 @@
 package main
 
 import (
-	"github.com/4kpros/go-api/cmd/api"
-	"github.com/4kpros/go-api/cmd/migrate"
-	"github.com/4kpros/go-api/common/helpers"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/config"
+	"api/cmd/api"
+	"api/cmd/di"
+	"api/cmd/migrate"
+	"api/common/helpers"
+	"api/common/utils/security"
+	"api/config"
+
 	"go.uber.org/zap"
 )
 
-var errInit error = nil
+// Contains all errors during init() execution
+var errInit error
 
+func main() {
+	// Check if there are any errors when initializing the app
+	if errInit != nil {
+		helpers.Logger.Warn(
+			"There are some errors when initializing app!",
+			zap.String("Error", "Please fix previous errors before."),
+		)
+		panic(errInit)
+	}
+
+	migrate.Start()
+	di.InjectDependencies()
+	api.Start()
+}
+
+// Called before the main entry point. It's useful for setting up
+// configurations before starting the application.
 func init() {
-	// Setup logger
-	helpers.SetupLogger()
+	helpers.EnableLogger()
 
 	// Load env
-	errEnv := config.LoadEnv(".")
+	errEnv := config.LoadEnv()
 	if errEnv != nil {
 		errInit = errEnv
 		helpers.Logger.Error(
@@ -24,23 +43,19 @@ func init() {
 			zap.String("Error", errEnv.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"Env loaded!",
-		)
+		helpers.Logger.Info("Env loaded!")
 	}
 
-	// Test argon2id with empty password
-	_, errArgon2id := utils.EncryptWithArgon2id("")
+	// Test Argon2id with an empty password to ensure that everything works as expected
+	_, errArgon2id := security.CheckArgon2id()
 	if errArgon2id != nil {
 		errInit = errArgon2id
 		helpers.Logger.Error(
-			"Failed to setup argon2id!",
+			"Failed to initialize argon2id!",
 			zap.String("Error", errArgon2id.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"Argon2id setup ok!",
-		)
+		helpers.Logger.Info("Argon2id initialized ok!")
 	}
 
 	// Connect database
@@ -52,9 +67,7 @@ func init() {
 			zap.String("Error", errDB.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"Connected to database!",
-		)
+		helpers.Logger.Info("Connected to database!")
 	}
 
 	// Connect redis
@@ -66,9 +79,7 @@ func init() {
 			zap.String("Error", errRedis.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"Connected to Redis!",
-		)
+		helpers.Logger.Info("Connected to Redis!")
 	}
 
 	// Load keys
@@ -76,13 +87,11 @@ func init() {
 	if errKeys != nil {
 		errInit = errKeys
 		helpers.Logger.Error(
-			"Failed to load all keys!",
+			"Failed to load keys!",
 			zap.String("Error", errRedis.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"All keys loaded!",
-		)
+		helpers.Logger.Info("Keys loaded!")
 	}
 
 	// Load OpenAPI templates
@@ -94,20 +103,6 @@ func init() {
 			zap.String("Error", errRedis.Error()),
 		)
 	} else {
-		helpers.Logger.Info(
-			"All OpenAPI templates loaded!",
-		)
+		helpers.Logger.Info("OpenAPI templates loaded!")
 	}
-}
-
-func main() {
-	if errInit != nil {
-		helpers.Logger.Warn(
-			"There are some errors when initializing app!",
-			zap.String("Error", "Please fix previous errors before."),
-		)
-		return
-	}
-	migrate.Start()
-	api.Start()
 }

@@ -1,16 +1,28 @@
 package config
 
 import (
+	"api/common/constants"
+
 	"github.com/spf13/viper"
 )
 
 type Environment struct {
+	// Application config
+	AppPort  int    `mapstructure:"APP_PORT"`
+	AppName  string `mapstructure:"APP_NAME"`
+	Hostname string `mapstructure:"HOST_NAME"`
+
 	// API config
-	ApiPort      int    `mapstructure:"API_PORT"`
-	ApiKey       string `mapstructure:"API_KEY"`
 	ApiGroup     string `mapstructure:"API_GROUP"`
 	GinMode      string `mapstructure:"GIN_MODE"`
 	AllowedHosts string `mapstructure:"ALLOWED_HOSTS"`
+
+	// Redis for fast memory key-value storage
+	RedisHost     string `mapstructure:"REDIS_HOST"`
+	RedisPort     int    `mapstructure:"REDIS_PORT"`
+	RedisUserName string `mapstructure:"REDIS_USERNAME"`
+	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
+	RedisDatabase int    `mapstructure:"REDIS_DB"`
 
 	// Postgres database
 	PostGresHost     string `mapstructure:"POSTGRES_HOST"`
@@ -21,24 +33,24 @@ type Environment struct {
 	PostGresSslMode  string `mapstructure:"POSTGRES_SSL_MODE"`
 	PostGresTimeZone string `mapstructure:"POSTGRES_TIME_ZONE"`
 
-	// JWT
-	JwtExpiresSignIn              int `mapstructure:"JWT_EXPIRES_SIGN_IN"`
-	JwtExpiresSignInStayConnected int `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
-	JwtExpiresDefault             int `mapstructure:"JWT_EXPIRES_DEFAULT"`
-
-	// Redis for fast key-value database
-	RedisHost     string `mapstructure:"REDIS_HOST"`
-	RedisPort     int    `mapstructure:"REDIS_PORT"`
-	RedisUserName string `mapstructure:"REDIS_USERNAME"`
-	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
-	RedisDatabase int    `mapstructure:"REDIS_DB"`
-
-	// Crypto Argon2id for passwords
+	// Argon2id to hash password
 	ArgonMemoryLeft  int `mapstructure:"ARGON_PARAM_MEMORY_L"`
 	ArgonMemoryRight int `mapstructure:"ARGON_PARAM_MEMORY_R"`
 	ArgonIterations  int `mapstructure:"ARGON_PARAM_ITERATIONS"`
 	ArgonSaltLength  int `mapstructure:"ARGON_PARAM_SALT_LENGTH"`
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
+
+	// JWT for authentication and user session
+	JwtExpiresSignIn                 int    `mapstructure:"JWT_EXPIRES_SIGN_IN"`
+	JwtExpiresSignInStayConnected    int    `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
+	JwtExpiresDefault                int    `mapstructure:"JWT_EXPIRES_DEFAULT"`
+	JwtIssuerSessionPassphrase       string `mapstructure:"JWT_ISSUER_SESSION_PASSPHRASE"`
+	JwtIssuerSessionApiKeyPassphrase string `mapstructure:"JWT_ISSUER_SESSION_API_KEY_PASSPHRASE"`
+	JwtIssuerAuthPassphrase          string `mapstructure:"JWT_ISSUER_AUTH_PASSPHRASE"`
+
+	// reCAPTCHA
+	GoogleReCAPTCHASiteKey string  `mapstructure:"GOOGLE_RECAPTCHA_SITE_KEY"`
+	GoogleReCAPTCHAScore   float32 `mapstructure:"GOOGLE_RECAPTCHA_SCORE"`
 
 	// SMTP
 	SmtpHost     string `mapstructure:"SMTP_HOST"`
@@ -46,20 +58,45 @@ type Environment struct {
 	SmtpUsername string `mapstructure:"SMTP_USERNAME"`
 	SmtpPassword string `mapstructure:"SMTP_PASSWORD"`
 	SmtpSender   string `mapstructure:"SMTP_SENDER"`
+
+	// SMS
+	TwilioAccountSid   string `mapstructure:"TWILIO_ACCOUNT_SID"`
+	TwilioApiKey       string `mapstructure:"TWILIO_API_KEY"`
+	TwilioApiSecret    string `mapstructure:"TWILIO_API_SECRET"`
+	TwilioSenderNumber string `mapstructure:"TWILIO_SENDER_NUMBER"`
+
+	// Login with Google
+	GooglePlusClientId string `mapstructure:"GOOGLE_PLUS_CLIENT_ID"`
+
+	// Login with Facebook
+	FacebookAppName       string `mapstructure:"FACEBOOK_APP_NAME"`
+	FacebookAppId         string `mapstructure:"FACEBOOK_APP_ID"`
+	FacebookClientSecret  string `mapstructure:"FACEBOOK_CLIENT_SECRET"`
+	FacebookDebugTokenUrl string `mapstructure:"FACEBOOK_DEBUG_TOKEN_URL"`
+	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`
 }
 
 var Env = &Environment{}
 
-func LoadEnv(path string) (err error) {
-	viper.AddConfigPath(path)
+// Loads environment variables.
+func LoadEnv() error {
+	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err == nil {
 		err = viper.Unmarshal(Env)
+		if err == nil {
+			// Initialize the JWT issuer passphrase after the environment file is loaded
+			constants.InitializeJwtIssuerConst(
+				Env.JwtIssuerSessionPassphrase,
+				Env.JwtIssuerSessionApiKeyPassphrase,
+				Env.JwtIssuerAuthPassphrase,
+			)
+		}
 	}
-	return
+	return err
 }

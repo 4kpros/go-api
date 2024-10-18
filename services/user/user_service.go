@@ -4,131 +4,113 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/user/model"
+	"api/common/constants"
+	"api/common/types"
+	"api/common/utils"
+	"api/services/user/model"
 )
 
-type UserService interface {
-	Create(user *model.User) (result *model.User, errCode int, err error)
-	UpdateUser(user *model.User) (errCode int, err error)
-	UpdateUserInfo(userInfo *model.UserInfo) (errCode int, err error)
-	Delete(id string) (result int64, errCode int, err error)
-	GetById(id string) (result *model.User, errCode int, err error)
-	GetUserInfoById(id string) (result *model.UserInfo, errCode int, err error)
-	GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.User, errCode int, err error)
+type UserService struct {
+	Repository *UserRepository
 }
 
-type UserServiceImpl struct {
-	Repository UserRepository
+func NewUserService(repository *UserRepository) *UserService {
+	return &UserService{Repository: repository}
 }
 
-func NewUserServiceImpl(repository UserRepository) UserService {
-	return &UserServiceImpl{Repository: repository}
-}
-
-func (service *UserServiceImpl) Create(user *model.User) (result *model.User, errCode int, err error) {
+// Create user
+func (service *UserService) Create(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
-	var foundUser *model.User = nil
-	var errFound error = nil
-	var message string = ""
+	var foundUser *model.User
+	var errMsg string = ""
 	if utils.IsEmailValid(user.Email) {
-		message = "User with this email already exists! Please use another email."
-		foundUser, errFound = service.Repository.GetByEmail(user.Email)
+		errMsg = "email"
+		foundUser, err = service.Repository.GetByEmail(user.Email)
 	} else {
-		message = "User with this phone number already exists! Please use another phone number."
-		foundUser, errFound = service.Repository.GetByPhoneNumber(user.PhoneNumber)
+		errMsg = "phone number"
+		foundUser, err = service.Repository.GetByPhoneNumber(user.PhoneNumber)
 	}
-	if errFound != nil {
+	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = errFound
+		err = constants.HTTP_500_ERROR_MESSAGE(
+			fmt.Sprintf("get user by %s from database", errMsg),
+		)
 		return
 	}
 	if foundUser != nil && foundUser.Email == user.Email {
 		errCode = http.StatusFound
-		err = fmt.Errorf("%s", message)
+		err = constants.HTTP_302_ERROR_MESSAGE(
+			fmt.Sprintf("user %s", errMsg),
+		)
 		return
 	}
 
 	// Create new user
-	var randomPassword = utils.GenerateRandomPassword(8)
-	var newUser = &model.User{
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		Password:    randomPassword,
-		Role:        user.Role,
+	randomPassword := utils.GenerateRandomPassword(8)
+	newUser := &model.User{
+		Email:        user.Email,
+		PhoneNumber:  user.PhoneNumber,
+		RoleId:       user.RoleId,
+		Password:     randomPassword,
+		SignInMethod: constants.AUTH_LOGIN_METHOD_DEFAULT,
 	}
-	err = service.Repository.Create(newUser)
+	result, err = service.Repository.Create(newUser)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
 		return
 	}
-	result = newUser
 	return
 }
 
-func (service *UserServiceImpl) UpdateUser(user *model.User) (errCode int, err error) {
-	err = service.Repository.UpdateUser(user)
+// Update user
+func (service *UserService) UpdateUser(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdateUser(user.ID, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("update user from database")
 	}
 	return
 }
 
-func (service *UserServiceImpl) UpdateUserInfo(userInfo *model.UserInfo) (errCode int, err error) {
-	err = service.Repository.UpdateUserInfo(userInfo)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-	}
-	return
-}
-
-func (service *UserServiceImpl) Delete(id string) (affectedRows int64, errCode int, err error) {
+// Delete user with matching id and return affected rows
+func (service *UserService) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("delete user from database")
+		return
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		var message = "Could not delete user that doesn't exists! Please enter valid id."
-		err = fmt.Errorf("%s", message)
+		err = constants.HTTP_404_ERROR_MESSAGE("User")
 		return
 	}
 	return
 }
 
-func (service *UserServiceImpl) GetById(id string) (user *model.User, errCode int, err error) {
+// Return user with matching id
+func (service *UserService) Get(jwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get user by id from database")
 		return
 	}
 	if user == nil {
 		errCode = http.StatusNotFound
-		var message = "User not found! Please enter valid id."
-		err = fmt.Errorf("%s", message)
-	}
-	return
-}
-
-func (service *UserServiceImpl) GetUserInfoById(id string) (user *model.UserInfo, errCode int, err error) {
-	user, err = service.Repository.GetUserInfoById(id)
-	if err != nil {
-		errCode = http.StatusInternalServerError
+		err = constants.HTTP_404_ERROR_MESSAGE("User")
 		return
 	}
-	if user == nil {
-		errCode = http.StatusNotFound
-		var message = "User information not found! Please enter valid id."
-		err = fmt.Errorf("%s", message)
-	}
 	return
 }
 
-func (service *UserServiceImpl) GetAll(filter *types.Filter, pagination *types.Pagination) (users []model.User, errCode int, err error) {
-	users, err = service.Repository.GetAll(filter, pagination)
+// Return all users with support for search, filter and pagination
+func (service *UserService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
+	userList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
+		err = constants.HTTP_500_ERROR_MESSAGE("get users from database")
 	}
 	return
 }

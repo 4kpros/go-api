@@ -1,41 +1,38 @@
 package history
 
 import (
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/history/data"
-	"github.com/4kpros/go-api/services/history/model"
+	"context"
+
+	"api/common/helpers"
+	"api/common/types"
+	"api/services/history/data"
+	"api/services/history/model"
 )
 
 type HistoryController struct {
-	Service HistoryService
+	Service *HistoryService
 }
 
-func NewHistoryController(service HistoryService) *HistoryController {
+func NewHistoryController(service *HistoryService) *HistoryController {
 	return &HistoryController{Service: service}
 }
 
-func (controller *HistoryController) Create(input *model.History) (result *model.History, errCode int, err error) {
-	var history = *input
-	errCode, err = controller.Service.Create(&history)
+func (controller *HistoryController) GetAll(
+	ctx *context.Context,
+	input *struct {
+		types.Filter
+		types.PaginationRequest
+	},
+) (result *data.HistoryList, errCode int, err error) {
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	historyList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &history
-	return
-}
-
-func (controller *HistoryController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.HistoriesResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
-	var histories []model.History
-	histories, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
-	if err != nil {
-		return
+	result = &data.HistoryList{
+		Data: model.ToResponseList(historyList),
 	}
-	result = &data.HistoriesResponse{
-		Data: histories,
-	}
-	result.Filter = NewFilter
+	result.Filter = newFilter
 	result.Pagination = newPagination
 	return
 }

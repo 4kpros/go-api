@@ -1,30 +1,27 @@
 package helpers
 
 import (
-	"fmt"
-
 	"go.uber.org/zap"
 )
 
 var Logger *zap.Logger
 
-func SetupLogger() {
+// Enable the logger to print beautiful log messages.
+func EnableLogger() {
 	Logger, _ = zap.NewProduction()
 	defer Logger.Sync()
 }
 
-func PrintMigrationLogs(err error, modelName string) {
-	var message string
+// Custom log message for migrations.
+func LogMigrations(err error) {
 	if err != nil {
-		message = fmt.Sprintf("Failed to migrate << %s >> table !", modelName)
 		Logger.Error(
-			message,
+			"Failed to migrate some tables!",
 			zap.String("Error", err.Error()),
 		)
 		return
 	}
-	message = fmt.Sprintf("Migration for table << %s >> Done !", modelName)
 	Logger.Info(
-		message,
+		"Migration done for all tables!",
 	)
 }

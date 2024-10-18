@@ -1,48 +1,62 @@
 package role
 
 import (
-	"strconv"
+	"context"
 
-	"github.com/4kpros/go-api/common/types"
-	"github.com/4kpros/go-api/common/utils"
-	"github.com/4kpros/go-api/services/role/data"
-	"github.com/4kpros/go-api/services/role/model"
+	"api/common/helpers"
+	"api/common/types"
+	"api/services/role/data"
+	"api/services/role/model"
 )
 
 type RoleController struct {
-	Service RoleService
+	Service *RoleService
 }
 
-func NewRoleController(service RoleService) *RoleController {
+func NewRoleController(service *RoleService) *RoleController {
 	return &RoleController{Service: service}
 }
 
-func (controller *RoleController) Create(input *data.RoleRequest) (result *model.Role, errCode int, err error) {
-	var role = model.Role{
-		Name:        (*input).Name,
-		Description: (*input).Description,
-	}
-	errCode, err = controller.Service.Create(&role)
-	if err != nil {
-		return
-	}
-	result = &role
+func (controller *RoleController) Create(
+	ctx *context.Context,
+	input *struct {
+		Body data.RoleRequest
+	},
+) (result *model.Role, errCode int, err error) {
+	result, errCode, err = controller.Service.Create(
+		helpers.GetJwtContext(ctx),
+		&model.Role{
+			Name:        input.Body.Name,
+			Description: input.Body.Description,
+		},
+	)
 	return
 }
 
-func (controller *RoleController) Update(input *model.Role) (result *model.Role, errCode int, err error) {
-	var role = *input
-	errCode, err = controller.Service.Update(&role)
-	if err != nil {
-		return
-	}
-	result = &role
+func (controller *RoleController) Update(
+	ctx *context.Context,
+	input *struct {
+		data.RoleId
+		Body data.RoleRequest
+	},
+) (result *model.Role, errCode int, err error) {
+	result, errCode, err = controller.Service.Update(
+		helpers.GetJwtContext(ctx), input.ID,
+		&model.Role{
+			Name:        input.Body.Name,
+			Description: input.Body.Description,
+		},
+	)
 	return
 }
 
-func (controller *RoleController) Delete(input *data.RoleId) (result int64, errCode int, err error) {
-	var affectedRows int64
-	affectedRows, errCode, err = controller.Service.Delete(strconv.Itoa(input.Id))
+func (controller *RoleController) Delete(
+	ctx *context.Context,
+	input *struct {
+		data.RoleId
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
 	}
@@ -50,9 +64,13 @@ func (controller *RoleController) Delete(input *data.RoleId) (result int64, errC
 	return
 }
 
-func (controller *RoleController) GetById(input *data.RoleId) (result *model.Role, errCode int, err error) {
-	var role *model.Role
-	role, errCode, err = controller.Service.GetById(strconv.Itoa(input.Id))
+func (controller *RoleController) Get(
+	ctx *context.Context,
+	input *struct {
+		data.RoleId
+	},
+) (result *model.Role, errCode int, err error) {
+	role, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
 	}
@@ -60,17 +78,22 @@ func (controller *RoleController) GetById(input *data.RoleId) (result *model.Rol
 	return
 }
 
-func (controller *RoleController) GetAll(filter *types.Filter, pagination *types.PaginationRequest) (result *data.RolesResponse, errCode int, err error) {
-	var newPagination, NewFilter = utils.GetPaginationFiltersFromQuery(filter, pagination)
-	var roles []model.Role
-	roles, errCode, err = controller.Service.GetAll(NewFilter, newPagination)
+func (controller *RoleController) GetAll(
+	ctx *context.Context,
+	input *struct {
+		types.Filter
+		types.PaginationRequest
+	},
+) (result *data.RoleResponseList, errCode int, err error) {
+	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
+	roleList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.RolesResponse{
-		Data: roles,
+	result = &data.RoleResponseList{
+		Data: model.ToResponseList(roleList),
 	}
-	result.Filter = NewFilter
+	result.Filter = newFilter
 	result.Pagination = newPagination
 	return
 }
