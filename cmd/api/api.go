@@ -89,6 +89,8 @@ func Start() {
 	)
 
 	// Register endpoints
+	// Serve static files as favicon
+	engine.Static("/static", constants.ASSET_PUBLIC_PATH)
 	// Register endpoint for docs with support for custom template
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(*config.OpenAPITemplates.Scalar))
