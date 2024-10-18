@@ -2,18 +2,25 @@
 
 This repository contains a simple API written in Go, designed to be reusable and easily integrated into multiple projects. The API is built with a focus on performance, scalability, and maintainability. 
 
-It provides a clean and consistent interface for accessing and managing data, making it an ideal choice for a variety of applications.
+# Features
 
+- [x] History
 
-# Key features
+- [x] Roles
 
-**- Good performance:** The API is designed to handle a high volume of requests with low latency.
+- [x] Permissions
 
-**- Scalable:** The API can be easily scaled to accommodate increasing workloads.
+- [x] Authentication
 
-**- Well-structured:** The API is well-documented and easy to use, with a consistent and intuitive interface.
+- [x] Users
 
-**- Reusable:** The API can be easily integrated into multiple projects, reducing development time and effort.
+# TODO
+
+- Add 2FA and passKey, and add Google reCAPTCHA to all endpoints starting with /auth
+
+- Add testing
+
+- Add CI pipeline with GitHub actions(build image)
 
 # To get started with the API, follow these steps:
 
@@ -29,7 +36,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
   - Rename .env.example to ```app.env```
 
-  - JWT .pem files with ES212(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
+  - JWT .pem files with ES512(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
     You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/) 
 
   - Password is hashed using Argon2id algorithm. If you want to customize salinity, you can edit the .env.example file
@@ -39,7 +46,7 @@ It provides a clean and consistent interface for accessing and managing data, ma
 
 ### 2. Clone the repository
 
-``
+```
 git clone https://github.com/your-username/go-api.git
 ```
 
@@ -47,7 +54,7 @@ git clone https://github.com/your-username/go-api.git
 cd go-api/
 ```
 
-The entry point of the project is `cmd/` folder. In this folder the is a `main.go` file.
+The entry point of the project is `cmd/` folder. In this folder the is the `main.go` file.
 
 ### 3. Install dependencies
 
@@ -74,27 +81,7 @@ If you want to scan vulnerabilities(security issues)
 ```
 make scan
 ```
-
-# Features
-
-- [x] History
-
-- [x] Roles
-
-- [x] Permissions
-
-- [x] Authentication
-
-- [x] Users
-
-- [...] Add 2FA and passKey, add Google reCAPTCHA to all endpoints starting with /auth
-
-- [...] Add tests
-
-- [...] Update GitHub workflow(build image)
-
-
-Amazing API documentation. You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger. 
+You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger.
 
 <ins>Scalar(default) template screenshot</ins>
 ![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
@@ -107,10 +94,3 @@ Amazing API documentation. You can choose between 4 templates: Scalar(Default), 
 
 <ins>Swagger template screenshot</ins>
 ![OpenAPI-Swagger](https://github.com/user-attachments/assets/823fbfe6-7886-450d-b58f-81b66b13f2b4)
-
-
-# Contributing
-
-We welcome contributions to this project. If you have any ideas or improvements, please feel free to open an issue or pull request.
-
-We believe that this API can be a valuable tool for developers who need to build high-performance, scalable, and maintainable applications. We encourage you to try it out and let us know what you think.
