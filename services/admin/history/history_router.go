@@ -1,14 +1,15 @@
 package history
 
 import (
+	"api/common/constants"
+	"api/common/types"
+	"api/services/admin"
+	"api/services/admin/history/data"
+
 	"context"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
-
-	"api/common/constants"
-	"api/common/types"
-	"api/services/admin/history/data"
 )
 
 func RegisterEndpoints(
@@ -31,7 +32,14 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -40,9 +48,9 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				types.Filter
-				types.PaginationRequest
-			},
+			types.Filter
+			types.PaginationRequest
+		},
 		) (*struct {
 			Body data.HistoryList
 		}, error) {

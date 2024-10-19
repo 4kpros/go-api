@@ -33,7 +33,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/email", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionCreate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -64,7 +71,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/phone", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionCreate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -95,7 +109,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionUpdate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -127,7 +148,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionDelete,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -158,7 +186,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -191,13 +226,12 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FEATURE_PERMISSION, // Feature scope
+						admin.FeaturePermission, // Feature scope
 					},
 				},
 			},
 			Metadata: map[string]any{
-				constants.PERMISSION_METADATA_TABLE_KEY: constants.FeatureAdmin,
-				"permissionName":                        constants.PermissionRead,
+				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"api/services/admin"
 	"context"
 	"fmt"
 	"net/http"
@@ -33,7 +34,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionUpdate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -64,7 +72,14 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -95,7 +110,14 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						admin.FeaturePermission, // Feature scope
+					},
+				},
+			},
+			Metadata: map[string]any{
+				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

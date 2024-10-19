@@ -2,4 +2,4 @@ package admin
 
 import "api/common/constants"
 
-const FEATURE_PERMISSION = constants.FeatureAdmin
+const FeaturePermission = constants.FeatureShopping

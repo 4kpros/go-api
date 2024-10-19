@@ -32,7 +32,11 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -48,7 +52,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
 		},
 	)
 
@@ -63,7 +67,11 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/info", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -79,7 +87,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileInfoResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.UserProfileInfoResponse }{Body: *data.FromUserInfo(result)}, nil
 		},
 	)
 
@@ -94,7 +102,11 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/mfa", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -110,7 +122,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileMfaResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.UserProfileMfaResponse }{Body: *data.FromUserMfa(result)}, nil
 		},
 	)
 
@@ -125,7 +137,11 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -154,7 +170,11 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SecurityAuthName: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -168,7 +188,7 @@ func RegisterEndpoints(
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
 		},
 	)
 }
