@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 )
 
-// Generates an HMAC-SHA256 signature for the given message using the provided private key.
+// EncodeHMAC_SHA256 Generates an HMAC-SHA256 signature for the given message using the provided private key.
 // Returns the hex-encoded signature as a string and any error encountered.
 func EncodeHMAC_SHA256(message string, privateKey string) (string, error) {
 	mac := hmac.New(sha256.New, []byte(privateKey))
@@ -17,9 +17,9 @@ func EncodeHMAC_SHA256(message string, privateKey string) (string, error) {
 	return hex.EncodeToString(mac.Sum(nil)), nil
 }
 
-// Verifies the HMAC-SHA256 signature of a message using the provided private key.
+// VerifyHmacSha256 Verifies the HMAC-SHA256 signature of a message using the provided private key.
 // Returns true if the signature is valid, false otherwise.
-func VerifyHMAC_SHA256(message string, privateKey string, hash string) (bool, error) {
+func VerifyHmacSha256(message string, privateKey string, hash string) (bool, error) {
 	sig, err := hex.DecodeString(hash)
 	if err != nil {
 		return false, err

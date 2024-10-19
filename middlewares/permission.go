@@ -1,16 +1,17 @@
 package middlewares
 
 import (
-	"api/services/admin/permission"
 	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
-	"github.com/danielgtaylor/huma/v2"
+	"api/services/admin/permission"
 )
 
-// Checks resource permissions
+// PermissionMiddleware Checks resource permissions
 func PermissionMiddleware(api huma.API, repository *permission.Repository) func(huma.Context, func(huma.Context)) {
 	return func(ctx huma.Context, next func(huma.Context)) {
 		// Retrieve jwtToken, table permission, permission type

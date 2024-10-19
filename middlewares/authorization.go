@@ -1,18 +1,19 @@
 package middlewares
 
 import (
-	"api/common/constants"
-	"api/common/helpers"
-	"api/common/utils/security"
-	"api/config"
 	"fmt"
 	"net/http"
 	"slices"
 
 	"github.com/danielgtaylor/huma/v2"
+
+	"api/common/constants"
+	"api/common/helpers"
+	"api/common/utils/security"
+	"api/config"
 )
 
-// Handles authentication for API requests.
+// AuthMiddleware Handles authentication for API requests.
 func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
@@ -33,7 +34,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		token := helpers.ExtractBearerTokenHeader(&ctx)
 		if len(token) < 1 {
 			errMessage = "Missing or bad authorization header! Please enter valid information."
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
+			_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
 		jwtDecoded, errDecoded := security.DecodeJWTToken(

@@ -20,7 +20,10 @@ func GenerateOTP(userId int64, userName string, issuer string) (string, error) {
 	}
 
 	// Save secret on redis
-	config.SetRedisString(GetJWTCachedKey(userId, issuer), secret.Secret())
+	err = config.SetRedisString(GetJWTCachedKey(userId, issuer), secret.Secret())
+	if err != nil {
+		return "", err
+	}
 
 	// Construct the OTP URL for generating QR code
 	otpURL := fmt.Sprintf("otpauth://totp/%s:%s?secret=%s&issuer=%s",
@@ -31,12 +34,12 @@ func GenerateOTP(userId int64, userName string, issuer string) (string, error) {
 	)
 
 	// Generate QR code
-	// TODO contact storage api
+	// TODO generate QR code with otpURL
 
 	return otpURL, nil
 }
 
-// Validate the OTP code
+// ValidateOTP Validates the OTP code
 func ValidateOTP(otpCode int, userId int64, issuer string) bool {
 	userSecret, err := config.GetRedisString(GetJWTCachedKey(userId, issuer))
 	if err != nil {

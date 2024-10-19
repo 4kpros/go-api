@@ -14,7 +14,7 @@ import (
 
 var contextGoogle = context.Background()
 
-// Verifies a Google ID token and returns the associated user information.
+// VerifyGoogleIDToken Verifies a Google ID token and returns the associated user information.
 //
 // Refer to the official Google documentation for more details on token validation
 // https://developers.google.com/identity/openid-connect/openid-connect#discovery

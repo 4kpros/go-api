@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-// Fetch url and return response
-func HTTP_GET(url string, response any) error {
+// HttpGet Fetches url and return response
+func HttpGet(url string, response any) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

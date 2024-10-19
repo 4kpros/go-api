@@ -3,7 +3,6 @@ package di
 import (
 	"api/cmd/api"
 	"api/config"
-	"api/services/admin"
 	"api/services/admin/history"
 	"api/services/admin/permission"
 	"api/services/admin/role"
@@ -18,48 +17,40 @@ func InjectDependencies() {
 	var userRepo = user.NewRepository(config.DB)
 	var roleRepo = role.NewRepository(config.DB)
 	var permissionRepo = permission.NewPermissionRepository(config.DB)
-	// Auth
-	api.Controllers.AuthController = auth.NewAuthController(
-		auth.NewAuthService(
-			userRepo,
-		),
-	)
 	// History
-	api.Controllers.HistoryController = history.NewController(
+	api.AllControllers.HistoryController = history.NewController(
 		history.NewService(
 			historyRepo,
 		),
 	)
+	// Auth
+	api.AllControllers.AuthController = auth.NewAuthController(
+		auth.NewAuthService(
+			userRepo,
+		),
+	)
 	// Role
-	api.Controllers.RoleController = role.NewController(
+	api.AllControllers.RoleController = role.NewController(
 		role.NewService(
 			roleRepo,
 		),
 	)
 	// Permission
-	api.Controllers.PermissionController = permission.NewController(
+	api.AllControllers.PermissionController = permission.NewController(
 		permission.NewService(
 			permissionRepo,
 		),
 	)
 	// User
-	api.Controllers.UserController = user.NewController(
+	api.AllControllers.UserController = user.NewController(
 		user.NewService(
 			userRepo,
 		),
 	)
 	// Profile
-	api.Controllers.ProfileController = profile.NewProfileController(
+	api.AllControllers.ProfileController = profile.NewProfileController(
 		profile.NewProfileService(
 			userRepo,
-		),
-	)
-	// Admin
-	api.Controllers.AdminController = admin.NewController(
-		admin.NewAdminService(
-			userRepo,
-			roleRepo,
-			permissionRepo,
 		),
 	)
 }

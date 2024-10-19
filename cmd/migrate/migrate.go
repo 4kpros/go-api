@@ -9,7 +9,7 @@ import (
 	userModel "api/services/admin/user/model"
 )
 
-// Loads and applies all migrations.
+// Start Loads and applies all migrations.
 func Start() {
 	helpers.LogMigrations(
 		config.DB.AutoMigrate(
