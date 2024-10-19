@@ -1,6 +1,12 @@
 package api
 
 import (
+	history2 "api/services/admin/history"
+	permission2 "api/services/admin/permission"
+	role2 "api/services/admin/role"
+	user2 "api/services/admin/user"
+	auth2 "api/services/common/auth"
+	profile2 "api/services/common/profile"
 	"fmt"
 	"net/http"
 
@@ -8,13 +14,6 @@ import (
 	"api/config"
 	"api/middlewares"
 	"api/services/admin"
-	"api/services/auth"
-	"api/services/history"
-	"api/services/permission"
-	"api/services/profile"
-	"api/services/role"
-	"api/services/user"
-
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 
@@ -22,12 +21,12 @@ import (
 )
 
 type APIControllers struct {
-	AuthController       *auth.AuthController
-	HistoryController    *history.HistoryController
-	RoleController       *role.RoleController
-	PermissionController *permission.PermissionController
-	UserController       *user.UserController
-	ProfileController    *profile.ProfileController
+	AuthController       *auth2.AuthController
+	HistoryController    *history2.HistoryController
+	RoleController       *role2.RoleController
+	PermissionController *permission2.PermissionController
+	UserController       *user2.UserController
+	ProfileController    *profile2.ProfileController
 	AdminController      *admin.AdminController
 }
 
@@ -35,12 +34,12 @@ var Controllers = &APIControllers{}
 
 // Register all API endpoints
 func registerEndpoints(humaApi *huma.API) {
-	auth.RegisterEndpoints(humaApi, Controllers.AuthController)
-	history.RegisterEndpoints(humaApi, Controllers.HistoryController)
-	role.RegisterEndpoints(humaApi, Controllers.RoleController)
-	permission.RegisterEndpoints(humaApi, Controllers.PermissionController)
-	user.RegisterEndpoints(humaApi, Controllers.UserController)
-	profile.RegisterEndpoints(humaApi, Controllers.ProfileController)
+	auth2.RegisterEndpoints(humaApi, Controllers.AuthController)
+	history2.RegisterEndpoints(humaApi, Controllers.HistoryController)
+	role2.RegisterEndpoints(humaApi, Controllers.RoleController)
+	permission2.RegisterEndpoints(humaApi, Controllers.PermissionController)
+	user2.RegisterEndpoints(humaApi, Controllers.UserController)
+	profile2.RegisterEndpoints(humaApi, Controllers.ProfileController)
 	admin.RegisterEndpoints(humaApi, Controllers.AdminController)
 }
 

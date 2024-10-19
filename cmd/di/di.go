@@ -4,53 +4,53 @@ import (
 	"api/cmd/api"
 	"api/config"
 	"api/services/admin"
-	"api/services/auth"
-	"api/services/history"
-	"api/services/permission"
-	"api/services/profile"
-	"api/services/role"
-	"api/services/user"
+	history2 "api/services/admin/history"
+	permission2 "api/services/admin/permission"
+	role2 "api/services/admin/role"
+	user2 "api/services/admin/user"
+	auth2 "api/services/common/auth"
+	profile2 "api/services/common/profile"
 )
 
 // Inject all dependencies
 func InjectDependencies() {
-	var historyRepo = history.NewHistoryRepository(config.DB)
-	var userRepo = user.NewUserRepository(config.DB)
-	var roleRepo = role.NewRoleRepository(config.DB)
-	var permissionRepo = permission.NewPermissionRepository(config.DB)
+	var historyRepo = history2.NewHistoryRepository(config.DB)
+	var userRepo = user2.NewUserRepository(config.DB)
+	var roleRepo = role2.NewRoleRepository(config.DB)
+	var permissionRepo = permission2.NewPermissionRepository(config.DB)
 	// Auth
-	api.Controllers.AuthController = auth.NewAuthController(
-		auth.NewAuthService(
+	api.Controllers.AuthController = auth2.NewAuthController(
+		auth2.NewAuthService(
 			userRepo,
 		),
 	)
 	// History
-	api.Controllers.HistoryController = history.NewHistoryController(
-		history.NewHistoryService(
+	api.Controllers.HistoryController = history2.NewHistoryController(
+		history2.NewHistoryService(
 			historyRepo,
 		),
 	)
 	// Role
-	api.Controllers.RoleController = role.NewRoleController(
-		role.NewRoleService(
+	api.Controllers.RoleController = role2.NewRoleController(
+		role2.NewRoleService(
 			roleRepo,
 		),
 	)
 	// Permission
-	api.Controllers.PermissionController = permission.NewPermissionController(
-		permission.NewPermissionService(
+	api.Controllers.PermissionController = permission2.NewPermissionController(
+		permission2.NewPermissionService(
 			permissionRepo,
 		),
 	)
 	// User
-	api.Controllers.UserController = user.NewUserController(
-		user.NewUserService(
+	api.Controllers.UserController = user2.NewUserController(
+		user2.NewUserService(
 			userRepo,
 		),
 	)
 	// Profile
-	api.Controllers.ProfileController = profile.NewProfileController(
-		profile.NewProfileService(
+	api.Controllers.ProfileController = profile2.NewProfileController(
+		profile2.NewProfileService(
 			userRepo,
 		),
 	)

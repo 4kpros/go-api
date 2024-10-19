@@ -1,13 +1,12 @@
 package middlewares
 
 import (
+	"api/services/admin/permission"
 	"net/http"
 
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
-	"api/services/permission"
-
 	"github.com/danielgtaylor/huma/v2"
 )
 
