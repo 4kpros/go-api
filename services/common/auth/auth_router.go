@@ -1,19 +1,19 @@
 package auth
 
 import (
-	data2 "api/services/common/auth/data"
 	"context"
 	"fmt"
 	"net/http"
 
 	"api/common/constants"
 	"api/common/types"
+	"api/services/common/auth/data"
 	"github.com/danielgtaylor/huma/v2"
 )
 
 func RegisterEndpoints(
 	humaApi *huma.API,
-	controller *AuthController,
+	controller *Controller,
 ) {
 	endpointConfig := types.APIEndpointConfig{
 		Group: "/auth",
@@ -37,15 +37,15 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.SignInDevice
-				Body data2.SignInWithEmailRequest
+				data.LoginDevice
+				Body data.LoginWithEmailRequest
 			},
-		) (*struct{ Body data2.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithEmail(&ctx, input)
+		) (*struct{ Body data.LoginResponse }, error) {
+			result, errCode, err := controller.LoginWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignInResponse }{Body: *result}, nil
+			return &struct{ Body data.LoginResponse }{Body: *result}, nil
 		},
 	)
 
@@ -66,15 +66,15 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.SignInDevice
-				Body data2.SignInWithPhoneNumberRequest
+				data.LoginDevice
+				Body data.LoginWithPhoneNumberRequest
 			},
-		) (*struct{ Body data2.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithPhoneNumber(&ctx, input)
+		) (*struct{ Body data.LoginResponse }, error) {
+			result, errCode, err := controller.LoginWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignInResponse }{Body: *result}, nil
+			return &struct{ Body data.LoginResponse }{Body: *result}, nil
 		},
 	)
 
@@ -95,15 +95,15 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.SignInDevice
-				Body data2.SignInWithProviderRequest
+				data.LoginDevice
+				Body data.LoginWithProviderRequest
 			},
-		) (*struct{ Body data2.SignInResponse }, error) {
-			result, errCode, err := controller.SignInWithProvider(&ctx, input)
+		) (*struct{ Body data.LoginResponse }, error) {
+			result, errCode, err := controller.LoginWithProvider(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignInResponse }{Body: *result}, nil
+			return &struct{ Body data.LoginResponse }{Body: *result}, nil
 		},
 	)
 
@@ -124,14 +124,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.SignUpWithEmailRequest
+				Body data.RegisterWithEmailRequest
 			},
-		) (*struct{ Body data2.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithEmail(&ctx, input)
+		) (*struct{ Body data.RegisterResponse }, error) {
+			result, errCode, err := controller.RegisterWithEmail(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignUpResponse }{Body: *result}, nil
+			return &struct{ Body data.RegisterResponse }{Body: *result}, nil
 		},
 	)
 
@@ -152,14 +152,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.SignUpWithPhoneNumberRequest
+				Body data.RegisterWithPhoneNumberRequest
 			},
-		) (*struct{ Body data2.SignUpResponse }, error) {
-			result, errCode, err := controller.SignUpWithPhoneNumber(&ctx, input)
+		) (*struct{ Body data.RegisterResponse }, error) {
+			result, errCode, err := controller.RegisterWithPhoneNumber(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignUpResponse }{Body: *result}, nil
+			return &struct{ Body data.RegisterResponse }{Body: *result}, nil
 		},
 	)
 
@@ -180,14 +180,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.ActivateAccountRequest
+				Body data.ActivateAccountRequest
 			},
-		) (*struct{ Body data2.ActivateAccountResponse }, error) {
+		) (*struct{ Body data.ActivateAccountResponse }, error) {
 			result, errCode, err := controller.ActivateAccount(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.ActivateAccountResponse }{Body: *result}, nil
+			return &struct{ Body data.ActivateAccountResponse }{Body: *result}, nil
 		},
 	)
 
@@ -199,7 +199,7 @@ func RegisterEndpoints(
 			Summary:       "Forgot step 1 - email",
 			Description:   "Forgot password step 1 initialize request with email.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/forgot/init/email", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/initemail", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -208,17 +208,17 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.ForgotPasswordWithEmailInitRequest
+				Body data.ForgotPasswordWithEmailInitRequest
 			},
 		) (*struct {
-			Body data2.ForgotPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
 			result, errCode, err := controller.ForgotPasswordEmailInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.ForgotPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -231,7 +231,7 @@ func RegisterEndpoints(
 			Summary:       "Forgot step 1 - phone",
 			Description:   "Forgot password step 1 initialize request with phone number.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/forgot/init/phone", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/initphone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -240,17 +240,17 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.ForgotPasswordWithPhoneNumberInitRequest
+				Body data.ForgotPasswordWithPhoneNumberInitRequest
 			},
 		) (*struct {
-			Body data2.ForgotPasswordInitResponse
+			Body data.ForgotPasswordInitResponse
 		}, error) {
 			result, errCode, err := controller.ForgotPasswordPhoneNumberInit(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.ForgotPasswordInitResponse
+				Body data.ForgotPasswordInitResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -263,7 +263,7 @@ func RegisterEndpoints(
 			Summary:       "Forgot step 2",
 			Description:   "Forgot password step 2 validate your request with your received(email/phone) code and token from step 1.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/forgot/code", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/checkcode", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -272,17 +272,17 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.ForgotPasswordCodeRequest
+				Body data.ForgotPasswordCodeRequest
 			},
 		) (*struct {
-			Body data2.ForgotPasswordCodeResponse
+			Body data.ForgotPasswordCodeResponse
 		}, error) {
 			result, errCode, err := controller.ForgotPasswordCode(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.ForgotPasswordCodeResponse
+				Body data.ForgotPasswordCodeResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -295,7 +295,7 @@ func RegisterEndpoints(
 			Summary:       "Forgot step 3",
 			Description:   "Forgot password step 3 set your new password by providing a token received from step 2.",
 			Method:        http.MethodPost,
-			Path:          fmt.Sprintf("%s/forgot/password", endpointConfig.Group),
+			Path:          fmt.Sprintf("%s/forgot/newpassword", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -304,17 +304,17 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.ForgotPasswordNewPasswordRequest
+				Body data.ForgotPasswordNewPasswordRequest
 			},
 		) (*struct {
-			Body data2.ForgotPasswordNewPasswordResponse
+			Body data.ForgotPasswordNewPasswordResponse
 		}, error) {
 			result, errCode, err := controller.ForgotPasswordNewPassword(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.ForgotPasswordNewPasswordResponse
+				Body data.ForgotPasswordNewPasswordResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -338,15 +338,13 @@ func RegisterEndpoints(
 		},
 		func(
 			ctx context.Context,
-			input *struct {
-				data2.SignOutRequest
-			},
-		) (*struct{ Body data2.SignOutResponse }, error) {
-			result, errCode, err := controller.SignOut(&ctx, input)
+			input *struct{},
+		) (*struct{ Body data.LogoutResponse }, error) {
+			result, errCode, err := controller.Logout(&ctx)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.SignOutResponse }{Body: *result}, nil
+			return &struct{ Body data.LogoutResponse }{Body: *result}, nil
 		},
 	)
 }

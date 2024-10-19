@@ -21,7 +21,7 @@ import (
 )
 
 type APIControllers struct {
-	AuthController       *auth2.AuthController
+	AuthController       *auth2.Controller
 	HistoryController    *history2.HistoryController
 	RoleController       *role2.RoleController
 	PermissionController *permission2.PermissionController

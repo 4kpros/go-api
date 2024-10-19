@@ -1,7 +1,6 @@
 package auth
 
 import (
-	data2 "api/services/common/auth/data"
 	"context"
 	"fmt"
 	"net/http"
@@ -9,23 +8,24 @@ import (
 
 	"api/common/helpers"
 	"api/common/utils"
+	"api/services/common/auth/data"
 )
 
-type AuthController struct {
-	Service *AuthService
+type Controller struct {
+	Service *Service
 }
 
-func NewAuthController(service *AuthService) *AuthController {
-	return &AuthController{Service: service}
+func NewAuthController(service *Service) *Controller {
+	return &Controller{Service: service}
 }
 
-func (controller *AuthController) SignInWithEmail(
+func (controller *Controller) LoginWithEmail(
 	ctx *context.Context,
 	input *struct {
-		data2.SignInDevice
-		Body data2.SignInWithEmailRequest
+		data.LoginDevice
+		Body data.LoginWithEmailRequest
 	},
-) (result *data2.SignInResponse, errCode int, err error) {
+) (result *data.LoginResponse, errCode int, err error) {
 	// Check input
 	isEmailValid := utils.IsEmailValid(input.Body.Email)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
@@ -52,18 +52,18 @@ func (controller *AuthController) SignInWithEmail(
 	}
 
 	// Execute the service
-	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
-		&data2.SignInRequest{
+	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.Login(
+		&data.LoginRequest{
 			Email:         input.Body.Email,
 			Password:      input.Body.Password,
 			StayConnected: input.Body.StayConnected,
 		},
-		&input.SignInDevice,
+		&input.LoginDevice,
 	)
 	if err != nil {
 		return
 	}
-	result = &data2.SignInResponse{
+	result = &data.LoginResponse{
 		AccessToken:          accessToken,
 		Expires:              accessExpires,
 		ActivateAccountToken: activateAccountToken,
@@ -71,13 +71,13 @@ func (controller *AuthController) SignInWithEmail(
 	return
 }
 
-func (controller *AuthController) SignInWithPhoneNumber(
+func (controller *Controller) LoginWithPhoneNumber(
 	ctx *context.Context,
 	input *struct {
-		data2.SignInDevice
-		Body data2.SignInWithPhoneNumberRequest
+		data.LoginDevice
+		Body data.LoginWithPhoneNumberRequest
 	},
-) (result *data2.SignInResponse, errCode int, err error) {
+) (result *data.LoginResponse, errCode int, err error) {
 	// Check input
 	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
@@ -104,18 +104,18 @@ func (controller *AuthController) SignInWithPhoneNumber(
 	}
 
 	// Execute the service
-	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.SignIn(
-		&data2.SignInRequest{
+	accessToken, accessExpires, activateAccountToken, errCode, err := controller.Service.Login(
+		&data.LoginRequest{
 			PhoneNumber:   input.Body.PhoneNumber,
 			Password:      input.Body.Password,
 			StayConnected: input.Body.StayConnected,
 		},
-		&input.SignInDevice,
+		&input.LoginDevice,
 	)
 	if err != nil {
 		return
 	}
-	result = &data2.SignInResponse{
+	result = &data.LoginResponse{
 		AccessToken:          accessToken,
 		Expires:              accessExpires,
 		ActivateAccountToken: activateAccountToken,
@@ -123,13 +123,13 @@ func (controller *AuthController) SignInWithPhoneNumber(
 	return
 }
 
-func (controller *AuthController) SignInWithProvider(
+func (controller *Controller) LoginWithProvider(
 	ctx *context.Context,
 	input *struct {
-		data2.SignInDevice
-		Body data2.SignInWithProviderRequest
+		data.LoginDevice
+		Body data.LoginWithProviderRequest
 	},
-) (result *data2.SignInResponse, errCode int, err error) {
+) (result *data.LoginResponse, errCode int, err error) {
 	// Check input
 	isProviderValid := utils.IsAuthProviderValid(input.Body.Provider)
 	if !isProviderValid {
@@ -141,23 +141,23 @@ func (controller *AuthController) SignInWithProvider(
 	// Execute the service
 	accessToken := ""
 	var accessExpires *time.Time
-	accessToken, accessExpires, errCode, err = controller.Service.SignInWithProvider(&input.Body, &input.SignInDevice)
+	accessToken, accessExpires, errCode, err = controller.Service.LoginWithProvider(&input.Body, &input.LoginDevice)
 	if err != nil {
 		return
 	}
-	result = &data2.SignInResponse{
+	result = &data.LoginResponse{
 		AccessToken: accessToken,
 		Expires:     accessExpires,
 	}
 	return
 }
 
-func (controller *AuthController) SignUpWithEmail(
+func (controller *Controller) RegisterWithEmail(
 	ctx *context.Context,
 	input *struct {
-		Body data2.SignUpWithEmailRequest
+		Body data.RegisterWithEmailRequest
 	},
-) (result *data2.SignUpResponse, errCode int, err error) {
+) (result *data.RegisterResponse, errCode int, err error) {
 	// Check input
 	isEmailValid := utils.IsEmailValid(input.Body.Email)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
@@ -185,8 +185,8 @@ func (controller *AuthController) SignUpWithEmail(
 
 	// Execute the service
 	var activateAccountToken string
-	activateAccountToken, errCode, err = controller.Service.SignUp(
-		&data2.SignUpRequest{
+	activateAccountToken, errCode, err = controller.Service.Register(
+		&data.RegisterRequest{
 			Email:    input.Body.Email,
 			Password: input.Body.Password,
 		},
@@ -194,19 +194,19 @@ func (controller *AuthController) SignUpWithEmail(
 	if err != nil {
 		return
 	}
-	result = &data2.SignUpResponse{
+	result = &data.RegisterResponse{
 		ActivateAccountToken: activateAccountToken,
 		Message:              "Account created! Please activate your account to start using your services.",
 	}
 	return
 }
 
-func (controller *AuthController) SignUpWithPhoneNumber(
+func (controller *Controller) RegisterWithPhoneNumber(
 	ctx *context.Context,
 	input *struct {
-		Body data2.SignUpWithPhoneNumberRequest
+		Body data.RegisterWithPhoneNumberRequest
 	},
-) (result *data2.SignUpResponse, errCode int, err error) {
+) (result *data.RegisterResponse, errCode int, err error) {
 	// Check input
 	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
 	isPasswordValid, missingPasswordChars := utils.IsPasswordValid(input.Body.Password)
@@ -234,8 +234,8 @@ func (controller *AuthController) SignUpWithPhoneNumber(
 
 	// Execute the service
 	var activateAccountToken string
-	activateAccountToken, errCode, err = controller.Service.SignUp(
-		&data2.SignUpRequest{
+	activateAccountToken, errCode, err = controller.Service.Register(
+		&data.RegisterRequest{
 			PhoneNumber: input.Body.PhoneNumber,
 			Password:    input.Body.Password,
 		},
@@ -243,37 +243,37 @@ func (controller *AuthController) SignUpWithPhoneNumber(
 	if err != nil {
 		return
 	}
-	result = &data2.SignUpResponse{
+	result = &data.RegisterResponse{
 		ActivateAccountToken: activateAccountToken,
 		Message:              "Account created! Please activate your account to start using your services.",
 	}
 	return
 }
 
-func (controller *AuthController) ActivateAccount(
+func (controller *Controller) ActivateAccount(
 	ctx *context.Context,
 	input *struct {
-		Body data2.ActivateAccountRequest
+		Body data.ActivateAccountRequest
 	},
-) (result *data2.ActivateAccountResponse, errCode int, err error) {
+) (result *data.ActivateAccountResponse, errCode int, err error) {
 	activatedAt, errCode, err := controller.Service.ActivateAccount(&input.Body)
 	if err != nil {
 		return
 	}
-	result = &data2.ActivateAccountResponse{
+	result = &data.ActivateAccountResponse{
 		ActivatedAt: activatedAt,
 	}
 	return
 }
 
-func (controller *AuthController) ForgotPasswordEmailInit(
+func (controller *Controller) ForgotPasswordEmailInit(
 	ctx *context.Context,
 	input *struct {
-		Body data2.ForgotPasswordWithEmailInitRequest
+		Body data.ForgotPasswordWithEmailInitRequest
 	},
-) (result *data2.ForgotPasswordInitResponse, errCode int, err error) {
+) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
 	token, errCode, err := controller.Service.ForgotPasswordInit(
-		&data2.ForgotPasswordInitRequest{
+		&data.ForgotPasswordInitRequest{
 			Email: input.Body.Email,
 		},
 	)
@@ -285,18 +285,18 @@ func (controller *AuthController) ForgotPasswordEmailInit(
 		err = fmt.Errorf("%s", "Failed to start the process! Please try again later.")
 		return
 	}
-	result = &data2.ForgotPasswordInitResponse{
+	result = &data.ForgotPasswordInitResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ForgotPasswordPhoneNumberInit(
+func (controller *Controller) ForgotPasswordPhoneNumberInit(
 	ctx *context.Context,
 	input *struct {
-		Body data2.ForgotPasswordWithPhoneNumberInitRequest
+		Body data.ForgotPasswordWithPhoneNumberInitRequest
 	},
-) (result *data2.ForgotPasswordInitResponse, errCode int, err error) {
+) (result *data.ForgotPasswordInitResponse, errCode int, err error) {
 	// Check input
 	isPhoneNumberValid := utils.IsPhoneNumberValid(input.Body.PhoneNumber)
 	if !isPhoneNumberValid {
@@ -307,7 +307,7 @@ func (controller *AuthController) ForgotPasswordPhoneNumberInit(
 
 	// Execute the service
 	token, errCode, err := controller.Service.ForgotPasswordInit(
-		&data2.ForgotPasswordInitRequest{
+		&data.ForgotPasswordInitRequest{
 			PhoneNumber: input.Body.PhoneNumber,
 		},
 	)
@@ -319,55 +319,52 @@ func (controller *AuthController) ForgotPasswordPhoneNumberInit(
 		err = fmt.Errorf("%s", "Failed to start the process! Please try again later.")
 		return
 	}
-	result = &data2.ForgotPasswordInitResponse{
+	result = &data.ForgotPasswordInitResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ForgotPasswordCode(
+func (controller *Controller) ForgotPasswordCode(
 	ctx *context.Context,
 	input *struct {
-		Body data2.ForgotPasswordCodeRequest
+		Body data.ForgotPasswordCodeRequest
 	},
-) (result *data2.ForgotPasswordCodeResponse, errCode int, err error) {
+) (result *data.ForgotPasswordCodeResponse, errCode int, err error) {
 	token, errCode, err := controller.Service.ForgotPasswordCode(&input.Body)
 	if err != nil {
 		return
 	}
-	result = &data2.ForgotPasswordCodeResponse{
+	result = &data.ForgotPasswordCodeResponse{
 		Token: token,
 	}
 	return
 }
 
-func (controller *AuthController) ForgotPasswordNewPassword(
+func (controller *Controller) ForgotPasswordNewPassword(
 	ctx *context.Context,
 	input *struct {
-		Body data2.ForgotPasswordNewPasswordRequest
+		Body data.ForgotPasswordNewPasswordRequest
 	},
-) (result *data2.ForgotPasswordNewPasswordResponse, errCode int, err error) {
+) (result *data.ForgotPasswordNewPasswordResponse, errCode int, err error) {
 	errCode, err = controller.Service.ForgotPasswordNewPassword(&input.Body)
 	if err != nil {
 		return
 	}
-	result = &data2.ForgotPasswordNewPasswordResponse{
+	result = &data.ForgotPasswordNewPasswordResponse{
 		Message: "Password successful changed! Please sign in to start using our services.",
 	}
 	return
 }
 
-func (controller *AuthController) SignOut(
+func (controller *Controller) Logout(
 	ctx *context.Context,
-	input *struct {
-		data2.SignOutRequest
-	},
-) (result *data2.SignOutResponse, errCode int, err error) {
-	errCode, err = controller.Service.SignOut(helpers.GetJwtContext(ctx), helpers.GetBearerContext(ctx))
+) (result *data.LogoutResponse, errCode int, err error) {
+	errCode, err = controller.Service.Logout(helpers.GetJwtContext(ctx), helpers.GetBearerContext(ctx))
 	if err != nil {
 		return
 	}
-	result = &data2.SignOutResponse{
+	result = &data.LogoutResponse{
 		Message: "Successful signed out! See you soon bye.",
 	}
 	return

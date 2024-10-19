@@ -12,7 +12,7 @@ type UserResponse struct {
 	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number"`
 	RoleId      int64  `json:"roleId" required:"false" doc:"RoleId id"`
 
-	SignInMethod   string     `json:"signInMethod" required:"false" doc:"How the user should login ? with email, phone number or external provider?"`
+	LoginMethod    string     `json:"loginMethod" required:"false" doc:"How the user should login ? with email, phone number or external provider?"`
 	Provider       string     `json:"provider" required:"false" doc:"Provider name"`
 	ProviderUserId string     `json:"providerUserId" required:"false" doc:"User id from the provider"`
 	IsActivated    bool       `json:"isActivated" required:"false" doc:"Is user account activated ?"`

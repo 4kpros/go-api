@@ -17,7 +17,7 @@ type User struct {
 	RoleId      int64  `gorm:"default:null"`
 	Password    string `gorm:"default:null"`
 
-	SignInMethod   string     `gorm:"default:null"`
+	LoginMethod    string     `gorm:"default:null"`
 	Provider       string     `gorm:"default:null"`
 	ProviderUserId string     `gorm:"default:null"`
 	IsActivated    bool       `gorm:"default:null"`
@@ -73,7 +73,7 @@ func (user *User) ToResponse() *data.UserResponse {
 	resp.PhoneNumber = user.PhoneNumber
 	resp.RoleId = user.RoleId
 
-	resp.SignInMethod = user.SignInMethod
+	resp.LoginMethod = user.LoginMethod
 	resp.Provider = user.Provider
 	resp.ProviderUserId = user.ProviderUserId
 	resp.IsActivated = user.IsActivated
