@@ -19,7 +19,7 @@ func NewService(repository *Repository) *Service {
 // Update permission
 func (service *Service) Update(jwtToken *types.JwtToken, permission *model.Permission) (result *model.Permission, errCode int, err error) {
 	// Check if permission already exists(unique by group of "roleId" and "table")
-	foundPermission, err := service.Repository.GetByRoleIdTable(permission.RoleId, permission.Table)
+	foundPermission, err := service.Repository.GetByRoleIdTable(permission.RoleId, "///////////////////")
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get permission by roleId and table from database")
@@ -27,10 +27,10 @@ func (service *Service) Update(jwtToken *types.JwtToken, permission *model.Permi
 	}
 	if foundPermission != nil {
 		// Update only necessary fields
-		foundPermission.Read = permission.Read
-		foundPermission.Create = permission.Create
-		foundPermission.Update = permission.Update
-		foundPermission.Delete = permission.Delete
+		//foundPermission.Read = permission.Read
+		//foundPermission.Create = permission.Create
+		//foundPermission.Update = permission.Update
+		//foundPermission.Delete = permission.Delete
 		result, err = service.Repository.Update(foundPermission.ID, foundPermission)
 		if err != nil {
 			errCode = http.StatusInternalServerError
