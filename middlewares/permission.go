@@ -25,12 +25,12 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		}
 
 		// Check permission
-		permissionTable, _ := ctx.Operation().Metadata[constants.PERMISSION_METADATA_TABLE_KEY].(string)
-		permissionType, _ := ctx.Operation().Metadata[constants.PERMISSION_METADATA_TYPE_KEY].(string)
-		if checkUserPermissions(repository, jwtToken, permissionTable, permissionType) {
-			next(ctx)
-			return
-		}
+		//permissionTable, _ := ctx.Operation().Metadata[constants.PERMISSION_METADATA_TABLE_KEY].(string)
+		//permissionType, _ := ctx.Operation().Metadata[constants.PERMISSION_METADATA_TYPE_KEY].(string)
+		//if checkUserPermissions(repository, jwtToken, permissionTable, permissionType) {
+		//	next(ctx)
+		//	return
+		//}
 
 		tempErr := constants.Http401InvalidPermissionErrorMessage()
 		_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
@@ -44,22 +44,22 @@ func checkUserPermissions(repository *permission.Repository, jwtToken *types.Jwt
 		return true
 	}
 
-	if jwtToken.Issuer == constants.JwtIssuerSession {
-		foundPermission, _ := repository.GetByRoleIdTable(jwtToken.RoleId, table)
-		if foundPermission != nil && (foundPermission.Table == "*" || foundPermission.Table == table) && foundPermission.RoleId == jwtToken.RoleId {
-			if permissionType == constants.PermissionCreate && foundPermission.Create {
-				return true
-			}
-			if permissionType == constants.PermissionRead && foundPermission.Read {
-				return true
-			}
-			if permissionType == constants.PermissionUpdate && foundPermission.Update {
-				return true
-			}
-			if permissionType == constants.PermissionDelete && foundPermission.Delete {
-				return true
-			}
-		}
-	}
+	//if jwtToken.Issuer == constants.JwtIssuerSession {
+	//	foundPermission, _ := repository.GetByRoleIdTable(jwtToken.RoleId, table)
+	//	if foundPermission != nil && (foundPermission.Table == "*" || foundPermission.Table == table) && foundPermission.RoleId == jwtToken.RoleId {
+	//		if permissionType == constants.PermissionCreate && foundPermission.Create {
+	//			return true
+	//		}
+	//		if permissionType == constants.PermissionRead && foundPermission.Read {
+	//			return true
+	//		}
+	//		if permissionType == constants.PermissionUpdate && foundPermission.Update {
+	//			return true
+	//		}
+	//		if permissionType == constants.PermissionDelete && foundPermission.Delete {
+	//			return true
+	//		}
+	//	}
+	//}
 	return false
 }
