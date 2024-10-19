@@ -25,7 +25,7 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	}
 	tokenValidator, err := googleIdToken.NewValidator(contextGoogle)
 	if err != nil {
-		return nil, constants.HTTP_500_ERROR_MESSAGE("validate Google token")
+		return nil, constants.Http500ErrorMessage("validate Google token")
 	}
 	payload, err := tokenValidator.Validate(contextGoogle, token, config.Env.GooglePlusClientId)
 	if err != nil {

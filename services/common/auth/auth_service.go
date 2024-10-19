@@ -20,10 +20,10 @@ import (
 )
 
 type Service struct {
-	Repository *user.UserRepository
+	Repository *user.Repository
 }
 
-func NewAuthService(repository *user.UserRepository) *Service {
+func NewAuthService(repository *user.Repository) *Service {
 	return &Service{Repository: repository}
 }
 
@@ -63,14 +63,14 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 				Device:   device.DeviceName,
 				App:      device.App,
 			},
-			constants.JWT_ISSUER_SESSION,
+			constants.JwtIssuerSession,
 			security.NewExpiresDateLogin(input.StayConnected),
 			config.Keys.JwtPrivateKey,
 			config.AppendToRedisStringList,
 		)
 		if err != nil || accessJwtToken == nil || len(accessToken) <= 0 {
 			errCode = http.StatusInternalServerError
-			err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
+			err = constants.Http500ErrorMessage("encode JWT token")
 			return
 		}
 
@@ -84,7 +84,7 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 	randomCode, err = utils.GenerateRandomCode(6)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		err = constants.Http500ErrorMessage("generate random code")
 		return
 	}
 
@@ -99,14 +99,14 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 			App:      "*",
 			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_AUTH_ACTIVATE,
+		constants.JwtIssuerAuthActivate,
 		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
 	if err != nil || activateAccountJwtToken == nil || len(activateAccountToken) <= 0 {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("encode jwt token")
+		err = constants.Http500ErrorMessage("encode jwt token")
 		return
 	}
 	errCode = http.StatusForbidden
@@ -143,7 +143,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	// Validate provider token and update user
 	var newUser = &model.User{}
 	var expires int64 = 0
-	if input.Provider == constants.AUTH_PROVIDER_GOOGLE {
+	if input.Provider == constants.AuthProviderGoogle {
 		googleUser, errGoogleUser := auth.VerifyGoogleIDToken(input.Token)
 		if errGoogleUser != nil || googleUser == nil || len(googleUser.ID) <= 0 {
 			errCode = http.StatusUnprocessableEntity
@@ -157,7 +157,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		}
 		expires = googleUser.Expires
 		newUser.FromGoogleUser(googleUser)
-	} else if input.Provider == constants.AUTH_PROVIDER_FACEBOOK {
+	} else if input.Provider == constants.AuthProviderFacebook {
 		facebookUser, errFacebookUser := auth.VerifyFacebookToken(input.Token)
 		if errFacebookUser != nil || facebookUser == nil || len(facebookUser.ID) <= 0 {
 			errCode = http.StatusUnprocessableEntity
@@ -185,19 +185,19 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 			&model.User{
 				Provider:       input.Provider,
 				ProviderUserId: newUser.ProviderUserId,
-				LoginMethod:    constants.AUTH_LOGIN_METHOD_PROVIDER,
+				LoginMethod:    constants.AuthLoginMethodProvider,
 			},
 		)
 		if err != nil {
 			errCode = http.StatusInternalServerError
-			err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
+			err = constants.Http500ErrorMessage("create user on database")
 			return
 		}
 		var userInfo *model.UserInfo
 		userInfo, err = service.Repository.CreateUserInfo(&newUser.UserInfo)
 		if err != nil {
 			errCode = http.StatusInternalServerError
-			err = constants.HTTP_500_ERROR_MESSAGE("create user info on database")
+			err = constants.Http500ErrorMessage("create user info on database")
 			return
 		}
 		userFound.UserInfo = *userInfo
@@ -213,14 +213,14 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 			Device:   device.DeviceName,
 			App:      device.App,
 		},
-		constants.JWT_ISSUER_SESSION,
+		constants.JwtIssuerSession,
 		&expiresTime,
 		config.Keys.JwtPrivateKey,
 		config.AppendToRedisStringList,
 	)
 	if err != nil || jwtToken == nil || len(accessToken) <= 0 {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("encode JWT token")
+		err = constants.Http500ErrorMessage("encode JWT token")
 		return
 	}
 	accessExpires = &jwtToken.ExpiresAt.Time
@@ -241,12 +241,12 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 	}
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("find user on database")
+		err = constants.Http500ErrorMessage("find user on database")
 		return
 	}
 	if userFound.Email == input.Email {
 		errCode = http.StatusFound
-		err = constants.HTTP_302_ERROR_MESSAGE(errMsg)
+		err = constants.Http302ErrorMessage(errMsg)
 		return
 	}
 
@@ -254,11 +254,11 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 	userFound.Email = input.Email
 	userFound.PhoneNumber = input.PhoneNumber
 	userFound.Password = input.Password
-	userFound.LoginMethod = constants.AUTH_LOGIN_METHOD_DEFAULT
+	userFound.LoginMethod = constants.AuthLoginMethodDefault
 	createdUser, err := service.Repository.Create(userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user on database")
+		err = constants.Http500ErrorMessage("create user on database")
 		return
 	}
 
@@ -268,7 +268,7 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 	randomCode, err = utils.GenerateRandomCode(6)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		err = constants.Http500ErrorMessage("generate random code")
 		return
 	}
 
@@ -283,14 +283,14 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 			App:      "*",
 			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_AUTH_ACTIVATE,
+		constants.JwtIssuerAuthActivate,
 		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
 	if err != nil || activateAccountJwtToken == nil || len(activateAccountToken) <= 0 {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("encode jwt token")
+		err = constants.Http500ErrorMessage("encode jwt token")
 	}
 
 	// Send code to email or phone number
@@ -329,7 +329,7 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_ACTIVATE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthActivate {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -366,13 +366,13 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	userInfo, err := service.Repository.CreateUserInfo(&model.UserInfo{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user info")
+		err = constants.Http500ErrorMessage("create user info")
 		return
 	}
 	userMfa, err := service.Repository.CreateUserMfa(&model.UserMfa{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user MFA")
+		err = constants.Http500ErrorMessage("create user MFA")
 		return
 	}
 
@@ -387,7 +387,7 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update user" + err.Error())
+		err = constants.Http500ErrorMessage("update user" + err.Error())
 		return
 	}
 	activatedAt = updatedUser.ActivatedAt
@@ -441,7 +441,7 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 	}
 	if err != nil || userFound.ID <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE(errMsg)
+		err = constants.Http404ErrorMessage(errMsg)
 		return
 	}
 
@@ -449,7 +449,7 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 	randomCode, err := utils.GenerateRandomCode(6)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate random code")
+		err = constants.Http500ErrorMessage("generate random code")
 		return
 	}
 	expires := security.NewExpiresDateDefault()
@@ -462,14 +462,14 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 			App:      "*",
 			Code:     randomCode,
 		},
-		constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_CODE,
+		constants.JwtIssuerAuthForgotPasswordCode,
 		expires,
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
 	if err != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate new JWT token")
+		err = constants.Http500ErrorMessage("generate new JWT token")
 		return
 	}
 	token = newToken
@@ -527,7 +527,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_CODE {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordCode {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -566,14 +566,14 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 			Device:   "*",
 			App:      "*",
 		},
-		constants.JWT_ISSUER_SESSION,
+		constants.JwtIssuerSession,
 		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
 	)
 	if err != nil || newJwtToken == nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("generate new JWT token")
+		err = constants.Http500ErrorMessage("generate new JWT token")
 	}
 	token = newToken
 	return
@@ -613,7 +613,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JWT_ISSUER_AUTH_FORGOT_PASSWORD_NEW_PASSWORD {
+	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordNewPassword {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -637,7 +637,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	userUpdated, err := service.Repository.UpdateUserPassword(jwtToken.UserId, input.NewPassword)
 	if err != nil || userUpdated == nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update password")
+		err = constants.Http500ErrorMessage("update password")
 		return
 	}
 
@@ -645,7 +645,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	_, err = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
+		err = constants.Http500ErrorMessage("create user from database")
 		return
 	}
 	return
@@ -657,19 +657,19 @@ func (service *Service) Logout(jwtToken *types.JwtToken, bearerToken string) (er
 	sessions, err := config.GetRedisStringList(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusUnauthorized
-		err = constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+		err = constants.Http401InvalidTokenErrorMessage()
 		return
 	}
 	tokenIndex := slices.Index(sessions, bearerToken)
 	if tokenIndex < 0 {
 		errCode = http.StatusUnauthorized
-		err = constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+		err = constants.Http401InvalidTokenErrorMessage()
 		return
 	}
 	err = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("delete cached session")
+		err = constants.Http500ErrorMessage("delete cached session")
 		return
 	}
 	return

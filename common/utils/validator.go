@@ -12,13 +12,13 @@ import (
 // Validate the authentication provider (e.g., Google, Facebook, ...)
 // and return a boolean indicating success or failure.
 func IsAuthProviderValid(provider string) bool {
-	return slices.Contains(constants.AUTH_PROVIDERS, provider)
+	return slices.Contains(constants.AuthProviders, provider)
 }
 
 // Validate the multiple authentication method name (e.g., email, phone, authenticator)
 // and return a boolean indicating success or failure.
 func IsMfaMethodValid(mfaMethod string) bool {
-	return slices.Contains(constants.AUTH_MFA_METHODS, mfaMethod)
+	return slices.Contains(constants.AuthMfaMethods, mfaMethod)
 }
 
 // Validate the phone number and return a boolean indicating success or failure.
@@ -77,9 +77,9 @@ func IsPasswordValid(password string) (bool, string) {
 func IsFacebookLoginScopesValid(scopes []string) bool {
 	counter := 0
 	for _, scope := range scopes {
-		if slices.Contains(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES, scope) {
+		if slices.Contains(constants.AuthLoginWithFacebookRequiredScopes, scope) {
 			counter++
 		}
 	}
-	return counter == len(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES)
+	return counter == len(constants.AuthLoginWithFacebookRequiredScopes)
 }

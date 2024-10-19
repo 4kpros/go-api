@@ -1,24 +1,25 @@
 package user
 
 import (
+	"fmt"
+	"net/http"
+
 	"api/common/constants"
 	"api/common/types"
 	"api/common/utils"
 	"api/services/admin/user/model"
-	"fmt"
-	"net/http"
 )
 
-type UserService struct {
-	Repository *UserRepository
+type Service struct {
+	Repository *Repository
 }
 
-func NewUserService(repository *UserRepository) *UserService {
-	return &UserService{Repository: repository}
+func NewService(repository *Repository) *Service {
+	return &Service{Repository: repository}
 }
 
 // Create user
-func (service *UserService) Create(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+func (service *Service) Create(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
 	var foundUser *model.User
 	var errMsg string = ""
@@ -31,14 +32,14 @@ func (service *UserService) Create(jwtToken *types.JwtToken, user *model.User) (
 	}
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE(
+		err = constants.Http500ErrorMessage(
 			fmt.Sprintf("get user by %s from database", errMsg),
 		)
 		return
 	}
 	if foundUser != nil && foundUser.Email == user.Email {
 		errCode = http.StatusFound
-		err = constants.HTTP_302_ERROR_MESSAGE(
+		err = constants.Http302ErrorMessage(
 			fmt.Sprintf("user %s", errMsg),
 		)
 		return
@@ -47,69 +48,69 @@ func (service *UserService) Create(jwtToken *types.JwtToken, user *model.User) (
 	// Create new user
 	randomPassword := utils.GenerateRandomPassword(8)
 	newUser := &model.User{
-		Email:        user.Email,
-		PhoneNumber:  user.PhoneNumber,
-		RoleId:       user.RoleId,
-		Password:     randomPassword,
-		SignInMethod: constants.AUTH_LOGIN_METHOD_DEFAULT,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		RoleId:      user.RoleId,
+		Password:    randomPassword,
+		LoginMethod: constants.AuthLoginMethodDefault,
 	}
 	result, err = service.Repository.Create(newUser)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("create user from database")
+		err = constants.Http500ErrorMessage("create user from database")
 		return
 	}
 	return
 }
 
-// Update user
-func (service *UserService) UpdateUser(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+// UpdateUser Update user
+func (service *Service) UpdateUser(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
 	result, err = service.Repository.UpdateUser(user.ID, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update user from database")
+		err = constants.Http500ErrorMessage("update user from database")
 	}
 	return
 }
 
 // Delete user with matching id and return affected rows
-func (service *UserService) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
+func (service *Service) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("delete user from database")
+		err = constants.Http500ErrorMessage("delete user from database")
 		return
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE("User")
+		err = constants.Http404ErrorMessage("User")
 		return
 	}
 	return
 }
 
-// Return user with matching id
-func (service *UserService) Get(jwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
+// Get Returns user with matching id
+func (service *Service) Get(jwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("get user by id from database")
+		err = constants.Http500ErrorMessage("get user by id from database")
 		return
 	}
 	if user == nil {
 		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE("User")
+		err = constants.Http404ErrorMessage("User")
 		return
 	}
 	return
 }
 
-// Return all users with support for search, filter and pagination
-func (service *UserService) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
+// GetAll Returns all users with support for search, filter and pagination
+func (service *Service) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
 	userList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("get users from database")
+		err = constants.Http500ErrorMessage("get users from database")
 	}
 	return
 }

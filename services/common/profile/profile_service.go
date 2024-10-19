@@ -1,46 +1,46 @@
 package profile
 
 import (
-	"api/services/admin/user"
-	model2 "api/services/admin/user/model"
 	"fmt"
 	"net/http"
 
 	"api/common/constants"
 	"api/common/types"
 	"api/common/utils"
+	"api/services/admin/user"
+	"api/services/admin/user/model"
 )
 
-type ProfileService struct {
-	Repository *user.UserRepository
+type Service struct {
+	Repository *user.Repository
 }
 
-func NewProfileService(repository *user.UserRepository) *ProfileService {
-	return &ProfileService{Repository: repository}
+func NewProfileService(repository *user.Repository) *Service {
+	return &Service{Repository: repository}
 }
 
-// Update profile
-func (service *ProfileService) UpdateProfile(jwtToken *types.JwtToken, user *model2.User) (result *model2.User, errCode int, err error) {
+// UpdateProfile Update profile
+func (service *Service) UpdateProfile(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
 	result, err = service.Repository.UpdateProfile(jwtToken.UserId, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update user from database")
+		err = constants.Http500ErrorMessage("update user from database")
 	}
 	return
 }
 
-// Update profile info
-func (service *ProfileService) UpdateProfileInfo(jwtToken *types.JwtToken, userInfo *model2.UserInfo) (result *model2.UserInfo, errCode int, err error) {
+// UpdateProfileInfo Update profile info
+func (service *Service) UpdateProfileInfo(jwtToken *types.JwtToken, userInfo *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
 	result, err = service.Repository.UpdateProfileInfo(jwtToken.UserId, userInfo)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update profile info from database")
+		err = constants.Http500ErrorMessage("update profile info from database")
 	}
 	return
 }
 
-// Update profile MFA
-func (service *ProfileService) UpdateProfileMfa(jwtToken *types.JwtToken, method string, value bool) (result *model2.UserMfa, errCode int, err error) {
+// UpdateProfileMfa Update profile MFA
+func (service *Service) UpdateProfileMfa(jwtToken *types.JwtToken, method string, value bool) (result *model.UserMfa, errCode int, err error) {
 	if !utils.IsMfaMethodValid(method) {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", "Invalid MFA method! Please enter valid method.")
@@ -49,38 +49,38 @@ func (service *ProfileService) UpdateProfileMfa(jwtToken *types.JwtToken, method
 	result, err = service.Repository.UpdateProfileMfa(jwtToken.UserId, method, value)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("update profile MFA from database")
+		err = constants.Http500ErrorMessage("update profile MFA from database")
 	}
 	return
 }
 
-// Delete user account
-func (service *ProfileService) DeleteProfile(jwtToken *types.JwtToken) (affectedRows int64, errCode int, err error) {
+// DeleteProfile Delete user account
+func (service *Service) DeleteProfile(jwtToken *types.JwtToken) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(jwtToken.UserId)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("delete account from database")
+		err = constants.Http500ErrorMessage("delete account from database")
 		return
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE("User")
+		err = constants.Http404ErrorMessage("User")
 		return
 	}
 	return
 }
 
-// Return profile information
-func (service *ProfileService) GetProfile(jwtToken *types.JwtToken) (user *model2.User, errCode int, err error) {
+// GetProfile Return profile information
+func (service *Service) GetProfile(jwtToken *types.JwtToken) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.GetById(jwtToken.UserId)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.HTTP_500_ERROR_MESSAGE("get profile from database")
+		err = constants.Http500ErrorMessage("get profile from database")
 		return
 	}
 	if user == nil {
 		errCode = http.StatusNotFound
-		err = constants.HTTP_404_ERROR_MESSAGE("User")
+		err = constants.Http404ErrorMessage("User")
 		return
 	}
 	return

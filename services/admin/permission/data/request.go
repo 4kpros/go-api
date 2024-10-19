@@ -5,10 +5,7 @@ type PermissionId struct {
 }
 
 type UpdatePermissionRequest struct {
-	RoleId      int64  `json:"roleId" required:"true" doc:"Role id" example:"1"`
-	FeatureName string `json:"featureName" required:"true" minLength:"2" doc:"Feature name" example:"shopping"`
-	Create      bool   `json:"create" required:"true" doc:"Create permission" example:"false"`
-	Read        bool   `json:"read" required:"true" doc:"Read permission" example:"false"`
-	Update      bool   `json:"update" required:"true" doc:"Update permission" example:"false"`
-	Delete      bool   `json:"delete" required:"true" doc:"Delete permission" example:"false"`
+	RoleId           int64    `json:"roleId" required:"true" doc:"Role id" example:"1"`
+	FeatureName      string   `json:"featureName" required:"true" minLength:"2" doc:"Feature name" example:"feature-admin"`
+	TablePermissions []string `json:"data" required:"true" doc:"List of tables with theirs permissions" example:"[\"users crud\", \"roles crud\"]"`
 }

@@ -1,22 +1,23 @@
 package user
 
 import (
+	"context"
+
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/admin/user/data"
 	"api/services/admin/user/model"
-	"context"
 )
 
-type UserController struct {
-	Service *UserService
+type Controller struct {
+	Service *Service
 }
 
-func NewUserController(service *UserService) *UserController {
-	return &UserController{Service: service}
+func NewController(service *Service) *Controller {
+	return &Controller{Service: service}
 }
 
-func (controller *UserController) CreateWithEmail(
+func (controller *Controller) CreateWithEmail(
 	ctx *context.Context,
 	input *struct {
 		Body data.CreateUserWithEmailRequest
@@ -32,7 +33,7 @@ func (controller *UserController) CreateWithEmail(
 	return
 }
 
-func (controller *UserController) CreateWithPhoneNumber(
+func (controller *Controller) CreateWithPhoneNumber(
 	ctx *context.Context,
 	input *struct {
 		Body data.CreateUserWithPhoneNumberRequest
@@ -48,7 +49,7 @@ func (controller *UserController) CreateWithPhoneNumber(
 	return
 }
 
-func (controller *UserController) UpdateUser(
+func (controller *Controller) UpdateUser(
 	ctx *context.Context,
 	input *struct {
 		data.UserId
@@ -66,7 +67,7 @@ func (controller *UserController) UpdateUser(
 	return
 }
 
-func (controller *UserController) Delete(
+func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
 		data.UserId
@@ -79,7 +80,7 @@ func (controller *UserController) Delete(
 	return
 }
 
-func (controller *UserController) Get(
+func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
 		data.UserId
@@ -92,7 +93,7 @@ func (controller *UserController) Get(
 	return
 }
 
-func (controller *UserController) GetAll(
+func (controller *Controller) GetAll(
 	ctx *context.Context,
 	input *struct {
 		types.Filter

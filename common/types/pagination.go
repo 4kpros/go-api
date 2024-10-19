@@ -15,7 +15,7 @@ type Pagination struct {
 	Offset       int   `json:"offset" required:"false"`
 }
 
-// Updates pagination parameters based on total item count.
+// UpdateFields Updates pagination parameters based on total item count.
 func (p *Pagination) UpdateFields(count int64) {
 	p.Count = count                              // Update count
 	DivUp(&count, &p.Limit, &p.TotalPages)       // Update total pages
@@ -29,19 +29,19 @@ func (p *Pagination) UpdateFields(count int64) {
 	}
 	// Update offset
 	if p.CurrentPage > 1 {
-		var tempOffset = (p.CurrentPage - 1)
+		var tempOffset = p.CurrentPage - 1
 		p.Offset = tempOffset * p.Limit
 	} else {
 		p.Offset = 0
 	}
 }
 
-// Calculates the ceiling of the division between numerator and denominator.
+// DivUp Calculates the ceiling of the division between numerator and denominator.
 func DivUp(numerator *int64, denominator *int, result *int64) {
 	*result = 1 + (*numerator-1)/int64(*denominator)
 }
 
-// Calculates the next page number based on current page and total pages.
+// NextPage Calculates the next page number based on current page and total pages.
 func NextPage(page *int, totalPages *int64) {
 	if int64(*page) <= 0 {
 		*page = 1
@@ -53,7 +53,7 @@ func NextPage(page *int, totalPages *int64) {
 	*page = int(*totalPages)
 }
 
-// Calculates the previous page number based on current page and total pages.
+// PreviousPage Calculates the previous page number based on current page and total pages.
 func PreviousPage(page *int, totalPages *int64) {
 	if int64(*page) > *totalPages {
 		*page = int(*totalPages)

@@ -1,26 +1,26 @@
 package role
 
 import (
-	data2 "api/services/admin/role/data"
-	"api/services/admin/role/model"
 	"context"
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/services/admin/role/data"
+	"api/services/admin/role/model"
 )
 
-type RoleController struct {
-	Service *RoleService
+type Controller struct {
+	Service *Service
 }
 
-func NewRoleController(service *RoleService) *RoleController {
-	return &RoleController{Service: service}
+func NewController(service *Service) *Controller {
+	return &Controller{Service: service}
 }
 
-func (controller *RoleController) Create(
+func (controller *Controller) Create(
 	ctx *context.Context,
 	input *struct {
-		Body data2.RoleRequest
+		Body data.RoleRequest
 	},
 ) (result *model.Role, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
@@ -33,11 +33,11 @@ func (controller *RoleController) Create(
 	return
 }
 
-func (controller *RoleController) Update(
+func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
-		data2.RoleId
-		Body data2.RoleRequest
+		data.RoleId
+		Body data.RoleRequest
 	},
 ) (result *model.Role, errCode int, err error) {
 	result, errCode, err = controller.Service.Update(
@@ -50,10 +50,10 @@ func (controller *RoleController) Update(
 	return
 }
 
-func (controller *RoleController) Delete(
+func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
-		data2.RoleId
+		data.RoleId
 	},
 ) (result int64, errCode int, err error) {
 	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
@@ -64,10 +64,10 @@ func (controller *RoleController) Delete(
 	return
 }
 
-func (controller *RoleController) Get(
+func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
-		data2.RoleId
+		data.RoleId
 	},
 ) (result *model.Role, errCode int, err error) {
 	role, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
@@ -78,19 +78,19 @@ func (controller *RoleController) Get(
 	return
 }
 
-func (controller *RoleController) GetAll(
+func (controller *Controller) GetAll(
 	ctx *context.Context,
 	input *struct {
 		types.Filter
 		types.PaginationRequest
 	},
-) (result *data2.RoleResponseList, errCode int, err error) {
+) (result *data.RoleResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	roleList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data2.RoleResponseList{
+	result = &data.RoleResponseList{
 		Data: model.ToResponseList(roleList),
 	}
 	result.Filter = newFilter

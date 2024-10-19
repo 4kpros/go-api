@@ -1,28 +1,28 @@
 package user
 
 import (
+	"gorm.io/gorm"
+
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/admin/user/model"
-	"gorm.io/gorm"
 )
 
-type UserRepository struct {
-	Db                  *gorm.DB
-	PermissionTableName string
+type Repository struct {
+	Db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
-	return &UserRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_USER}
+func NewRepository(db *gorm.DB) *Repository {
+	return &Repository{Db: db}
 }
 
-func (repository *UserRepository) Create(user *model.User) (*model.User, error) {
+func (repository *Repository) Create(user *model.User) (*model.User, error) {
 	result := *user
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *UserRepository) UpdateUser(id int64, user *model.User) (*model.User, error) {
+func (repository *Repository) UpdateUser(id int64, user *model.User) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
@@ -33,38 +33,38 @@ func (repository *UserRepository) UpdateUser(id int64, user *model.User) (*model
 	).Error
 }
 
-func (repository *UserRepository) Delete(id int64) (int64, error) {
+func (repository *Repository) Delete(id int64) (int64, error) {
 	result := repository.Db.Where("id = ?", id).Delete(&model.User{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *UserRepository) GetById(id int64) (*model.User, error) {
+func (repository *Repository) GetById(id int64) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
 }
 
-func (repository *UserRepository) GetByEmail(email string) (*model.User, error) {
+func (repository *Repository) GetByEmail(email string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_DEFAULT,
+		"sign_in_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"email = ?", email,
 	).Limit(1).Find(result).Error
 }
 
-func (repository *UserRepository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
+func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_DEFAULT,
+		"sign_in_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"phone_number = ?", phoneNumber,
 	).Limit(1).Find(result).Error
 }
 
-func (repository *UserRepository) GetByProvider(provider string, providerUserId string) (*model.User, error) {
+func (repository *Repository) GetByProvider(provider string, providerUserId string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AUTH_LOGIN_METHOD_PROVIDER,
+		"sign_in_method = ?", constants.AuthLoginMethodProvider,
 	).Where(
 		"provider = ?", provider,
 	).Where(
@@ -72,27 +72,27 @@ func (repository *UserRepository) GetByProvider(provider string, providerUserId 
 	).Limit(1).Find(result).Error
 }
 
-func (repository *UserRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
 	result := []model.User{}
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
 
 // ----------------- Authentication service -----------------
 
-func (repository *UserRepository) CreateUserInfo(userInfo *model.UserInfo) (*model.UserInfo, error) {
+func (repository *Repository) CreateUserInfo(userInfo *model.UserInfo) (*model.UserInfo, error) {
 	result := *userInfo
 	return &result, repository.Db.Create(&result).Error
 }
-func (repository *UserRepository) CreateUserMfa(userMfa *model.UserMfa) (*model.UserMfa, error) {
+func (repository *Repository) CreateUserMfa(userMfa *model.UserMfa) (*model.UserMfa, error) {
 	result := *userMfa
 	return &result, repository.Db.Create(&result).Error
 }
-func (repository *UserRepository) UpdateUserPassword(id int64, password string) (*model.User, error) {
+func (repository *Repository) UpdateUserPassword(id int64, password string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Update("password", password).Error
 }
 
-func (repository *UserRepository) UpdateUserActivation(id int64, user *model.User) (*model.User, error) {
+func (repository *Repository) UpdateUserActivation(id int64, user *model.User) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
@@ -105,7 +105,7 @@ func (repository *UserRepository) UpdateUserActivation(id int64, user *model.Use
 }
 
 // ----------------- Profile service -----------------
-func (repository *UserRepository) UpdateProfile(id int64, user *model.User) (*model.User, error) {
+func (repository *Repository) UpdateProfile(id int64, user *model.User) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
@@ -116,7 +116,7 @@ func (repository *UserRepository) UpdateProfile(id int64, user *model.User) (*mo
 	).Error
 }
 
-func (repository *UserRepository) UpdateProfileInfo(id int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
+func (repository *Repository) UpdateProfileInfo(id int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
 	result := &model.UserInfo{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
@@ -130,7 +130,7 @@ func (repository *UserRepository) UpdateProfileInfo(id int64, userInfo *model.Us
 	).Error
 }
 
-func (repository *UserRepository) UpdateProfileMfa(id int64, column string, value bool) (*model.UserMfa, error) {
+func (repository *Repository) UpdateProfileMfa(id int64, column string, value bool) (*model.UserMfa, error) {
 	result := &model.UserMfa{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{

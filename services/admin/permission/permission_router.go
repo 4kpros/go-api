@@ -1,22 +1,23 @@
 package permission
 
 import (
-	data2 "api/services/admin/permission/data"
-	"api/services/admin/permission/model"
 	"context"
 	"fmt"
 	"net/http"
 
+	"github.com/danielgtaylor/huma/v2"
+
 	"api/common/constants"
 	"api/common/types"
-	"github.com/danielgtaylor/huma/v2"
+	"api/services/admin/permission/data"
+	"api/services/admin/permission/model"
 )
 
 func RegisterEndpoints(
 	humaApi *huma.API,
-	controller *PermissionController,
+	controller *Controller,
 ) {
-	var endpointConfig = types.APIEndpointConfig{
+	var endpointConfig = types.ApiEndpointConfig{
 		Group: "/permissions",
 		Tag:   []string{"Permissions"},
 	}
@@ -32,7 +33,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -41,7 +42,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.UpdatePermissionRequest
+				Body data.UpdatePermissionRequest
 			},
 		) (*struct{ Body model.Permission }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
@@ -63,7 +64,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -72,7 +73,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.PermissionId
+				data.PermissionId
 			},
 		) (*struct{ Body model.Permission }, error) {
 			result, errCode, err := controller.Get(&ctx, input)
@@ -94,7 +95,7 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -107,14 +108,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data2.PermissionList
+			Body data.PermissionList
 		}, error) {
 			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.PermissionList
+				Body data.PermissionList
 			}{Body: *result}, nil
 		},
 	)

@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"api/common/types"
 	"api/services/admin/user/data"
-	"time"
 )
 
 type UserInfo struct {

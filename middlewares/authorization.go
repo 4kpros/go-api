@@ -19,7 +19,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		// Check if current endpoint require authorization
 		isAuthorizationRequired := false
 		for _, opScheme := range ctx.Operation().Security {
-			if _, ok := opScheme[constants.SECURITY_AUTH_NAME]; ok {
+			if _, ok := opScheme[constants.SecurityAuthName]; ok {
 				isAuthorizationRequired = true
 				break
 			}
@@ -41,20 +41,20 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+			tempErr := constants.Http401InvalidTokenErrorMessage()
 			_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}
 
 		// Validate the token by checking if it's cached
 		isTokenCached := false
-		if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION {
+		if jwtDecoded.Issuer == constants.JwtIssuerSession {
 			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
 				config.CheckValueInRedisList(token),
 			)
-		} else if slices.Contains(constants.JWT_ISSUER_AUTH, jwtDecoded.Issuer) {
+		} else if slices.Contains(constants.JwtIssuerAuths, jwtDecoded.Issuer) {
 			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
@@ -66,7 +66,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			return
 		}
 
-		tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+		tempErr := constants.Http401InvalidTokenErrorMessage()
 		_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }

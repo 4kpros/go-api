@@ -1,23 +1,23 @@
 package history
 
 import (
-	"api/services/admin/history/data"
-	"api/services/admin/history/model"
 	"context"
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/services/admin/history/data"
+	"api/services/admin/history/model"
 )
 
-type HistoryController struct {
-	Service *HistoryService
+type Controller struct {
+	Service *Service
 }
 
-func NewHistoryController(service *HistoryService) *HistoryController {
-	return &HistoryController{Service: service}
+func NewController(service *Service) *Controller {
+	return &Controller{Service: service}
 }
 
-func (controller *HistoryController) GetAll(
+func (controller *Controller) GetAll(
 	ctx *context.Context,
 	input *struct {
 		types.Filter

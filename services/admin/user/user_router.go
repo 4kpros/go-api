@@ -1,20 +1,23 @@
 package user
 
 import (
-	"api/common/constants"
-	"api/common/types"
-	"api/services/admin/user/data"
 	"context"
 	"fmt"
-	"github.com/danielgtaylor/huma/v2"
 	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
+
+	"api/common/constants"
+	"api/common/types"
+	"api/services/admin"
+	"api/services/admin/user/data"
 )
 
 func RegisterEndpoints(
 	humaApi *huma.API,
-	controller *UserController,
+	controller *Controller,
 ) {
-	var endpointConfig = types.APIEndpointConfig{
+	var endpointConfig = types.ApiEndpointConfig{
 		Group: "/users",
 		Tag:   []string{"Users"},
 	}
@@ -30,7 +33,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/email", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -61,7 +64,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/phone", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -92,7 +95,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -124,7 +127,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -155,7 +158,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -187,16 +190,15 @@ func RegisterEndpoints(
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
-					constants.SECURITY_AUTH_NAME: { // Used for authentication
-						constants.PERMISSION_TABLE_NAME_USER, // Used for permission table name
-						constants.PERMISSION_READ,            // Used for permission type
+					constants.SecurityAuthName: { // Authentication
+						admin.FEATURE_PERMISSION, // Feature scope
 					},
 				},
 			},
-			// Metadata: map[string]any{
-			// 	"permissionTable": constants.PERMISSION_TABLE_NAME_USER,
-			// 	"permissionName":  constants.PERMISSION_READ,
-			// },
+			Metadata: map[string]any{
+				constants.PERMISSION_METADATA_TABLE_KEY: constants.FeatureAdmin,
+				"permissionName":                        constants.PermissionRead,
+			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},

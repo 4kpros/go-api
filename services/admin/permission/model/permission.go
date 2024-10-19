@@ -7,26 +7,21 @@ import (
 
 type Permission struct {
 	types.BaseGormModel
-	RoleId      int64  `gorm:"default:null"`
-	FeatureName string `gorm:"default:null"`
-	Create      bool   `gorm:"default:false"`
-	Read        bool   `gorm:"default:false"`
-	Update      bool   `gorm:"default:false"`
-	Delete      bool   `gorm:"default:false"`
+	RoleId           int64    `gorm:"default:null"`
+	FeatureName      string   `gorm:"default:null"`
+	TablePermissions []string `gorm:"default:null"` // E.g. ["roles.crud", "user.----"]
 }
 
 func (permission *Permission) ToResponse() *data.PermissionResponse {
-	resp := &data.PermissionResponse{}
+	resp := &data.PermissionResponse{
+		RoleId:           permission.RoleId,
+		FeatureName:      permission.FeatureName,
+		TablePermissions: permission.TablePermissions,
+	}
 	resp.ID = permission.ID
 	resp.CreatedAt = permission.CreatedAt
 	resp.UpdatedAt = permission.UpdatedAt
 	resp.DeletedAt = permission.DeletedAt
-	resp.RoleId = permission.RoleId
-	resp.FeatureName = permission.FeatureName
-	resp.Create = permission.Create
-	resp.Read = permission.Read
-	resp.Update = permission.Update
-	resp.Delete = permission.Delete
 	return resp
 }
 

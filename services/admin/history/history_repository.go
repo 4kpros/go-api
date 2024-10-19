@@ -1,28 +1,27 @@
 package history
 
 import (
-	"api/common/constants"
+	"gorm.io/gorm"
+
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/admin/history/model"
-	"gorm.io/gorm"
 )
 
-type HistoryRepository struct {
-	Db                  *gorm.DB
-	PermissionTableName string
+type Repository struct {
+	Db *gorm.DB
 }
 
-func NewHistoryRepository(db *gorm.DB) *HistoryRepository {
-	return &HistoryRepository{Db: db, PermissionTableName: constants.PERMISSION_TABLE_NAME_HISTORY}
+func NewRepository(db *gorm.DB) *Repository {
+	return &Repository{Db: db}
 }
 
-func (repository *HistoryRepository) Create(history *model.History) (*model.History, error) {
+func (repository *Repository) Create(history *model.History) (*model.History, error) {
 	result := *history
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *HistoryRepository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
-	result := []model.History{}
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
+	var result []model.History
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

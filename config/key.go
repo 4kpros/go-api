@@ -19,7 +19,7 @@ func LoadKeys() error {
 	var err error
 	var errRead error
 	// JWT private key
-	Keys.JwtPrivateKey, errRead = utils.ReadFileToString(constants.ASSET_KEYS_PATH + "/jwt/private.pem")
+	Keys.JwtPrivateKey, errRead = utils.ReadFileToString(constants.AssetKeysPath + "/jwt/private.pem")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Error(
@@ -31,7 +31,7 @@ func LoadKeys() error {
 	}
 
 	// JWT public key
-	Keys.JwtPublicKey, errRead = utils.ReadFileToString(constants.ASSET_KEYS_PATH + "/jwt/public.pem")
+	Keys.JwtPublicKey, errRead = utils.ReadFileToString(constants.AssetKeysPath + "/jwt/public.pem")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Error(

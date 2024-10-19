@@ -15,7 +15,7 @@ func RegisterEndpoints(
 	humaApi *huma.API,
 	controller *Controller,
 ) {
-	endpointConfig := types.APIEndpointConfig{
+	endpointConfig := types.ApiEndpointConfig{
 		Group: "/auth",
 		Tag:   []string{"Authentication"},
 	}
@@ -330,7 +330,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/logout", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

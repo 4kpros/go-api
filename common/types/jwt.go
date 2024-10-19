@@ -14,7 +14,7 @@ type JwtToken struct {
 	Code     int    `json:"code"`
 }
 
-// Represents claims for a Google user.
+// GoogleUserProfileResponse Represents claims for a Google user.
 //
 // Refer to the official Google documentation for more details
 // https://developers.google.com/identity/openid-connect/openid-connect

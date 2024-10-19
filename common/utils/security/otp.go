@@ -16,7 +16,7 @@ func GenerateOTP(userId int64, userName string, issuer string) (string, error) {
 		AccountName: userName,
 	})
 	if err != nil {
-		return "", constants.HTTP_500_ERROR_MESSAGE("generate TOTP code")
+		return "", constants.Http500ErrorMessage("generate TOTP code")
 	}
 
 	// Save secret on redis

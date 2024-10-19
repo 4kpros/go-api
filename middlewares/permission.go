@@ -11,7 +11,7 @@ import (
 )
 
 // Checks resource permissions
-func PermissionMiddleware(api huma.API, repository *permission.PermissionRepository) func(huma.Context, func(huma.Context)) {
+func PermissionMiddleware(api huma.API, repository *permission.Repository) func(huma.Context, func(huma.Context)) {
 	return func(ctx huma.Context, next func(huma.Context)) {
 		// Retrieve jwtToken, table permission, permission type
 		ctxContext := ctx.Context()
@@ -31,31 +31,31 @@ func PermissionMiddleware(api huma.API, repository *permission.PermissionReposit
 			return
 		}
 
-		tempErr := constants.HTTP_401_INVALID_PERMISSION_ERROR_MESSAGE()
+		tempErr := constants.Http401InvalidPermissionErrorMessage()
 		_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }
 
 // Checks if the user(from JWT token) has permission to access the table name
-func checkUserPermissions(repository *permission.PermissionRepository, jwtToken *types.JwtToken, table string, permissionType string) bool {
+func checkUserPermissions(repository *permission.Repository, jwtToken *types.JwtToken, table string, permissionType string) bool {
 	// If there is no required permission, return true
 	if len(table) <= 0 || len(permissionType) <= 0 {
 		return true
 	}
 
-	if jwtToken.Issuer == constants.JWT_ISSUER_SESSION {
+	if jwtToken.Issuer == constants.JwtIssuerSession {
 		foundPermission, _ := repository.GetByRoleIdTable(jwtToken.RoleId, table)
 		if foundPermission != nil && (foundPermission.Table == "*" || foundPermission.Table == table) && foundPermission.RoleId == jwtToken.RoleId {
-			if permissionType == constants.PERMISSION_CREATE && foundPermission.Create {
+			if permissionType == constants.PermissionCreate && foundPermission.Create {
 				return true
 			}
-			if permissionType == constants.PERMISSION_READ && foundPermission.Read {
+			if permissionType == constants.PermissionRead && foundPermission.Read {
 				return true
 			}
-			if permissionType == constants.PERMISSION_UPDATE && foundPermission.Update {
+			if permissionType == constants.PermissionUpdate && foundPermission.Update {
 				return true
 			}
-			if permissionType == constants.PERMISSION_DELETE && foundPermission.Delete {
+			if permissionType == constants.PermissionDelete && foundPermission.Delete {
 				return true
 			}
 		}

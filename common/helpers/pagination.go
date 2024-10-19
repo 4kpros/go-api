@@ -9,10 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// Return *gorm.DB pointer with applied search, filter and pagination
+// PaginationScope Returns *gorm.DB pointer with applied search, filter and pagination
 //
 // - Search performs a full-text search on every row of the table. It searches all fields.
-// The official documentation for full text search in PostgreSQL can be found here
+// The official documentation for full text search in PostgresSQL can be found here
 // https://www.postgresql.org/docs/17/textsearch-tables.html#TEXTSEARCH-TABLES-SEARCH
 //
 // - Filter applies an ORDER BY clause to the specified field name,
@@ -30,7 +30,7 @@ func PaginationScope(model any, pagination *types.Pagination, filter *types.Filt
 	}
 }
 
-// Check the entries and return the corrected ones.
+// GetPaginationFiltersFromQuery Checks the entries and return the corrected ones.
 func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.PaginationRequest) (*types.Pagination, *types.Filter) {
 	page := pagination.Page
 	limit := pagination.Limit
@@ -51,7 +51,7 @@ func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.Pagin
 	return NewPaginationData(page, limit), filter
 }
 
-// The user passes a pagination request, specifying the desired page and limit.
+// NewPaginationData The user passes a pagination request, specifying the desired page and limit.
 // We validate the inputs and return a new pagination object with the applied settings:
 // current page, next page, previous page, total pages, count, limit, and offset.
 func NewPaginationData(page int, limit int) *types.Pagination {

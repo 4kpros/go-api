@@ -1,21 +1,22 @@
 package role
 
 import (
-	data2 "api/services/admin/role/data"
 	"context"
 	"fmt"
 	"net/http"
 
+	"github.com/danielgtaylor/huma/v2"
+
 	"api/common/constants"
 	"api/common/types"
-	"github.com/danielgtaylor/huma/v2"
+	"api/services/admin/role/data"
 )
 
 func RegisterEndpoints(
 	humaApi *huma.API,
-	controller *RoleController,
+	controller *Controller,
 ) {
-	var endpointConfig = types.APIEndpointConfig{
+	var endpointConfig = types.ApiEndpointConfig{
 		Group: "/roles",
 		Tag:   []string{"Roles"},
 	}
@@ -31,7 +32,7 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -40,14 +41,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data2.RoleRequest
+				Body data.RoleRequest
 			},
-		) (*struct{ Body data2.RoleResponse }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.RoleResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -62,7 +63,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -71,15 +72,15 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.RoleId
-				Body data2.RoleRequest
+				data.RoleId
+				Body data.RoleRequest
 			},
-		) (*struct{ Body data2.RoleResponse }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.RoleResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -94,7 +95,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -103,7 +104,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.RoleId
+				data.RoleId
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
@@ -125,7 +126,7 @@ func RegisterEndpoints(
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -134,14 +135,14 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data2.RoleId
+				data.RoleId
 			},
-		) (*struct{ Body data2.RoleResponse }, error) {
+		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data2.RoleResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.RoleResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -156,7 +157,11 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{
+					constants.SecurityAuthName: { // Used to require authentication
+						"", // Used to required feature
+					},
+				},
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -169,14 +174,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data2.RoleResponseList
+			Body data.RoleResponseList
 		}, error) {
 			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data2.RoleResponseList
+				Body data.RoleResponseList
 			}{Body: *result}, nil
 		},
 	)

@@ -1,20 +1,21 @@
 package history
 
 import (
-	"api/services/admin/history/data"
 	"context"
 	"net/http"
 
+	"github.com/danielgtaylor/huma/v2"
+
 	"api/common/constants"
 	"api/common/types"
-	"github.com/danielgtaylor/huma/v2"
+	"api/services/admin/history/data"
 )
 
 func RegisterEndpoints(
 	humaApi *huma.API,
-	controller *HistoryController,
+	controller *Controller,
 ) {
-	var endpointConfig = types.APIEndpointConfig{
+	var endpointConfig = types.ApiEndpointConfig{
 		Group: "/history",
 		Tag:   []string{"History"},
 	}
@@ -30,7 +31,7 @@ func RegisterEndpoints(
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
-				{constants.SECURITY_AUTH_NAME: {}}, // Used to require authentication
+				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
