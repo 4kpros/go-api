@@ -194,13 +194,13 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 			return
 		}
 		var userInfo *model.UserInfo
-		userInfo, err = service.Repository.CreateUserInfo(&newUser.UserInfo)
+		userInfo, err = service.Repository.CreateUserInfo(newUser.UserInfo)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.Http500ErrorMessage("create user info on database")
 			return
 		}
-		userFound.UserInfo = *userInfo
+		userFound.UserInfo = userInfo
 	}
 
 	// Generate new token
@@ -381,9 +381,9 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
 	userFound.UserInfoId = userInfo.ID
-	userFound.UserInfo = *userInfo
+	userFound.UserInfo = userInfo
 	userFound.UserMfaId = userMfa.ID
-	userFound.UserMfa = *userMfa
+	userFound.UserMfa = userMfa
 	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError

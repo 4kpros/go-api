@@ -19,9 +19,29 @@ func NewProfileService(repository *user.Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// UpdateProfile Update profile
-func (service *Service) UpdateProfile(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
-	result, err = service.Repository.UpdateProfile(jwtToken.UserId, user)
+// UpdateProfileEmail Updates email
+func (service *Service) UpdateProfileEmail(jwtToken *types.JwtToken, email string) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdateEmail(jwtToken.UserId, email)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("update user from database")
+	}
+	return
+}
+
+// UpdateProfilePhoneNumber Updates phone number
+func (service *Service) UpdateProfilePhoneNumber(jwtToken *types.JwtToken, phoneNumber int64) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdatePhoneNumber(jwtToken.UserId, phoneNumber)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("update user from database")
+	}
+	return
+}
+
+// UpdateProfilePassword Updates password
+func (service *Service) UpdateProfilePassword(jwtToken *types.JwtToken, password string) (result *model.User, errCode int, err error) {
+	result, err = service.Repository.UpdatePassword(jwtToken.UserId, password)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update user from database")

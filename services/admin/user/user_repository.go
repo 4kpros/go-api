@@ -105,13 +105,27 @@ func (repository *Repository) UpdateUserActivation(id int64, user *model.User) (
 }
 
 // ----------------- Profile service -----------------
-func (repository *Repository) UpdateProfile(id int64, user *model.User) (*model.User, error) {
+func (repository *Repository) UpdateEmail(id int64, email string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
-			"email":        user.Email,
-			"phone_number": user.PhoneNumber,
-			"password":     user.Password,
+			"email": email,
+		},
+	).Error
+}
+func (repository *Repository) UpdatePhoneNumber(id int64, phoneNumber int64) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"phone_number": phoneNumber,
+		},
+	).Error
+}
+func (repository *Repository) UpdatePassword(id int64, password string) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+		map[string]interface{}{
+			"password": password,
 		},
 	).Error
 }

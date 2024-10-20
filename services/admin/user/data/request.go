@@ -21,11 +21,11 @@ type UpdateUserInfoRequest struct {
 	FirstName string `json:"firstName" required:"false" minLength:"2" maxLength:"30" doc:"First name" example:"John"`
 	LastName  string `json:"lastName" required:"false" minLength:"2" maxLength:"30" doc:"Last name" example:"Doe"`
 
-	Birthday      time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
-	BirthLocation string    `json:"birthLocation" required:"false" doc:"Birth location"`
-	Address       string    `json:"address" required:"false" minLength:"2" maxLength:"30" doc:"Address" example:"No City"`
-	Language      string    `json:"language" required:"false" minLength:"2" maxLength:"2" doc:"Language code with 2 letter" example:"en"`
-	Image         string    `json:"image" required:"false" doc:"Thumbnail"`
+	Birthday      *time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
+	BirthLocation string     `json:"birthLocation" required:"false" doc:"Birth location"`
+	Address       string     `json:"address" required:"false" minLength:"2" maxLength:"30" doc:"Address" example:"No City"`
+	Language      string     `json:"language" required:"false" minLength:"2" maxLength:"2" doc:"Language code with 2 letter" example:"en"`
+	Image         string     `json:"image" required:"false" doc:"Thumbnail"`
 }
 
 type UpdateUserRequest struct {

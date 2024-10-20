@@ -57,8 +57,8 @@ func FromUser(user *model.User) *UserProfileResponse {
 	resp.IsActivated = user.IsActivated
 	resp.ActivatedAt = user.ActivatedAt
 
-	resp.UserInfo = FromUserInfo(&user.UserInfo)
-	resp.UserMfa = FromUserMfa(&user.UserMfa)
+	resp.UserInfo = FromUserInfo(user.UserInfo)
+	resp.UserMfa = FromUserMfa(user.UserMfa)
 	return resp
 }
 

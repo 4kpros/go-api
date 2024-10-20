@@ -18,8 +18,15 @@ type UserResponse struct {
 	IsActivated    bool       `json:"isActivated" required:"false" doc:"Is user account activated ?"`
 	ActivatedAt    *time.Time `json:"activatedAt" required:"false" doc:"Activation date time"`
 
+	Role     *RoleResponse     `json:"role" required:"false" doc:"Role" `
 	UserInfo *UserInfoResponse `json:"info" required:"false" doc:"Additional user info(e.g. address, first name, last name, ...)" `
 	UserMfa  *UserMfaResponse  `json:"mfa" required:"false" doc:"Multiple factor authenticator enabled by the user"`
+}
+
+type RoleResponse struct {
+	ID          int64  `json:"id" doc:"Role id"`
+	Name        string `json:"name" doc:"Role name"`
+	Description string `json:"description" doc:"Role description"`
 }
 
 type UserInfoResponse struct {
@@ -27,11 +34,11 @@ type UserInfoResponse struct {
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
 
-	Birthday      time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
-	BirthLocation string    `json:"birthLocation" required:"false" doc:"Birth location"`
-	Address       string    `json:"address" required:"false" doc:"Address"`
-	Language      string    `json:"language" required:"false" doc:"Language"`
-	Image         string    `json:"image" required:"false" doc:"Thumbnail"`
+	Birthday      *time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
+	BirthLocation string     `json:"birthLocation" required:"false" doc:"Birth location"`
+	Address       string     `json:"address" required:"false" doc:"Address"`
+	Language      string     `json:"language" required:"false" doc:"Language"`
+	Image         string     `json:"image" required:"false" doc:"Thumbnail"`
 }
 
 type UserMfaResponse struct {

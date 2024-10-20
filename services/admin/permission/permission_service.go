@@ -1,6 +1,7 @@
 package permission
 
 import (
+	"api/services/admin/permission/data"
 	"net/http"
 
 	"api/common/constants"
@@ -16,45 +17,26 @@ func NewService(repository *Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// Update permission
-func (service *Service) Update(jwtToken *types.JwtToken, permission *model.Permission) (result *model.Permission, errCode int, err error) {
-	// Check if permission already exists(unique by group of "roleId" and "table")
-	foundPermission, err := service.Repository.GetByRoleIdTable(permission.RoleId, "///////////////////")
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get permission by roleId and table from database")
-		return
-	}
-	if foundPermission != nil {
-		// Update only necessary fields
-		//foundPermission.Read = permission.Read
-		//foundPermission.Create = permission.Create
-		//foundPermission.Update = permission.Update
-		//foundPermission.Delete = permission.Delete
-		result, err = service.Repository.Update(foundPermission.ID, foundPermission)
-		if err != nil {
-			errCode = http.StatusInternalServerError
-			err = constants.Http500ErrorMessage("update permission from database")
-			return
-		}
-		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("permission")
-		return
-	}
-
-	// Insert permission
-	result, err = service.Repository.Create(permission)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("create permission from database")
-		return
-	}
+// UpdateByRoleIdFeatureName Update permission
+func (service *Service) UpdateByRoleIdFeatureName(
+	jwtToken *types.JwtToken,
+	roleId int64,
+	featureName string,
+	body data.UpdateRoleFeaturePermissionBodyRequest,
+) (result *model.Permission, errCode int, err error) {
+	// TODO
 	return
 }
 
-// Get Returns permission with matching id
-func (service *Service) Get(jwtToken *types.JwtToken, id int64) (result *model.Permission, errCode int, err error) {
-	result, err = service.Repository.GetById(id)
+// GetByRoleIdFeatureName Get Returns permission with matching id
+func (service *Service) GetByRoleIdFeatureName(
+	jwtToken *types.JwtToken,
+	roleId int64,
+	featureName string,
+) (result *model.Permission, errCode int, err error) {
+	result, err = service.Repository.GetByRoleIdFeatureName(
+		roleId, featureName,
+	)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get permission by id from database")
@@ -68,9 +50,17 @@ func (service *Service) Get(jwtToken *types.JwtToken, id int64) (result *model.P
 	return
 }
 
-// GetAll Returns all permissions with support for search, filter and pagination
-func (service *Service) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (result []model.Permission, errCode int, err error) {
-	result, err = service.Repository.GetAll(filter, pagination)
+// GetAllByRoleId GetAll Returns all permissions with matching role id and
+// support for search, filter and pagination
+func (service *Service) GetAllByRoleId(
+	jwtToken *types.JwtToken,
+	roleId int64,
+	filter *types.Filter,
+	pagination *types.Pagination,
+) (result []model.Permission, errCode int, err error) {
+	result, err = service.Repository.GetAllByRoleId(
+		roleId, filter, pagination,
+	)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get permissions from database")

@@ -6,7 +6,6 @@ import (
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/admin/permission/data"
-	"api/services/admin/permission/model"
 )
 
 type Controller struct {
@@ -17,47 +16,50 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) Update(
+func (controller *Controller) UpdateByRoleIdFeatureName(
 	ctx *context.Context,
-	input *struct {
-		Body data.UpdatePermissionRequest
-	},
-) (result *model.Permission, errCode int, err error) {
-	result, errCode, err = controller.Service.Update(
+	roleId int64,
+	featureName string,
+	body data.UpdateRoleFeaturePermissionBodyRequest,
+) (result *data.PermissionResponse, errCode int, err error) {
+	result, errCode, err = controller.Service.UpdateByRoleIdFeatureName(
 		helpers.GetJwtContext(ctx),
-		&model.Permission{
-			RoleId:           input.Body.RoleId,
-			FeatureName:      input.Body.FeatureName,
-			TablePermissions: input.Body.TablePermissions,
-		},
+		roleId,
+		featureName,
+		body,
 	)
 	return
 }
 
-func (controller *Controller) Get(
+func (controller *Controller) GetByRoleIdFeatureName(
 	ctx *context.Context,
 	input *struct {
-		data.PermissionId
-	},
-) (result *model.Permission, errCode int, err error) {
-	result, errCode, err = controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
+	data.GetRoleFeaturePermissionRequest
+},
+) (result *data.PermissionResponse, errCode int, err error) {
+	result, errCode, err = controller.Service.GetByRoleIdFeatureName(
+		helpers.GetJwtContext(ctx),
+		input.RoleId,
+		input.FeatureName,
+	)
 	return
 }
 
-func (controller *Controller) GetAll(
+func (controller *Controller) GetAllByRoleId(
 	ctx *context.Context,
 	input *struct {
-		types.Filter
-		types.PaginationRequest
-	},
-) (result *data.PermissionList, errCode int, err error) {
+	data.GetRolePermissionListRequest
+	types.Filter
+	types.PaginationRequest
+},
+) (result *data.PermissionListResponse, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	permissionList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
+	permissionList, errCode, err := controller.Service.GetAllByRoleId(helpers.GetJwtContext(ctx), input.RoleId, newFilter, newPagination)
 	if err != nil {
 		return
 	}
-	result = &data.PermissionList{
-		Data: model.ToResponseList(permissionList),
+	result = &data.PermissionListResponse{
+		// TODO
 	}
 	result.Filter = newFilter
 	result.Pagination = newPagination

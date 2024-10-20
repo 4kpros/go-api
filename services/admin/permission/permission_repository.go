@@ -12,16 +12,29 @@ type Repository struct {
 	Db *gorm.DB
 }
 
-func NewPermissionRepository(db *gorm.DB) *Repository {
+func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) Create(permission *model.Permission) (*model.Permission, error) {
+func (repository *Repository) CreatePermissionFeature(
+	permission *model.PermissionFeature,
+) (*model.PermissionFeature, error) {
 	result := *permission
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, permission *model.Permission) (*model.Permission, error) {
+func (repository *Repository) CreatePermissionTable(
+	permission *model.PermissionTable,
+) (*model.PermissionTable, error) {
+	result := *permission
+	return &result, repository.Db.Create(&result).Error
+}
+
+func (repository *Repository) UpdateByRoleIdFeatureName(
+	roleId int64,
+	featureName string,
+	permission *model.Permission
+) (*model.Permission, error) {
 	return nil, nil
 	//result := &model.Permission{}
 	//return result, repository.Db.Model(result).Where(
@@ -40,12 +53,10 @@ func (repository *Repository) Update(id int64, permission *model.Permission) (*m
 	//).Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.Permission, error) {
-	result := &model.Permission{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
-}
-
-func (repository *Repository) GetByRoleIdTable(roleId int64, table string) (*model.Permission, error) {
+func (repository *Repository) GetByRoleIdFeatureName(
+	roleId int64,
+	table string,
+) (*model.Permission, error) {
 	result := &model.Permission{}
 	return result, repository.Db.Where(
 		"role_id = ?", roleId,
@@ -54,7 +65,11 @@ func (repository *Repository) GetByRoleIdTable(roleId int64, table string) (*mod
 	).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Permission, error) {
+func (repository *Repository) GetAllByRoleId(
+	roleId int64,
+	filter *types.Filter,
+	pagination *types.Pagination,
+) ([]model.Permission, error) {
 	var result []model.Permission
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

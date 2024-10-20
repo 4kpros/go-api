@@ -16,7 +16,7 @@ func InjectDependencies() {
 	var historyRepo = history.NewRepository(config.DB)
 	var userRepo = user.NewRepository(config.DB)
 	var roleRepo = role.NewRepository(config.DB)
-	var permissionRepo = permission.NewPermissionRepository(config.DB)
+	var permissionRepo = permission.NewRepository(config.DB)
 	// History
 	api.AllControllers.HistoryController = history.NewController(
 		history.NewService(

@@ -16,13 +16,13 @@ func NewProfileController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdateProfile(
+func (controller *Controller) UpdateProfileEmail(
 	ctx *context.Context,
 	input *struct {
-	Body data.UpdateProfileRequest
-},
+		Body data.UpdateProfileRequest
+	},
 ) (result *model.User, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateProfile(
+	result, errCode, err = controller.Service.UpdateProfileEmail(
 		helpers.GetJwtContext(ctx),
 		&model.User{
 			Email:       input.Body.Email,
@@ -36,8 +36,8 @@ func (controller *Controller) UpdateProfile(
 func (controller *Controller) UpdateProfileInfo(
 	ctx *context.Context,
 	input *struct {
-	Body data.UpdateProfileInfoRequest
-},
+		Body data.UpdateProfileInfoRequest
+	},
 ) (result *model.UserInfo, errCode int, err error) {
 	result, errCode, err = controller.Service.UpdateProfileInfo(
 		helpers.GetJwtContext(ctx),
@@ -56,8 +56,8 @@ func (controller *Controller) UpdateProfileInfo(
 func (controller *Controller) UpdateProfileMfa(
 	ctx *context.Context,
 	input *struct {
-	Body data.UpdateProfileMfaRequest
-},
+		Body data.UpdateProfileMfaRequest
+	},
 ) (result *model.UserMfa, errCode int, err error) {
 	result, errCode, err = controller.Service.UpdateProfileMfa(helpers.GetJwtContext(ctx), input.Body.Method, input.Body.Value)
 	return

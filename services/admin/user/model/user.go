@@ -1,6 +1,7 @@
 package model
 
 import (
+	"api/services/admin/role/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,7 +15,6 @@ type User struct {
 	types.BaseGormModel
 	Email       string `gorm:"default:null"`
 	PhoneNumber uint64 `gorm:"default:null"`
-	RoleId      int64  `gorm:"default:null"`
 	Password    string `gorm:"default:null"`
 
 	LoginMethod    string     `gorm:"default:null"`
@@ -22,6 +22,9 @@ type User struct {
 	ProviderUserId string     `gorm:"default:null"`
 	IsActivated    bool       `gorm:"default:null"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
+
+	Role   *model.Role `gorm:"default:null;foreignKey:RoleId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	RoleId int64       `gorm:"default:null"`
 
 	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	UserInfoId int64     `gorm:"default:null"`
@@ -39,6 +42,33 @@ func (user *User) BeforeUpdate(db *gorm.DB) (err error) {
 	user.Password, err = security.EncodeArgon2id(user.Password)
 	return
 }
+
+func (user *User) ToResponse() *data.UserResponse {
+	resp := &data.UserResponse{
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+
+		LoginMethod:    user.LoginMethod,
+		Provider:       user.Provider,
+		ProviderUserId: user.ProviderUserId,
+		IsActivated:    user.IsActivated,
+		ActivatedAt:    user.ActivatedAt,
+
+		Role: &data.RoleResponse{
+			ID:          user.Role.ID,
+			Name:        user.Role.Name,
+			Description: user.Role.Description,
+		},
+		UserInfo: user.UserInfo.ToResponse(),
+		UserMfa:  user.UserMfa.ToResponse(),
+	}
+	resp.ID = user.ID
+	resp.CreatedAt = user.CreatedAt
+	resp.UpdatedAt = user.UpdatedAt
+	resp.DeletedAt = user.DeletedAt
+	return resp
+}
+
 func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 	user.ProviderUserId = googleUser.ID
 	user.Email = googleUser.Email
@@ -60,28 +90,6 @@ func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileRespon
 		// Language:  facebookUser.Languages,
 		Image: facebookUser.PictureSmall.Data.Url,
 	}
-}
-
-func (user *User) ToResponse() *data.UserResponse {
-	resp := &data.UserResponse{}
-	resp.ID = user.ID
-	resp.CreatedAt = user.CreatedAt
-	resp.UpdatedAt = user.UpdatedAt
-	resp.DeletedAt = user.DeletedAt
-
-	resp.Email = user.Email
-	resp.PhoneNumber = user.PhoneNumber
-	resp.RoleId = user.RoleId
-
-	resp.LoginMethod = user.LoginMethod
-	resp.Provider = user.Provider
-	resp.ProviderUserId = user.ProviderUserId
-	resp.IsActivated = user.IsActivated
-	resp.ActivatedAt = user.ActivatedAt
-
-	resp.UserInfo = user.UserInfo.ToResponse()
-	resp.UserMfa = user.UserMfa.ToResponse()
-	return resp
 }
 
 func ToResponseList(userList []User) []data.UserResponse {
