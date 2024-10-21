@@ -17,7 +17,7 @@ import (
 func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
-		// Check if current endpoint require authorization
+		// Check if current endpoint requires authorization
 		isAuthorizationRequired := false
 		for _, opScheme := range ctx.Operation().Security {
 			if _, ok := opScheme[constants.SecurityAuthName]; ok {

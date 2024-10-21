@@ -1,8 +1,6 @@
 package constants
 
 const (
-	PermissionMetadata = ""
-
 	PermissionNone   = "-"
 	PermissionCreate = "c"
 	PermissionRead   = "r"

@@ -21,13 +21,14 @@ func RegisterEndpoints(
 		Group: "/permissions",
 		Tag:   []string{"Permissions"},
 	}
+	const tableName = "permissions"
 
 	// Update permission
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission with matching role id and feature name",
+			Summary:     "Update permission",
 			Description: "Update permission with matching role id and feature name",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/role/{roleId}/{featureName}", endpointConfig.Group),
@@ -35,12 +36,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,    // Feature scope
+						tableName,                  // Table name
+						constants.PermissionUpdate, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionUpdate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -72,7 +72,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-permission-list",
-			Summary:     "Get all permissions with matching role id",
+			Summary:     "Get all role permissions",
 			Description: "Get all permissions with matching role id and support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/role/{roleId}", endpointConfig.Group),
@@ -80,12 +80,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,  // Feature scope
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

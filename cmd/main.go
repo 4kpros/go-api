@@ -46,8 +46,8 @@ func init() {
 		helpers.Logger.Info("Env loaded!")
 	}
 
-	// Test Argon2id with an empty password to ensure that everything works as expected
-	_, errArgon2id := security.CheckArgon2id()
+	// Test Argon 2id with an empty password to ensure that everything works as expected
+	_, errArgon2id := security.EncodeArgon2id("Testing")
 	if errArgon2id != nil {
 		errInit = errArgon2id
 		helpers.Logger.Error(

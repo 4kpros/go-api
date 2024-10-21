@@ -7,11 +7,6 @@ import (
 	"github.com/alexedwards/argon2id"
 )
 
-// CheckArgon2id Checks if Argo2id works as expected.
-func CheckArgon2id() (string, error) {
-	return EncodeArgon2id("Testing")
-}
-
 // EncodeArgon2id Applies the Argon2id hashing algorithm to the password and return the resulting hashed string.
 func EncodeArgon2id(password string) (string, error) {
 	params := &argon2id.Params{
