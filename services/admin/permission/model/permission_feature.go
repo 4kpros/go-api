@@ -12,8 +12,8 @@ type PermissionFeature struct {
 	IsEnabled   bool   `gorm:"default:false"`
 }
 
-func (permission *PermissionFeature) ToResponse() *data.PermissionResponse {
-	resp := &data.PermissionResponse{
+func (permission *PermissionFeature) ToResponse() *data.PermissionFeatureResponse {
+	resp := &data.PermissionFeatureResponse{
 		RoleId:      permission.RoleId,
 		FeatureName: permission.FeatureName,
 		IsEnabled:   permission.IsEnabled,

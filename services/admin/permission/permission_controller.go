@@ -21,7 +21,7 @@ func (controller *Controller) UpdateByRoleIdFeatureName(
 	roleId int64,
 	featureName string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
-) (result *data.PermissionResponse, errCode int, err error) {
+) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
 	result, errCode, err = controller.Service.UpdateByRoleIdFeatureName(
 		helpers.GetJwtContext(ctx),
 		roleId,
@@ -31,27 +31,13 @@ func (controller *Controller) UpdateByRoleIdFeatureName(
 	return
 }
 
-func (controller *Controller) GetByRoleIdFeatureName(
-	ctx *context.Context,
-	input *struct {
-	data.GetRoleFeaturePermissionRequest
-},
-) (result *data.PermissionResponse, errCode int, err error) {
-	result, errCode, err = controller.Service.GetByRoleIdFeatureName(
-		helpers.GetJwtContext(ctx),
-		input.RoleId,
-		input.FeatureName,
-	)
-	return
-}
-
 func (controller *Controller) GetAllByRoleId(
 	ctx *context.Context,
 	input *struct {
-	data.GetRolePermissionListRequest
-	types.Filter
-	types.PaginationRequest
-},
+		data.GetRolePermissionListRequest
+		types.Filter
+		types.PaginationRequest
+	},
 ) (result *data.PermissionListResponse, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
 	permissionList, errCode, err := controller.Service.GetAllByRoleId(helpers.GetJwtContext(ctx), input.RoleId, newFilter, newPagination)
@@ -59,7 +45,7 @@ func (controller *Controller) GetAllByRoleId(
 		return
 	}
 	result = &data.PermissionListResponse{
-		// TODO
+		Data: permissionList,
 	}
 	result.Filter = newFilter
 	result.Pagination = newPagination

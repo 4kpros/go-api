@@ -4,12 +4,11 @@ import (
 	"api/common/types"
 )
 
-type PermissionResponse struct {
+type PermissionFeatureResponse struct {
 	types.BaseGormModelResponse
-	RoleId      int64                   `json:"roleId" required:"false" doc:"Role id"`
-	FeatureName string                  `json:"featureName" required:"false" minLength:"2" doc:"Feature name"`
-	IsEnabled   bool                    `json:"isEnabled" required:"false" doc:"Is this feature enabled ?"`
-	Table       PermissionTableResponse `json:"table" required:"false" doc:"Table  permission"`
+	RoleId      int64  `json:"roleId" required:"false" doc:"Role id"`
+	FeatureName string `json:"featureName" required:"false" minLength:"2" doc:"Feature name"`
+	IsEnabled   bool   `json:"isEnabled" required:"false" doc:"Is this feature enabled ?"`
 }
 
 type PermissionTableResponse struct {
@@ -20,7 +19,12 @@ type PermissionTableResponse struct {
 	Delete    bool   `json:"delete" required:"false" doc:"Delete permission"`
 }
 
+type PermissionFeatureTableResponse struct {
+	*PermissionFeatureResponse
+	*PermissionTableResponse
+}
+
 type PermissionListResponse struct {
 	types.PaginatedResponse
-	Data []PermissionResponse `json:"data" required:"false" doc:"List of permissions" example:"[]"`
+	Data []PermissionFeatureTableResponse `json:"data" required:"false" doc:"List of all permissions" example:"[]"`
 }

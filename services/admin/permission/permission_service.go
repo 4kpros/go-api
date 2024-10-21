@@ -6,7 +6,6 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
-	"api/services/admin/permission/model"
 )
 
 type Service struct {
@@ -23,30 +22,10 @@ func (service *Service) UpdateByRoleIdFeatureName(
 	roleId int64,
 	featureName string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
-) (result *model.Permission, errCode int, err error) {
-	// TODO
-	return
-}
-
-// GetByRoleIdFeatureName Get Returns permission with matching id
-func (service *Service) GetByRoleIdFeatureName(
-	jwtToken *types.JwtToken,
-	roleId int64,
-	featureName string,
-) (result *model.Permission, errCode int, err error) {
-	result, err = service.Repository.GetByRoleIdFeatureName(
-		roleId, featureName,
+) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
+	result, err = service.Repository.UpdateByRoleIdFeatureName(
+		roleId, featureName, body.IsEnabled, body.Table,
 	)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get permission by id from database")
-		return
-	}
-	if result == nil {
-		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Permission")
-		return
-	}
 	return
 }
 
@@ -57,7 +36,7 @@ func (service *Service) GetAllByRoleId(
 	roleId int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
-) (result []model.Permission, errCode int, err error) {
+) (result []data.PermissionFeatureTableResponse, errCode int, err error) {
 	result, err = service.Repository.GetAllByRoleId(
 		roleId, filter, pagination,
 	)

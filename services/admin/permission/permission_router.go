@@ -52,52 +52,18 @@ func RegisterEndpoints(
 				data.UpdateRoleFeaturePermissionPathRequest
 				Body data.UpdateRoleFeaturePermissionBodyRequest
 			},
-		) (*struct{ Body data.PermissionResponse }, error) {
+		) (*struct {
+			Body data.PermissionFeatureTableResponse
+		}, error) {
 			result, errCode, err := controller.UpdateByRoleIdFeatureName(
 				&ctx, input.RoleId, input.FeatureName, input.Body,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.PermissionResponse }{Body: *result}, nil
-		},
-	)
-
-	// Get permission by role id and feature name
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID: "get-role-feature-permission",
-			Summary:     "Get permission with matching role id and feature name",
-			Description: "Return one permission with matching role id and feature name",
-			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/role/{roleId}/{featureName}", endpointConfig.Group),
-			Tags:        endpointConfig.Tag,
-			Security: []map[string][]string{
-				{
-					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
-					},
-				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionRead,
-			},
-			MaxBodyBytes:  1024, // 1 KiB
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				data.GetRoleFeaturePermissionRequest
-			},
-		) (*struct{ Body data.PermissionResponse }, error) {
-			result, errCode, err := controller.GetByRoleIdFeatureName(&ctx, input)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body data.PermissionResponse }{Body: *result}, nil
+			return &struct {
+				Body data.PermissionFeatureTableResponse
+			}{Body: *result}, nil
 		},
 	)
 
