@@ -25,7 +25,7 @@ func (controller *Controller) UpdateProfileInfo(
 	result, errCode, err = controller.Service.UpdateProfileInfo(
 		helpers.GetJwtContext(ctx),
 		&model.UserInfo{
-			UserName:  input.Body.UserName,
+			Username:  input.Body.Username,
 			FirstName: input.Body.FirstName,
 			LastName:  input.Body.LastName,
 			Address:   input.Body.Address,

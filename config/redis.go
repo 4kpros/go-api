@@ -16,7 +16,7 @@ func ConnectRedis() error {
 	addr := fmt.Sprintf("%s:%d", Env.RedisHost, Env.RedisPort)
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Username: Env.RedisUserName,
+		Username: Env.RedisUsername,
 		Password: Env.RedisPassword,
 		DB:       Env.RedisDatabase,
 	})

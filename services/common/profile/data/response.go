@@ -23,7 +23,7 @@ type UserProfileResponse struct {
 }
 
 type UserProfileInfoResponse struct {
-	UserName  string `json:"userName" required:"false" doc:"User name"`
+	Username  string `json:"username" required:"false" doc:"User name"`
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
 
@@ -64,7 +64,7 @@ func FromUser(user *model.User) *UserProfileResponse {
 
 func FromUserInfo(userInfo *model.UserInfo) *UserProfileInfoResponse {
 	resp := &UserProfileInfoResponse{}
-	resp.UserName = userInfo.UserName
+	resp.Username = userInfo.Username
 	resp.FirstName = userInfo.FirstName
 	resp.LastName = userInfo.LastName
 	resp.Birthday = userInfo.Birthday

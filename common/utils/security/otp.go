@@ -9,11 +9,11 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-func GenerateOTP(userId int64, userName string, issuer string) (string, error) {
+func GenerateOTP(userId int64, username string, issuer string) (string, error) {
 	// Generate OTP secret if not already generated
 	secret, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      issuer,
-		AccountName: userName,
+		AccountName: username,
 	})
 	if err != nil {
 		return "", constants.Http500ErrorMessage("generate TOTP code")
@@ -28,7 +28,7 @@ func GenerateOTP(userId int64, userName string, issuer string) (string, error) {
 	// Construct the OTP URL for generating QR code
 	otpURL := fmt.Sprintf("otpauth://totp/%s:%s?secret=%s&issuer=%s",
 		config.Env.AppName,
-		userName,
+		username,
 		secret.Secret(),
 		issuer,
 	)
