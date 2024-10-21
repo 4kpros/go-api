@@ -15,7 +15,8 @@ func Start() {
 		config.DB.AutoMigrate(
 			&historyModel.History{},
 			&roleModel.Role{},
-			&permissionModel.Permission{},
+			&permissionModel.PermissionFeature{},
+			&permissionModel.PermissionTable{},
 			&userModel.User{},
 		),
 	)
