@@ -10,7 +10,7 @@ var Http401InvalidTokenErrorMessage = func() error {
 	return fmt.Errorf("%s", "Invalid or expired token! Please enter valid information.")
 }
 
-var Http401InvalidPermissionErrorMessage = func() error {
+var Http403InvalidPermissionErrorMessage = func() error {
 	return fmt.Errorf("%s", "You don't have permission to access this resource! Please enter valid information.")
 }
 

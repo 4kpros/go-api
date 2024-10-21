@@ -54,7 +54,7 @@ func (user *User) ToResponse() *data.UserResponse {
 		IsActivated:    user.IsActivated,
 		ActivatedAt:    user.ActivatedAt,
 
-		Role: &data.RoleResponse{
+		Role: &data.UserRoleResponse{
 			ID:          user.Role.ID,
 			Name:        user.Role.Name,
 			Description: user.Role.Description,

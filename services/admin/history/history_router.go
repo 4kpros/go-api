@@ -20,6 +20,7 @@ func RegisterEndpoints(
 		Group: "/history",
 		Tag:   []string{"History"},
 	}
+	const tableName = "history"
 
 	// Get all history
 	huma.Register(
@@ -34,12 +35,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,  // Feature scope
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,

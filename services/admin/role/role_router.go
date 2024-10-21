@@ -21,6 +21,7 @@ func RegisterEndpoints(
 		Group: "/roles",
 		Tag:   []string{"Roles"},
 	}
+	const tableName = "roles"
 
 	// Create role
 	huma.Register(
@@ -35,12 +36,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,    // Feature scope
+						tableName,                  // Table name
+						constants.PermissionCreate, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionCreate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -73,12 +73,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,    // Feature scope
+						tableName,                  // Table name
+						constants.PermissionUpdate, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionUpdate,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -112,12 +111,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,    // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionDelete,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -150,12 +148,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,  // Feature scope
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
@@ -188,12 +185,11 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						admin.FeaturePermission, // Feature scope
+						admin.FeaturePermission,  // Feature scope
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
-			},
-			Metadata: map[string]any{
-				constants.PermissionMetadata: constants.PermissionRead,
 			},
 			MaxBodyBytes:  1024, // 1 KiB
 			DefaultStatus: http.StatusOK,
