@@ -21,15 +21,15 @@ func RegisterEndpoints(
 		Tag:   []string{"Profile"},
 	}
 
-	// Update profile
+	// Update password step 1
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-profile",
-			Summary:     "Update profile",
-			Description: "Update user profile such as email, phone number and password",
+			OperationID: "update-profile-password-init",
+			Summary:     "Update password - step 1",
+			Description: "Update user password step 1 by initializing",
 			Method:      http.MethodPut,
-			Path:        endpointConfig.Group,
+			Path:        fmt.Sprintf("%s/password/init", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -45,10 +45,10 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.UpdateProfileRequest
+				Body data.UpdateProfileEmailStep1Request
 			},
 		) (*struct{ Body data.UserProfileResponse }, error) {
-			result, errCode, err := controller.UpdateProfile(&ctx, input)
+			result, errCode, err := controller.UpdateProfileEmailStep1(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

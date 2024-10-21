@@ -18,7 +18,7 @@ func NewService(repository *Repository) *Service {
 
 // UpdateByRoleIdFeatureName Update permission
 func (service *Service) UpdateByRoleIdFeatureName(
-	jwtToken *types.JwtToken,
+	inputJwtToken *types.JwtToken,
 	roleId int64,
 	featureName string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
@@ -32,7 +32,7 @@ func (service *Service) UpdateByRoleIdFeatureName(
 // GetAllByRoleId GetAll Returns all permissions with matching role id and
 // support for search, filter and pagination
 func (service *Service) GetAllByRoleId(
-	jwtToken *types.JwtToken,
+	inputJwtToken *types.JwtToken,
 	roleId int64,
 	filter *types.Filter,
 	pagination *types.Pagination,

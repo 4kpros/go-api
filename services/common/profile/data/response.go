@@ -27,11 +27,11 @@ type UserProfileInfoResponse struct {
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
 
-	Birthday      time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
-	BirthLocation string    `json:"birthLocation" required:"false" doc:"Birth location"`
-	Address       string    `json:"address" required:"false" doc:"Address"`
-	Language      string    `json:"language" required:"false" doc:"Language"`
-	Image         string    `json:"image" required:"false" doc:"Thumbnail"`
+	Birthday      *time.Time `json:"birthday" required:"false" doc:"Birthday date time"`
+	BirthLocation string     `json:"birthLocation" required:"false" doc:"Birth location"`
+	Address       string     `json:"address" required:"false" doc:"Address"`
+	Language      string     `json:"language" required:"false" doc:"Language"`
+	Image         string     `json:"image" required:"false" doc:"Thumbnail"`
 }
 
 type UserProfileMfaResponse struct {

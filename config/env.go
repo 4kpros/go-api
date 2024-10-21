@@ -48,6 +48,13 @@ type Environment struct {
 	JwtIssuerSessionApiKeyPassphrase string `mapstructure:"JWT_ISSUER_SESSION_API_KEY_PASSPHRASE"`
 	JwtIssuerAuthPassphrase          string `mapstructure:"JWT_ISSUER_AUTH_PASSPHRASE"`
 
+	JwtIssuerProfileUpdatePasswordPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_PASSWORD_PASSPHRASE"`
+	JwtIssuerProfileUpdateEmailPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_EMAIL_PASSPHRASE"`
+	JwtIssuerProfileUpdatePhoneNumberPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_PHONE_NUMBER_PASSPHRASE"`
+
+	profileUpdatePasswordPassPhrase string,
+	profileUpdateEmailPassPhrase string,
+	profileUpdatePhoneNumberPassPhrase string,
 	// reCAPTCHA
 	GoogleReCAPTCHASiteKey string  `mapstructure:"GOOGLE_RECAPTCHA_SITE_KEY"`
 	GoogleReCAPTCHAScore   float32 `mapstructure:"GOOGLE_RECAPTCHA_SCORE"`
@@ -95,6 +102,9 @@ func LoadEnv() error {
 				Env.JwtIssuerSessionPassphrase,
 				Env.JwtIssuerSessionApiKeyPassphrase,
 				Env.JwtIssuerAuthPassphrase,
+				Env.JwtIssuerProfileUpdatePasswordPassphrase,
+				Env.JwtIssuerProfileUpdateEmailPassphrase,
+				Env.JwtIssuerProfileUpdatePhoneNumberPassphrase,
 			)
 		}
 	}
