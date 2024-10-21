@@ -17,7 +17,7 @@ type CreateUserWithPhoneNumberRequest struct {
 }
 
 type UpdateUserInfoRequest struct {
-	UserName  string `json:"userName" required:"false" minLength:"2" maxLength:"30" doc:"User name" example:"meta_human"`
+	Username  string `json:"username" required:"false" minLength:"2" maxLength:"30" doc:"User name" example:"meta_human"`
 	FirstName string `json:"firstName" required:"false" minLength:"2" maxLength:"30" doc:"First name" example:"John"`
 	LastName  string `json:"lastName" required:"false" minLength:"2" maxLength:"30" doc:"Last name" example:"Doe"`
 

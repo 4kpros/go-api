@@ -30,7 +30,7 @@ type UserRoleResponse struct {
 }
 
 type UserInfoResponse struct {
-	UserName  string `json:"userName" required:"false" doc:"User name"`
+	Username  string `json:"username" required:"false" doc:"User name"`
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
 
