@@ -1,6 +1,6 @@
 package types
 
-type APIEndpointConfig struct {
+type ApiEndpointConfig struct {
 	Group string
 	Tag   []string
 }

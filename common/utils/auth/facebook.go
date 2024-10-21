@@ -9,7 +9,7 @@ import (
 	"fmt"
 )
 
-// Verifies a Facebook token and returns the associated user information.
+// VerifyFacebookToken Verifies a Facebook token and returns the associated user information.
 //
 // Refer to the official documentation for more details
 // Debug: https://graph.facebook.com/debug_token?input_token=YOUR_AUTH_TOKEN&access_token=YOUR_APP_ID|YOUR_CLIENT_SECRET
@@ -20,7 +20,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 	debugResp := &types.FacebookDebugAccessTokenResponse{}
-	errDebug := utils.HTTP_GET(
+	errDebug := utils.HttpGet(
 		fmt.Sprintf(
 			"%s%s&access_token=%s|%s",
 			config.Env.FacebookDebugTokenUrl,
@@ -42,7 +42,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	if !utils.IsFacebookLoginScopesValid(debugResp.Data.Scopes) {
 		return nil, fmt.Errorf("%s%v",
 			"Invalid scopes! You need to enable these scopes: ",
-			constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES,
+			constants.AuthLoginWithFacebookRequiredScopes,
 		)
 	}
 
@@ -50,9 +50,9 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 	userResp := &types.FacebookUserProfileResponse{}
 	secretProof, errSecretProof := security.EncodeHMAC_SHA256(token, config.Env.FacebookClientSecret)
 	if errSecretProof != nil {
-		return nil, constants.HTTP_500_ERROR_MESSAGE("encode Facebook HMAC HS256 secret proof")
+		return nil, constants.Http500ErrorMessage("encode Facebook HMAC HS256 secret proof")
 	}
-	errUser := utils.HTTP_GET(
+	errUser := utils.HttpGet(
 		fmt.Sprintf(
 			"%s%s&appsecret_proof=%s",
 			config.Env.FacebookProfileUrl,

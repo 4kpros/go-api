@@ -1,13 +1,14 @@
 package middlewares
 
 import (
-	"api/config"
 	"fmt"
 	"net/http"
 	"slices"
 	"strings"
 
 	"github.com/danielgtaylor/huma/v2"
+
+	"api/config"
 )
 
 func CorsMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {

@@ -2,22 +2,22 @@ package constants
 
 import "fmt"
 
-var HTTP_500_ERROR_MESSAGE = func(message string) error {
+var Http500ErrorMessage = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("Error occurred when trying to %s! Please try again later.", message))
 }
 
-var HTTP_401_INVALID_TOKEN_ERROR_MESSAGE = func() error {
+var Http401InvalidTokenErrorMessage = func() error {
 	return fmt.Errorf("%s", "Invalid or expired token! Please enter valid information.")
 }
 
-var HTTP_401_INVALID_PERMISSION_ERROR_MESSAGE = func() error {
+var Http401InvalidPermissionErrorMessage = func() error {
 	return fmt.Errorf("%s", "You don't have permission to access this resource! Please enter valid information.")
 }
 
-var HTTP_404_ERROR_MESSAGE = func(message string) error {
+var Http404ErrorMessage = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("%s not found! Please enter valid information.", message))
 }
 
-var HTTP_302_ERROR_MESSAGE = func(message string) error {
+var Http302ErrorMessage = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("This %s already exists! Please enter valid information.", message))
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 )
 
-// Sets HTTP headers for responses.
+// HeadersMiddleware Sets HTTP headers for responses.
 func HeadersMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	return func(ctx huma.Context, next func(huma.Context)) {
 

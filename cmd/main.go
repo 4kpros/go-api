@@ -1,14 +1,14 @@
 package main
 
 import (
+	"go.uber.org/zap"
+
 	"api/cmd/api"
 	"api/cmd/di"
 	"api/cmd/migrate"
 	"api/common/helpers"
 	"api/common/utils/security"
 	"api/config"
-
-	"go.uber.org/zap"
 )
 
 // Contains all errors during init() execution

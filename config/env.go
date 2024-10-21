@@ -41,8 +41,8 @@ type Environment struct {
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
 
 	// JWT for authentication and user session
-	JwtExpiresSignIn                 int    `mapstructure:"JWT_EXPIRES_SIGN_IN"`
-	JwtExpiresSignInStayConnected    int    `mapstructure:"JWT_EXPIRES_SIGN_IN_STAY_CONNECTED"`
+	JwtExpiresLogin                  int    `mapstructure:"JWT_EXPIRES_LOGIN"`
+	JwtExpiresLoginStayConnected     int    `mapstructure:"JWT_EXPIRES_LOGIN_STAY_CONNECTED"`
 	JwtExpiresDefault                int    `mapstructure:"JWT_EXPIRES_DEFAULT"`
 	JwtIssuerSessionPassphrase       string `mapstructure:"JWT_ISSUER_SESSION_PASSPHRASE"`
 	JwtIssuerSessionApiKeyPassphrase string `mapstructure:"JWT_ISSUER_SESSION_API_KEY_PASSPHRASE"`
@@ -78,7 +78,7 @@ type Environment struct {
 
 var Env = &Environment{}
 
-// Loads environment variables.
+// LoadEnv Loads environment variables.
 func LoadEnv() error {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("app")

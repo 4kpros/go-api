@@ -1,25 +1,26 @@
 package middlewares
 
 import (
-	"api/common/constants"
-	"api/common/helpers"
-	"api/common/utils/security"
-	"api/config"
 	"fmt"
 	"net/http"
 	"slices"
 
 	"github.com/danielgtaylor/huma/v2"
+
+	"api/common/constants"
+	"api/common/helpers"
+	"api/common/utils/security"
+	"api/config"
 )
 
-// Handles authentication for API requests.
+// AuthMiddleware Handles authentication for API requests.
 func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 	var errMessage string
 	return func(ctx huma.Context, next func(huma.Context)) {
 		// Check if current endpoint require authorization
 		isAuthorizationRequired := false
 		for _, opScheme := range ctx.Operation().Security {
-			if _, ok := opScheme[constants.SECURITY_AUTH_NAME]; ok {
+			if _, ok := opScheme[constants.SecurityAuthName]; ok {
 				isAuthorizationRequired = true
 				break
 			}
@@ -33,7 +34,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 		token := helpers.ExtractBearerTokenHeader(&ctx)
 		if len(token) < 1 {
 			errMessage = "Missing or bad authorization header! Please enter valid information."
-			huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
+			_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, errMessage, fmt.Errorf("%s", errMessage))
 			return
 		}
 		jwtDecoded, errDecoded := security.DecodeJWTToken(
@@ -41,20 +42,20 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+			tempErr := constants.Http401InvalidTokenErrorMessage()
 			_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}
 
 		// Validate the token by checking if it's cached
 		isTokenCached := false
-		if jwtDecoded.Issuer == constants.JWT_ISSUER_SESSION {
+		if jwtDecoded.Issuer == constants.JwtIssuerSession {
 			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
 				config.CheckValueInRedisList(token),
 			)
-		} else if slices.Contains(constants.JWT_ISSUER_AUTH, jwtDecoded.Issuer) {
+		} else if slices.Contains(constants.JwtIssuerAuths, jwtDecoded.Issuer) {
 			isTokenCached = security.ValidateJWTToken(
 				token,
 				jwtDecoded,
@@ -66,7 +67,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			return
 		}
 
-		tempErr := constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+		tempErr := constants.Http401InvalidTokenErrorMessage()
 		_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 	}
 }

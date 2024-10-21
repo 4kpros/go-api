@@ -4,47 +4,43 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humagin"
+	"github.com/gin-gonic/gin"
+
 	"api/common/constants"
 	"api/config"
 	"api/middlewares"
-	"api/services/admin"
-	"api/services/auth"
-	"api/services/history"
-	"api/services/permission"
-	"api/services/profile"
-	"api/services/role"
-	"api/services/user"
-
-	"github.com/danielgtaylor/huma/v2"
-	"github.com/danielgtaylor/huma/v2/adapters/humagin"
-
-	"github.com/gin-gonic/gin"
+	"api/services/admin/history"
+	"api/services/admin/permission"
+	"api/services/admin/role"
+	"api/services/admin/user"
+	"api/services/common/auth"
+	"api/services/common/profile"
 )
 
-type APIControllers struct {
-	AuthController       *auth.AuthController
-	HistoryController    *history.HistoryController
-	RoleController       *role.RoleController
-	PermissionController *permission.PermissionController
-	UserController       *user.UserController
-	ProfileController    *profile.ProfileController
-	AdminController      *admin.AdminController
+type Controllers struct {
+	AuthController       *auth.Controller
+	HistoryController    *history.Controller
+	RoleController       *role.Controller
+	PermissionController *permission.Controller
+	UserController       *user.Controller
+	ProfileController    *profile.Controller
 }
 
-var Controllers = &APIControllers{}
+var AllControllers = &Controllers{}
 
 // Register all API endpoints
 func registerEndpoints(humaApi *huma.API) {
-	auth.RegisterEndpoints(humaApi, Controllers.AuthController)
-	history.RegisterEndpoints(humaApi, Controllers.HistoryController)
-	role.RegisterEndpoints(humaApi, Controllers.RoleController)
-	permission.RegisterEndpoints(humaApi, Controllers.PermissionController)
-	user.RegisterEndpoints(humaApi, Controllers.UserController)
-	profile.RegisterEndpoints(humaApi, Controllers.ProfileController)
-	admin.RegisterEndpoints(humaApi, Controllers.AdminController)
+	auth.RegisterEndpoints(humaApi, AllControllers.AuthController)
+	history.RegisterEndpoints(humaApi, AllControllers.HistoryController)
+	role.RegisterEndpoints(humaApi, AllControllers.RoleController)
+	permission.RegisterEndpoints(humaApi, AllControllers.PermissionController)
+	user.RegisterEndpoints(humaApi, AllControllers.UserController)
+	profile.RegisterEndpoints(humaApi, AllControllers.ProfileController)
 }
 
-// Set up and start the API: set up API documentation,
+// Start Set up and start the API: set up API documentation,
 // configure middlewares, and security measures.
 func Start() {
 	// Set up gin for your API
@@ -60,8 +56,8 @@ func Start() {
 	ginGroup := engine.Group(config.Env.ApiGroup)
 
 	// OpenAPI documentation based on huma
-	humaConfig := huma.DefaultConfig(constants.OPEN_API_TITLE, constants.OPEN_API_VERSION)
-	// CUstom CreateHooks to remove $schema links
+	humaConfig := huma.DefaultConfig(constants.OpenApiTitle, constants.OpenApiVersion)
+	// Custom CreateHooks to remove $schema links
 	humaConfig.CreateHooks = []func(huma.Config) huma.Config{
 		func(c huma.Config) huma.Config {
 			return c
@@ -72,26 +68,26 @@ func Start() {
 		{URL: config.Env.ApiGroup},
 	}
 	humaConfig.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
-		constants.SECURITY_AUTH_NAME: {
+		constants.SecurityAuthName: {
 			Type:         "http",
 			Scheme:       "bearer",
 			BearerFormat: "JWT",
 			Description:  "Bearer token used to access some resources",
 		},
 	}
-	humaConfig.Info.Description = constants.OPEN_API_DESCRIPTION
+	humaConfig.Info.Description = constants.OpenApiDescription
 	humaApi := humagin.NewWithGroup(engine, ginGroup, humaConfig)
 	// Register middlewares
 	humaApi.UseMiddleware(
 		middlewares.HeadersMiddleware(humaApi),
 		middlewares.CorsMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
-		middlewares.PermissionMiddleware(humaApi, Controllers.PermissionController.Service.Repository),
+		middlewares.PermissionMiddleware(humaApi, AllControllers.PermissionController.Service.Repository),
 	)
 
 	// Register endpoints
 	// Serve static files as favicon
-	engine.StaticFS("/assets", http.Dir(constants.ASSET_APP_PATH))
+	engine.StaticFS("/assets", http.Dir(constants.AssetAppPath))
 	// Register endpoint for docs with support for custom template
 	ginGroup.GET("/docs", func(ctx *gin.Context) {
 		ctx.Data(200, "text/html", []byte(*config.OpenAPITemplates.Scalar))

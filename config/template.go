@@ -22,7 +22,7 @@ func LoadOpenAPITemplates() error {
 	var errRead error
 
 	// Redocly
-	OpenAPITemplates.Redocly, errRead = utils.ReadFileToString(constants.ASSET_TEMPLATES_PATH + "/openapi/redocly.html")
+	OpenAPITemplates.Redocly, errRead = utils.ReadFileToString(constants.AssetTemplatesPath + "/openapi/redocly.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(
@@ -34,7 +34,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Scalar
-	OpenAPITemplates.Scalar, err = utils.ReadFileToString(constants.ASSET_TEMPLATES_PATH + "/openapi/scalar.html")
+	OpenAPITemplates.Scalar, err = utils.ReadFileToString(constants.AssetTemplatesPath + "/openapi/scalar.html")
 	if errRead != nil {
 		helpers.Logger.Warn(
 			"Failed to load OpenAPI Scalar template",
@@ -45,7 +45,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Stoplight
-	OpenAPITemplates.Stoplight, errRead = utils.ReadFileToString(constants.ASSET_TEMPLATES_PATH + "/openapi/stoplight.html")
+	OpenAPITemplates.Stoplight, errRead = utils.ReadFileToString(constants.AssetTemplatesPath + "/openapi/stoplight.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(
@@ -57,7 +57,7 @@ func LoadOpenAPITemplates() error {
 	}
 
 	// Swagger
-	OpenAPITemplates.Swagger, errRead = utils.ReadFileToString(constants.ASSET_TEMPLATES_PATH + "/openapi/swagger.html")
+	OpenAPITemplates.Swagger, errRead = utils.ReadFileToString(constants.AssetTemplatesPath + "/openapi/swagger.html")
 	if errRead != nil {
 		err = errRead
 		helpers.Logger.Warn(

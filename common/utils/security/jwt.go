@@ -10,30 +10,30 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// Returns the default expiration time for JWT. It's 10 min.
+// NewExpiresDateDefault Returns the default expiration time for JWT. It's 10 min.
 func NewExpiresDateDefault() *time.Time {
 	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresDefault))
 	return &tempDate
 }
 
-// Returns the login expiration time for JWT.
+// NewExpiresDateLogin Returns the login expiration time for JWT.
 // With default ENV var, the JWT login expiration time is
 // 30 days if stayConnected is true, otherwise it's 1 hour.
-func NewExpiresDateSignIn(stayConnected bool) (date *time.Time) {
+func NewExpiresDateLogin(stayConnected bool) (date *time.Time) {
 	if stayConnected {
-		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresSignInStayConnected))
+		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresLoginStayConnected))
 		return &tempDate
 	}
-	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresSignIn))
+	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresLogin))
 	return &tempDate
 }
 
-// Returns the key of Redis entry(combining userId and Issuer)
+// GetJWTCachedKey Returns the key of Redis entry(combining userId and Issuer)
 func GetJWTCachedKey(userId int64, issuer string) (key string) {
 	return fmt.Sprintf("%d_%s", userId, issuer)
 }
 
-// Encode the JWT token and store it in the cache. This returns a signed string token.
+// EncodeJWTToken Encodes the JWT token and store it in the cache. This returns a signed string token.
 func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time, privateKey *string, cacheFunc func(string, string) error) (*types.JwtToken, string, error) {
 	// Encode token with claims
 	jwtToken.Issuer = issuer
@@ -57,7 +57,8 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 	return jwtToken, token, nil
 }
 
-// Decode the JWT token using the signed string token and public key.
+// DecodeJWTToken Decodes the JWT token using the signed string token and public key.
+// It also validates to token if this one has not expired
 // This returns a JWT token object.
 func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 	// Parse the token and get claims
@@ -73,10 +74,10 @@ func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 	} else if claims, ok := jwtToken.Claims.(*types.JwtToken); ok && jwtToken.Valid {
 		return claims, nil
 	}
-	return nil, constants.HTTP_401_INVALID_TOKEN_ERROR_MESSAGE()
+	return nil, constants.Http401InvalidTokenErrorMessage()
 }
 
-// Validate the token by checking if it is cached.
+// ValidateJWTToken Validates the token by checking if it is cached.
 func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc func(string) (string, error)) bool {
 	tokenCached, errCached := loadCachedFunc(GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	if errCached != nil || len(tokenCached) <= 0 {

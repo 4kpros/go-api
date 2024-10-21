@@ -9,30 +9,30 @@ import (
 	"api/common/constants"
 )
 
-// Validate the authentication provider (e.g., Google, Facebook, ...)
+// IsAuthProviderValid Validates the authentication provider (e.g., Google, Facebook, ...)
 // and return a boolean indicating success or failure.
 func IsAuthProviderValid(provider string) bool {
-	return slices.Contains(constants.AUTH_PROVIDERS, provider)
+	return slices.Contains(constants.AuthProviders, provider)
 }
 
-// Validate the multiple authentication method name (e.g., email, phone, authenticator)
+// IsMfaMethodValid Validates the multiple authentication method name (e.g., email, phone, authenticator)
 // and return a boolean indicating success or failure.
 func IsMfaMethodValid(mfaMethod string) bool {
-	return slices.Contains(constants.AUTH_MFA_METHODS, mfaMethod)
+	return slices.Contains(constants.AuthMfaMethods, mfaMethod)
 }
 
-// Validate the phone number and return a boolean indicating success or failure.
+// IsPhoneNumberValid Validates the phone number and return a boolean indicating success or failure.
 func IsPhoneNumberValid(phoneNumber uint64) bool {
 	return phoneNumber > 1000000
 }
 
-// Validate the email address and return a boolean indicating success or failure.
+// IsEmailValid Validates the email address and return a boolean indicating success or failure.
 func IsEmailValid(email string) bool {
 	emailAddress, err := mail.ParseAddress(email)
 	return err == nil && emailAddress.Address == email
 }
 
-// Validate the password and return a boolean indicating success or failure,
+// IsPasswordValid Validates the password and return a boolean indicating success or failure,
 // along with a string listing all missing requirements.
 func IsPasswordValid(password string) (bool, string) {
 	var (
@@ -73,13 +73,13 @@ func IsPasswordValid(password string) (bool, string) {
 	return isValid, missing
 }
 
-// Validate the required scopes to allow login with Facebook
+// IsFacebookLoginScopesValid Validates the required scopes to allow login with Facebook
 func IsFacebookLoginScopesValid(scopes []string) bool {
 	counter := 0
 	for _, scope := range scopes {
-		if slices.Contains(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES, scope) {
+		if slices.Contains(constants.AuthLoginWithFacebookRequiredScopes, scope) {
 			counter++
 		}
 	}
-	return counter == len(constants.AUTH_LOGIN_WITH_FACEBOOK_REQUIRED_SCOPES)
+	return counter == len(constants.AuthLoginWithFacebookRequiredScopes)
 }
