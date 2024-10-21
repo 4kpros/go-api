@@ -133,7 +133,7 @@ func (repository *Repository) UpdateProfileInfo(id int64, userInfo *model.UserIn
 	var result *model.UserInfo
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
-			"user_name":  userInfo.UserName,
+			"user_name":  userInfo.Username,
 			"first_name": userInfo.FirstName,
 			"last_name":  userInfo.LastName,
 			"address":    userInfo.Address,

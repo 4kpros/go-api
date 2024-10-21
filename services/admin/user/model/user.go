@@ -73,7 +73,7 @@ func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 	user.ProviderUserId = googleUser.ID
 	user.Email = googleUser.Email
 	user.UserInfo = &UserInfo{
-		UserName:  googleUser.FullName,
+		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
 		// Language:  googleUser.Language,
@@ -84,7 +84,7 @@ func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileRespon
 	user.ProviderUserId = facebookUser.ID
 	user.Email = facebookUser.Email
 	user.UserInfo = &UserInfo{
-		UserName:  facebookUser.FullName,
+		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,
 		// Language:  facebookUser.Languages,

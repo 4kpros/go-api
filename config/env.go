@@ -20,7 +20,7 @@ type Environment struct {
 	// Redis for fast memory key-value storage
 	RedisHost     string `mapstructure:"REDIS_HOST"`
 	RedisPort     int    `mapstructure:"REDIS_PORT"`
-	RedisUserName string `mapstructure:"REDIS_USERNAME"`
+	RedisUsername string `mapstructure:"REDIS_USERNAME"`
 	RedisPassword string `mapstructure:"REDIS_PASSWORD"`
 	RedisDatabase int    `mapstructure:"REDIS_DB"`
 
