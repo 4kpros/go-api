@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "update-profile-info",
 			Summary:     "Update profile info",
-			Description: "Update profile information such as username, first name, last name, address, language",
+			Description: "Update profile information such as username, first name, last name, address, ...",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/info", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -63,7 +63,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "update-profile-mfa",
 			Summary:     "Update profile MFA",
-			Description: "Update profile MFA",
+			Description: "Update profile multiple factor authentication",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/mfa", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
