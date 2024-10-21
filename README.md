@@ -1,6 +1,7 @@
 # Simple and well-structured API for multiple projects
 
-This repository contains a simple API written in Go, designed to be reusable and easily integrated into multiple projects. The API is built with a focus on performance, scalability, and maintainability. 
+This repository contains a simple API written in Go, designed to be reusable and easily integrated into multiple
+projects. The API is built with a focus on performance, scalability, and maintainability.
 
 # Features
 
@@ -26,23 +27,22 @@ This repository contains a simple API written in Go, designed to be reusable and
 
 ### 1. Requirements
 
-  - Make installed for shortcuts
+- Make installed for shortcuts
 
-  - Docker installed if you want to build and start postgres or redis containers
+- Docker installed if you want to build and start postgres or redis containers
 
-  - Build and start Redis container with the command ```make docker-redis```
+- Build and start Redis container with the command ```make docker-redis```
 
-  - Build and start postgres container with the command ```make docker-postgres```
+- Build and start postgres container with the command ```make docker-postgres```
 
-  - Rename .env.example to ```app.env```
+- Rename .env.example to ```app.env```
 
-  - JWT .pem files with ES512(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
-    You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/) 
+- JWT .pem files with ES512(ECDSA SHA-512) algorithm: ```keys/jwt/private.pem``` ```keys/jwt/public.pem```
+  You ca use this website to generate JWT keys for your tests [JWT online generator](https://jwt-keys.21no.de/)
 
-  - Password is hashed using Argon2id algorithm. If you want to customize salinity, you can edit the .env.example file
+- Password is hashed using Argon2id algorithm. If you want to customize salinity, you can edit the .env.example file
 
-
-  Others information such configurations are on ```app.env```
+Others information such configurations are on ```app.env```
 
 ### 2. Clone the repository
 
@@ -72,15 +72,18 @@ make build
 make run
 ```
 
-API docs with openAPI v3.1(latest) is on 
+API docs with openAPI v3.1(latest) is on
+
 ```
 /api/v1/docs
 ```
 
 If you want to scan vulnerabilities(security issues)
+
 ```
 make scan
 ```
+
 You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger.
 
 <ins>Scalar(default) template screenshot</ins>

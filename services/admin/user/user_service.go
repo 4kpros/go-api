@@ -65,6 +65,32 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) 
 
 // UpdateUser Update user
 func (service *Service) UpdateUser(inputJwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+	// Check if user exists
+	var foundUser *model.User
+	var errMsg string = ""
+	if utils.IsEmailValid(user.Email) {
+		errMsg = "email"
+		foundUser, err = service.Repository.GetByEmail(user.Email)
+	} else {
+		errMsg = "phone number"
+		foundUser, err = service.Repository.GetByPhoneNumber(user.PhoneNumber)
+	}
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage(
+			fmt.Sprintf("get user by %s from database", errMsg),
+		)
+		return
+	}
+	if foundUser != nil && foundUser.Email == user.Email {
+		errCode = http.StatusFound
+		err = constants.Http302ErrorMessage(
+			fmt.Sprintf("user %s", errMsg),
+		)
+		return
+	}
+
+	// Update
 	result, err = service.Repository.UpdateUser(user.ID, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError

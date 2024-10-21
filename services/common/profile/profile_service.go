@@ -24,7 +24,21 @@ func NewProfileService(repository *user.Repository) *Service {
 }
 
 // UpdateProfileEmail Updates email
-func (service *Service) UpdateProfileEmail(inputJwtToken *types.JwtToken, email string) (result *model.User, errCode int, err error) {
+func (service *Service) UpdateProfileEmail(inputJwtToken *types.JwtToken, email string) (result *model.User, errCode int, err error) { // Check if user exists
+	// Check if this email is already taken
+	foundUser, err := service.Repository.GetByEmail(email)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get user by email from database")
+		return
+	}
+	if foundUser != nil && foundUser.Email == email {
+		errCode = http.StatusFound
+		err = constants.Http302ErrorMessage("user email")
+		return
+	}
+
+	// Update
 	result, err = service.Repository.UpdateEmail(inputJwtToken.UserId, email)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -34,7 +48,21 @@ func (service *Service) UpdateProfileEmail(inputJwtToken *types.JwtToken, email 
 }
 
 // UpdateProfilePhoneNumber Updates phone number
-func (service *Service) UpdateProfilePhoneNumber(inputJwtToken *types.JwtToken, phoneNumber int64) (result *model.User, errCode int, err error) {
+func (service *Service) UpdateProfilePhoneNumber(inputJwtToken *types.JwtToken, phoneNumber uint64) (result *model.User, errCode int, err error) { // Check if user exists
+	// Check if this phone number is already taken
+	foundUser, err := service.Repository.GetByPhoneNumber(phoneNumber)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get user by phone number from database")
+		return
+	}
+	if foundUser != nil && foundUser.PhoneNumber == phoneNumber {
+		errCode = http.StatusFound
+		err = constants.Http302ErrorMessage("user phone number")
+		return
+	}
+
+	// Update
 	result, err = service.Repository.UpdatePhoneNumber(inputJwtToken.UserId, phoneNumber)
 	if err != nil {
 		errCode = http.StatusInternalServerError

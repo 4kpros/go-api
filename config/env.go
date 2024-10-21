@@ -25,36 +25,35 @@ type Environment struct {
 	RedisDatabase int    `mapstructure:"REDIS_DB"`
 
 	// Postgres database
-	PostGresHost     string `mapstructure:"POSTGRES_HOST"`
-	PostGresPort     int    `mapstructure:"POSTGRES_PORT"`
-	PostGresUserName string `mapstructure:"POSTGRES_USERNAME"`
-	PostGresPassword string `mapstructure:"POSTGRES_PASSWORD"`
-	PostGresDatabase string `mapstructure:"POSTGRES_DATABASE"`
-	PostGresSslMode  string `mapstructure:"POSTGRES_SSL_MODE"`
-	PostGresTimeZone string `mapstructure:"POSTGRES_TIME_ZONE"`
+	PostgresHost     string `mapstructure:"POSTGRES_HOST"`
+	PostgresPort     int    `mapstructure:"POSTGRES_PORT"`
+	PostgresUsername string `mapstructure:"POSTGRES_USERNAME"`
+	PostgresPassword string `mapstructure:"POSTGRES_PASSWORD"`
+	PostgresDatabase string `mapstructure:"POSTGRES_DATABASE"`
+	PostgresSslMode  string `mapstructure:"POSTGRES_SSL_MODE"`
+	PostgresTimeZone string `mapstructure:"POSTGRES_TIME_ZONE"`
 
-	// Argon2id to hash password
+	// Argon 2id to hash password
 	ArgonMemoryLeft  int `mapstructure:"ARGON_PARAM_MEMORY_L"`
 	ArgonMemoryRight int `mapstructure:"ARGON_PARAM_MEMORY_R"`
 	ArgonIterations  int `mapstructure:"ARGON_PARAM_ITERATIONS"`
 	ArgonSaltLength  int `mapstructure:"ARGON_PARAM_SALT_LENGTH"`
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
 
-	// JWT for authentication and user session
-	JwtExpiresLogin                  int    `mapstructure:"JWT_EXPIRES_LOGIN"`
-	JwtExpiresLoginStayConnected     int    `mapstructure:"JWT_EXPIRES_LOGIN_STAY_CONNECTED"`
-	JwtExpiresDefault                int    `mapstructure:"JWT_EXPIRES_DEFAULT"`
+	// JWT expires
+	JwtExpiresDefault            int `mapstructure:"JWT_EXPIRES_DEFAULT"`
+	JwtExpiresLogin              int `mapstructure:"JWT_EXPIRES_LOGIN"`
+	JwtExpiresLoginStayConnected int `mapstructure:"JWT_EXPIRES_LOGIN_STAY_CONNECTED"`
+	// Jwt issuers auth
+	JwtIssuerAuthPassphrase string `mapstructure:"JWT_ISSUER_AUTH_PASSPHRASE"`
+	// Jwt issuers session
 	JwtIssuerSessionPassphrase       string `mapstructure:"JWT_ISSUER_SESSION_PASSPHRASE"`
 	JwtIssuerSessionApiKeyPassphrase string `mapstructure:"JWT_ISSUER_SESSION_API_KEY_PASSPHRASE"`
-	JwtIssuerAuthPassphrase          string `mapstructure:"JWT_ISSUER_AUTH_PASSPHRASE"`
-
-	JwtIssuerProfileUpdatePasswordPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_PASSWORD_PASSPHRASE"`
-	JwtIssuerProfileUpdateEmailPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_EMAIL_PASSPHRASE"`
+	// Jwt issuers profile
+	JwtIssuerProfileUpdatePasswordPassphrase    string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_PASSWORD_PASSPHRASE"`
+	JwtIssuerProfileUpdateEmailPassphrase       string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_EMAIL_PASSPHRASE"`
 	JwtIssuerProfileUpdatePhoneNumberPassphrase string `mapstructure:"JWT_ISSUER_PROFILE_UPDATE_PHONE_NUMBER_PASSPHRASE"`
 
-	profileUpdatePasswordPassPhrase string,
-	profileUpdateEmailPassPhrase string,
-	profileUpdatePhoneNumberPassPhrase string,
 	// reCAPTCHA
 	GoogleReCAPTCHASiteKey string  `mapstructure:"GOOGLE_RECAPTCHA_SITE_KEY"`
 	GoogleReCAPTCHAScore   float32 `mapstructure:"GOOGLE_RECAPTCHA_SCORE"`
