@@ -87,7 +87,7 @@ make scan
 You can choose between 4 templates: Scalar(Default), Redocly, Stoplight, Swagger.
 
 <ins>Scalar(default) template screenshot</ins>
-![OpenAPI-Scalar](https://github.com/user-attachments/assets/0092f0e1-e2c5-4e38-a618-437097327e24)
+![Scalar](https://github.com/user-attachments/assets/e3c9d237-9906-44f0-a55a-fa4199df53dd)
 
 <ins>Redocly template screenshot</ins>
 ![OpenAPI-Redocly](https://github.com/user-attachments/assets/1e1708aa-f355-446d-aa19-9f2ab16e08fa)
