@@ -17,7 +17,7 @@ func NewService(repository *Repository) *Service {
 }
 
 // Create new role
-func (service *Service) Create(jwtToken *types.JwtToken, role *model.Role) (result *model.Role, errCode int, err error) {
+func (service *Service) Create(inputJwtToken *types.JwtToken, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -42,7 +42,7 @@ func (service *Service) Create(jwtToken *types.JwtToken, role *model.Role) (resu
 }
 
 // Update role
-func (service *Service) Update(jwtToken *types.JwtToken, id int64, role *model.Role) (result *model.Role, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -67,7 +67,7 @@ func (service *Service) Update(jwtToken *types.JwtToken, id int64, role *model.R
 }
 
 // Delete role with matching id and return affected rows
-func (service *Service) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
+func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -83,7 +83,7 @@ func (service *Service) Delete(jwtToken *types.JwtToken, id int64) (affectedRows
 }
 
 // Get Returns role with matching id
-func (service *Service) Get(jwtToken *types.JwtToken, id int64) (role *model.Role, errCode int, err error) {
+func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (role *model.Role, errCode int, err error) {
 	role, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -99,7 +99,7 @@ func (service *Service) Get(jwtToken *types.JwtToken, id int64) (role *model.Rol
 }
 
 // GetAll Returns all roles with support for search, filter and pagination
-func (service *Service) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
+func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (roleList []model.Role, errCode int, err error) {
 	roleList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError

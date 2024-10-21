@@ -16,23 +16,6 @@ func NewProfileController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdateProfileEmail(
-	ctx *context.Context,
-	input *struct {
-		Body data.UpdateProfileRequest
-	},
-) (result *model.User, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateProfileEmail(
-		helpers.GetJwtContext(ctx),
-		&model.User{
-			Email:       input.Body.Email,
-			PhoneNumber: input.Body.PhoneNumber,
-			Password:    input.Body.Password,
-		},
-	)
-	return
-}
-
 func (controller *Controller) UpdateProfileInfo(
 	ctx *context.Context,
 	input *struct {

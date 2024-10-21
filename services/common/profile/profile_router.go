@@ -21,41 +21,6 @@ func RegisterEndpoints(
 		Tag:   []string{"Profile"},
 	}
 
-	// Update profile
-	huma.Register(
-		*humaApi,
-		huma.Operation{
-			OperationID: "update-profile",
-			Summary:     "Update profile",
-			Description: "Update user profile such as email, phone number and password",
-			Method:      http.MethodPut,
-			Path:        endpointConfig.Group,
-			Tags:        endpointConfig.Tag,
-			Security: []map[string][]string{
-				{
-					constants.SecurityAuthName: { // Authentication
-						// Feature scope
-					},
-				},
-			},
-			MaxBodyBytes:  1024, // 1 KiB
-			DefaultStatus: http.StatusOK,
-			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
-		},
-		func(
-			ctx context.Context,
-			input *struct {
-				Body data.UpdateProfileRequest
-			},
-		) (*struct{ Body data.UserProfileResponse }, error) {
-			result, errCode, err := controller.UpdateProfile(&ctx, input)
-			if err != nil {
-				return nil, huma.NewError(errCode, err.Error(), err)
-			}
-			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
-		},
-	)
-
 	// Update profile info
 	huma.Register(
 		*humaApi,

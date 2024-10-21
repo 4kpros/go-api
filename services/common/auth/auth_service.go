@@ -539,7 +539,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 		return
 	}
 
-	// Check if code is valid
+	// Check if the code is valid
 	if jwtToken.Code <= 0 || jwtToken.Code != input.Code {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", "Invalid code! Please enter valid information.")
@@ -566,7 +566,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 			Device:   "*",
 			App:      "*",
 		},
-		constants.JwtIssuerSession,
+		constants.JwtIssuerAuthForgotPasswordCode,
 		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
@@ -642,12 +642,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	}
 
 	// Invalidate token
-	_, err = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("create user from database")
-		return
-	}
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
 	return
 }
 

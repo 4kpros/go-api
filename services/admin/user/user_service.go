@@ -19,7 +19,7 @@ func NewService(repository *Repository) *Service {
 }
 
 // Create user
-func (service *Service) Create(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
 	var foundUser *model.User
 	var errMsg string = ""
@@ -64,7 +64,33 @@ func (service *Service) Create(jwtToken *types.JwtToken, user *model.User) (resu
 }
 
 // UpdateUser Update user
-func (service *Service) UpdateUser(jwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+func (service *Service) UpdateUser(inputJwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+	// Check if user exists
+	var foundUser *model.User
+	var errMsg string = ""
+	if utils.IsEmailValid(user.Email) {
+		errMsg = "email"
+		foundUser, err = service.Repository.GetByEmail(user.Email)
+	} else {
+		errMsg = "phone number"
+		foundUser, err = service.Repository.GetByPhoneNumber(user.PhoneNumber)
+	}
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage(
+			fmt.Sprintf("get user by %s from database", errMsg),
+		)
+		return
+	}
+	if foundUser != nil && foundUser.Email == user.Email {
+		errCode = http.StatusFound
+		err = constants.Http302ErrorMessage(
+			fmt.Sprintf("user %s", errMsg),
+		)
+		return
+	}
+
+	// Update
 	result, err = service.Repository.UpdateUser(user.ID, user)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -74,7 +100,7 @@ func (service *Service) UpdateUser(jwtToken *types.JwtToken, user *model.User) (
 }
 
 // Delete user with matching id and return affected rows
-func (service *Service) Delete(jwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
+func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
 	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -90,7 +116,7 @@ func (service *Service) Delete(jwtToken *types.JwtToken, id int64) (affectedRows
 }
 
 // Get Returns user with matching id
-func (service *Service) Get(jwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
+func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
 	user, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -106,7 +132,7 @@ func (service *Service) Get(jwtToken *types.JwtToken, id int64) (user *model.Use
 }
 
 // GetAll Returns all users with support for search, filter and pagination
-func (service *Service) GetAll(jwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
+func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
 	userList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError

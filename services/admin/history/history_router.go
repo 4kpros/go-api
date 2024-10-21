@@ -48,9 +48,9 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-			types.Filter
-			types.PaginationRequest
-		},
+				types.Filter
+				types.PaginationRequest
+			},
 		) (*struct {
 			Body data.HistoryList
 		}, error) {

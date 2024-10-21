@@ -13,13 +13,13 @@ var DB *gorm.DB
 func ConnectDatabase() error {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
-		Env.PostGresHost,
-		Env.PostGresUserName,
-		Env.PostGresPassword,
-		Env.PostGresDatabase,
-		Env.PostGresPort,
-		Env.PostGresSslMode,
-		Env.PostGresTimeZone,
+		Env.PostgresHost,
+		Env.PostgresUsername,
+		Env.PostgresPassword,
+		Env.PostgresDatabase,
+		Env.PostgresPort,
+		Env.PostgresSslMode,
+		Env.PostgresTimeZone,
 	)
 	var err error
 	DB, err = gorm.Open(

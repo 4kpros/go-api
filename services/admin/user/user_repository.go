@@ -1,12 +1,11 @@
 package user
 
 import (
-	"gorm.io/gorm"
-
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/admin/user/model"
+	"gorm.io/gorm"
 )
 
 type Repository struct {
@@ -113,7 +112,7 @@ func (repository *Repository) UpdateEmail(id int64, email string) (*model.User, 
 		},
 	).Error
 }
-func (repository *Repository) UpdatePhoneNumber(id int64, phoneNumber int64) (*model.User, error) {
+func (repository *Repository) UpdatePhoneNumber(id int64, phoneNumber uint64) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
