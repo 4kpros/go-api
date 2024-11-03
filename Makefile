@@ -24,11 +24,11 @@ scan:
 # ------------------ Docker commands ------------------
 .PHONY: docker-redis docker-postgres docker-api
 docker-redis:
-	@docker-compose --env-file app.env up --build --no-deps -d redis
+	@docker compose --env-file app.env up --build --no-deps -d redis
 docker-postgres:
-	@docker-compose --env-file app.env up --build --no-deps -d postgres
+	@docker compose --env-file app.env up --build --no-deps -d postgres
 docker-api:
-	@docker-compose --env-file app.env up --build --no-deps -d api
+	@docker compose --env-file app.env up --build --no-deps -d api
 
 .PHONY: docker-ghcr-login
 docker-ghcr-login:
