@@ -46,7 +46,7 @@ var JwtIssuerSessionApiKey string
 var JwtIssuerAuthActivate string
 var JwtIssuerAuthForgotPasswordCode string
 var JwtIssuerAuthForgotPasswordNewPassword string
-var JwtIssuerAuths []string
+var JwtIssuerAuthList []string
 
 // JWT issuers for user profile
 var JwtIssuerProfileUpdatePasswordCode string
@@ -73,7 +73,7 @@ func InitializeJwtIssuerConst(
 	JwtIssuerAuthActivate = sessionAuthPassPhrase + "issuer_auth_activate"
 	JwtIssuerAuthForgotPasswordCode = sessionAuthPassPhrase + "issuer_auth_forgot_password_code"
 	JwtIssuerAuthForgotPasswordNewPassword = sessionAuthPassPhrase + "issuer_auth_forgot_password_new_password"
-	JwtIssuerAuths = []string{
+	JwtIssuerAuthList = []string{
 		JwtIssuerAuthActivate,
 		JwtIssuerAuthForgotPasswordCode,
 		JwtIssuerAuthForgotPasswordNewPassword,
