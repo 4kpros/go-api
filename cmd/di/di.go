@@ -6,6 +6,7 @@ import (
 	"api/services/admin/history"
 	"api/services/admin/permission"
 	"api/services/admin/role"
+	"api/services/admin/school"
 	"api/services/admin/user"
 	"api/services/common/auth"
 	"api/services/common/profile"
@@ -17,6 +18,7 @@ func InjectDependencies() {
 	var userRepo = user.NewRepository(config.DB)
 	var roleRepo = role.NewRepository(config.DB)
 	var permissionRepo = permission.NewRepository(config.DB)
+	var schoolRepo = school.NewRepository(config.DB)
 	// History
 	api.AllControllers.HistoryController = history.NewController(
 		history.NewService(
@@ -48,9 +50,15 @@ func InjectDependencies() {
 		),
 	)
 	// Profile
-	api.AllControllers.ProfileController = profile.NewProfileController(
-		profile.NewProfileService(
+	api.AllControllers.ProfileController = profile.NewController(
+		profile.NewService(
 			userRepo,
+		),
+	)
+	// School
+	api.AllControllers.SchoolController = school.NewController(
+		school.NewService(
+			schoolRepo,
 		),
 	)
 }

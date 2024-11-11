@@ -12,7 +12,7 @@ type Controller struct {
 	Service *Service
 }
 
-func NewProfileController(service *Service) *Controller {
+func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 

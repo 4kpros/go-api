@@ -19,7 +19,7 @@ type Service struct {
 	Repository *user.Repository
 }
 
-func NewProfileService(repository *user.Repository) *Service {
+func NewService(repository *user.Repository) *Service {
 	return &Service{Repository: repository}
 }
 

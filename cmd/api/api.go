@@ -14,6 +14,7 @@ import (
 	"api/services/admin/history"
 	"api/services/admin/permission"
 	"api/services/admin/role"
+	"api/services/admin/school"
 	"api/services/admin/user"
 	"api/services/common/auth"
 	"api/services/common/profile"
@@ -26,6 +27,7 @@ type Controllers struct {
 	PermissionController *permission.Controller
 	UserController       *user.Controller
 	ProfileController    *profile.Controller
+	SchoolController     *school.Controller
 }
 
 var AllControllers = &Controllers{}

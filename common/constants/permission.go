@@ -10,5 +10,5 @@ const (
 
 const (
 	FeatureAdmin    = "feature-admin"
-	FeatureShopping = "feature-shopping"
+	FeatureDirector = "feature-director"
 )
