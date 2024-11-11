@@ -40,6 +40,7 @@ func registerEndpoints(humaApi *huma.API) {
 	permission.RegisterEndpoints(humaApi, AllControllers.PermissionController)
 	user.RegisterEndpoints(humaApi, AllControllers.UserController)
 	profile.RegisterEndpoints(humaApi, AllControllers.ProfileController)
+	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
 }
 
 // Start Set up and start the API: set up API documentation,
