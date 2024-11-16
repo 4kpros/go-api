@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"api/common/helpers"
+	"api/services/user/permission"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
 
 	"api/common/constants"
-	"api/services/admin/permission"
 )
 
 // PermissionMiddleware Checks resource permissions
@@ -75,6 +75,6 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		}
 
 		next(ctx)
-		return
+
 	}
 }

@@ -3,11 +3,11 @@ package migrate
 import (
 	"api/common/helpers"
 	"api/config"
-	historyModel "api/services/admin/history/model"
-	permissionModel "api/services/admin/permission/model"
-	roleModel "api/services/admin/role/model"
-	schoolModel "api/services/admin/school/model"
-	userModel "api/services/admin/user/model"
+	historyModel "api/services/history/model"
+	schoolModel "api/services/school/common/school/model"
+	permissionModel "api/services/user/permission/model"
+	roleModel "api/services/user/role/model"
+	userModel "api/services/user/user/model"
 )
 
 // Start Loads and applies all migrations.
