@@ -27,11 +27,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission",
+			Summary:     "Update permission" + constants.FeatureAdmin,
 			Description: "Update permission with matching role id and feature name",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/role/{roleId}/{featureName}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -71,11 +71,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-permission-list",
-			Summary:     "Get all role permissions",
+			Summary:     "Get all role permissions" + constants.FeatureAdmin,
 			Description: "Get all permissions with matching role id and support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/role/{roleId}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication

@@ -28,11 +28,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-school",
-			Summary:     "Create school",
+			Summary:     "Create school" + constants.FeatureAdmin,
 			Description: "Create new school by providing name and description and return created object. The name school should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -65,11 +65,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-school-director",
-			Summary:     "Add school director",
+			Summary:     "Add school director" + constants.FeatureAdmin,
 			Description: "Add new user as director in order to manage school.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s/director", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -102,11 +102,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-school",
-			Summary:     "Update school",
+			Summary:     "Update school" + constants.FeatureAdmin,
 			Description: "Update existing school with matching id and return the new school object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -140,11 +140,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-school",
-			Summary:     "Delete school",
+			Summary:     "Delete school" + constants.FeatureAdmin,
 			Description: "Delete existing school with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -177,11 +177,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-school-director",
-			Summary:     "Delete director",
+			Summary:     "Delete director" + constants.FeatureAdmin,
 			Description: "Delete director with matching school id and user id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/director/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -214,11 +214,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-school-id",
-			Summary:     "Get school by id",
+			Summary:     "Get school by id" + constants.FeatureAdmin,
 			Description: "Return one school with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -251,11 +251,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-school-list",
-			Summary:     "Get all schools",
+			Summary:     "Get all schools" + constants.FeatureAdmin,
 			Description: "Get all schools with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication

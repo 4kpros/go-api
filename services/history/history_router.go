@@ -26,11 +26,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-history-list",
-			Summary:     "Get history list",
+			Summary:     "Get history list" + constants.FeatureAdmin,
 			Description: "Get history list with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication

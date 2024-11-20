@@ -27,11 +27,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-user-email",
-			Summary:     "Create user with email",
+			Summary:     "Create user with email" + constants.FeatureAdmin,
 			Description: "Create new user by providing email and user and return created object.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s/email", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -64,11 +64,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "create-user-phone",
-			Summary:     "Create user with phone",
+			Summary:     "Create user with phone" + constants.FeatureAdmin,
 			Description: "Create new user by providing phone number and role and return created object.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s/phone", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -101,11 +101,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-user",
-			Summary:     "Update user",
+			Summary:     "Update user" + constants.FeatureAdmin,
 			Description: "Update existing user with matching id and return the new user object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -139,11 +139,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-user",
-			Summary:     "Delete user",
+			Summary:     "Delete user" + constants.FeatureAdmin,
 			Description: "Delete existing user with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -176,11 +176,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-user-id",
-			Summary:     "Get user by id",
+			Summary:     "Get user by id" + constants.FeatureAdmin,
 			Description: "Return one user with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
@@ -213,11 +213,11 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-user-list",
-			Summary:     "Get all users",
+			Summary:     "Get all users" + constants.FeatureAdmin,
 			Description: "Get all users with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
-			Tags:        append(endpointConfig.Tag, constants.FeatureAdmin),
+			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
