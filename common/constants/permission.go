@@ -16,8 +16,8 @@ const (
 )
 
 const (
-	FeatureAdminLabel    = "admin"
-	FeatureDirectorLabel = "director"
-	FeatureTeacherLabel  = "teacher"
-	FeatureStudentLabel  = "student"
+	FeatureAdminLabel    = "Admin"
+	FeatureDirectorLabel = "Director"
+	FeatureTeacherLabel  = "Teacher"
+	FeatureStudentLabel  = "Student"
 )
