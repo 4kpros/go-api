@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-role",
-			Summary:     "Create role" + constants.FeatureAdmin,
+			Summary:     "Create role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Create new role by providing name and description and return created object. The name role should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
@@ -64,7 +64,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-role",
-			Summary:     "Update role" + constants.FeatureAdmin,
+			Summary:     "Update role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing role with matching id and return the new role object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -102,7 +102,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-role",
-			Summary:     "Delete role" + constants.FeatureAdmin,
+			Summary:     "Delete role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing role with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -139,7 +139,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-id",
-			Summary:     "Get role by id" + constants.FeatureAdmin,
+			Summary:     "Get role by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one role with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -176,7 +176,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-list",
-			Summary:     "Get all roles" + constants.FeatureAdmin,
+			Summary:     "Get all roles" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Get all roles with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,

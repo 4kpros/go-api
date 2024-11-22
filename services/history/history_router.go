@@ -26,7 +26,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-history-list",
-			Summary:     "Get history list" + constants.FeatureAdmin,
+			Summary:     "Get history list" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Get history list with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,

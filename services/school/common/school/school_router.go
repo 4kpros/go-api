@@ -28,7 +28,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-school",
-			Summary:     "Create school" + constants.FeatureAdmin,
+			Summary:     "Create school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Create new school by providing name and description and return created object. The name school should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
@@ -65,7 +65,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-school-director",
-			Summary:     "Add school director" + constants.FeatureAdmin,
+			Summary:     "Add school director" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Add new user as director in order to manage school.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s/director", endpointConfig.Group),
@@ -102,7 +102,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-school",
-			Summary:     "Update school" + constants.FeatureAdmin,
+			Summary:     "Update school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing school with matching id and return the new school object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -140,7 +140,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-school",
-			Summary:     "Delete school" + constants.FeatureAdmin,
+			Summary:     "Delete school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing school with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -177,7 +177,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-school-director",
-			Summary:     "Delete director" + constants.FeatureAdmin,
+			Summary:     "Delete director" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete director with matching school id and user id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/director/{url}", endpointConfig.Group),
@@ -214,7 +214,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-school-id",
-			Summary:     "Get school by id" + constants.FeatureAdmin,
+			Summary:     "Get school by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one school with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
@@ -251,7 +251,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-school-list",
-			Summary:     "Get all schools" + constants.FeatureAdmin,
+			Summary:     "Get all schools" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Get all schools with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
