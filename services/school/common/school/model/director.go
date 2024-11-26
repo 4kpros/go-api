@@ -18,3 +18,11 @@ func (schoolDirector *SchoolDirector) ToResponse() *data.SchoolDirectorResponse 
 	}
 	return schoolDirectorResp
 }
+
+func ToSchoolDirectorResponseList(schoolDirectorList []SchoolDirector) []data.SchoolDirectorResponse {
+	resp := make([]data.SchoolDirectorResponse, len(schoolDirectorList))
+	for index, school := range schoolDirectorList {
+		resp[index] = *school.ToResponse()
+	}
+	return resp
+}

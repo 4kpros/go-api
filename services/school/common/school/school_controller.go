@@ -115,7 +115,7 @@ func (controller *Controller) GetAll(
 		return
 	}
 	result = &data.SchoolResponseList{
-		Data: model.ToResponseList(schoolList),
+		Data: model.ToSchoolResponseList(schoolList),
 	}
 	result.Filter = newFilter
 	result.Pagination = newPagination
