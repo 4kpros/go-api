@@ -19,18 +19,18 @@ type User struct {
 
 	LoginMethod    string     `gorm:"default:null"`
 	Provider       string     `gorm:"default:null"`
-	ProviderUserId string     `gorm:"default:null"`
+	ProviderUserID string     `gorm:"default:null"`
 	IsActivated    bool       `gorm:"default:null"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
-	Role   *model.Role `gorm:"default:null;foreignKey:RoleId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	RoleId int64       `gorm:"default:null"`
+	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	RoleID int64       `gorm:"default:null"`
 
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserInfoId int64     `gorm:"default:null"`
+	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserInfoID int64     `gorm:"default:null"`
 
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserMfaId int64    `gorm:"default:null"`
+	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserMfaID int64    `gorm:"default:null"`
 }
 
 func (user *User) BeforeCreate(db *gorm.DB) (err error) {
@@ -50,7 +50,7 @@ func (user *User) ToResponse() *data.UserResponse {
 
 		LoginMethod:    user.LoginMethod,
 		Provider:       user.Provider,
-		ProviderUserId: user.ProviderUserId,
+		ProviderUserID: user.ProviderUserID,
 		IsActivated:    user.IsActivated,
 		ActivatedAt:    user.ActivatedAt,
 
@@ -70,7 +70,7 @@ func (user *User) ToResponse() *data.UserResponse {
 }
 
 func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
-	user.ProviderUserId = googleUser.ID
+	user.ProviderUserID = googleUser.ID
 	user.Email = googleUser.Email
 	user.UserInfo = &UserInfo{
 		Username:  googleUser.FullName,
@@ -81,7 +81,7 @@ func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 	}
 }
 func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
-	user.ProviderUserId = facebookUser.ID
+	user.ProviderUserID = facebookUser.ID
 	user.Email = facebookUser.Email
 	user.UserInfo = &UserInfo{
 		Username:  facebookUser.FullName,

@@ -7,16 +7,14 @@ import (
 
 type School struct {
 	types.BaseGormModel
-	Name         string      `gorm:"unique;not null"`
-	Type         string      `gorm:"not null"`
-	SchoolInfo   *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	SchoolInfoId int64       `gorm:"default:null"`
-}
+	Name string `gorm:"unique;not null"`
+	Type string `gorm:"not null"`
 
-type SchoolDirector struct {
-	types.BaseGormModel
-	SchoolId int64 `gorm:"not null"`
-	UserId   int64 `gorm:"not null"`
+	SchoolInfo   *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	SchoolInfoID int64       `gorm:"default:null"`
+
+	SchoolConfig   *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	SchoolConfigID int64         `gorm:"default:null"`
 }
 
 func (school *School) ToResponse() *data.SchoolResponse {

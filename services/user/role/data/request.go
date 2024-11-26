@@ -1,6 +1,6 @@
 package data
 
-type RoleId struct {
+type RoleID struct {
 	ID int64 `json:"id" path:"id" required:"true" doc:"Role id" example:"1"`
 }
 

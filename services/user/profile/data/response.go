@@ -10,11 +10,11 @@ type UserProfileResponse struct {
 	types.BaseGormModelResponse
 	Email       string `json:"email" required:"false" doc:"Email"`
 	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number"`
-	RoleId      int64  `json:"roleId" required:"false" doc:"RoleId id"`
+	RoleID      int64  `json:"roleID" required:"false" doc:"Role id"`
 
 	LoginMethod    string     `json:"loginMethod" required:"false" doc:"How the user should login ? with email, phone number or external provider?"`
 	Provider       string     `json:"provider" required:"false" doc:"Provider name"`
-	ProviderUserId string     `json:"providerUserId" required:"false" doc:"User id from the provider"`
+	ProviderUserID string     `json:"providerUserID" required:"false" doc:"User id from the provider"`
 	IsActivated    bool       `json:"isActivated" required:"false" doc:"Is user account activated ?"`
 	ActivatedAt    *time.Time `json:"activatedAt" required:"false" doc:"Activation date time"`
 
@@ -49,11 +49,11 @@ func FromUser(user *model.User) *UserProfileResponse {
 
 	resp.Email = user.Email
 	resp.PhoneNumber = user.PhoneNumber
-	resp.RoleId = user.RoleId
+	resp.RoleID = user.RoleID
 
 	resp.LoginMethod = user.LoginMethod
 	resp.Provider = user.Provider
-	resp.ProviderUserId = user.ProviderUserId
+	resp.ProviderUserID = user.ProviderUserID
 	resp.IsActivated = user.IsActivated
 	resp.ActivatedAt = user.ActivatedAt
 

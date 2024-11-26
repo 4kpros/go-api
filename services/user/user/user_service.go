@@ -50,7 +50,7 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) 
 	newUser := &model.User{
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
-		RoleId:      user.RoleId,
+		RoleID:      user.RoleID,
 		Password:    randomPassword,
 		LoginMethod: constants.AuthLoginMethodDefault,
 	}
@@ -117,7 +117,7 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 
 // Get Returns user with matching id
 func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
-	user, err = service.Repository.GetById(id)
+	user, err = service.Repository.GetByID(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get user by id from database")

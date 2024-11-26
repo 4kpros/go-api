@@ -8,9 +8,9 @@ import (
 type History struct {
 	types.BaseGormModel
 	Action string `gorm:"default:null"`
-	UserId int64  `gorm:"default:null"`
+	UserID int64  `gorm:"default:null"`
 	Table  string `gorm:"default:null"`
-	RowId  int64  `gorm:"default:null"`
+	RowID  int64  `gorm:"default:null"`
 }
 
 func (history *History) ToResponse() *data.HistoryResponse {
@@ -20,9 +20,9 @@ func (history *History) ToResponse() *data.HistoryResponse {
 	resp.UpdatedAt = history.UpdatedAt
 	resp.DeletedAt = history.DeletedAt
 	resp.Action = history.Action
-	resp.UserId = history.UserId
+	resp.UserID = history.UserID
 	resp.Table = history.Table
-	resp.RowId = history.RowId
+	resp.RowID = history.RowID
 	return resp
 }
 

@@ -30,7 +30,7 @@ func RegisterEndpoints(
 			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update permission with matching role id and feature name",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleId}/{featureName}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}/{featureName}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -54,8 +54,8 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.PermissionFeatureTableResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleIdFeatureName(
-				&ctx, input.RoleId, input.FeatureName, input.Body,
+			result, errCode, err := controller.UpdateByRoleIDFeatureName(
+				&ctx, input.RoleID, input.FeatureName, input.Body,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
@@ -74,7 +74,7 @@ func RegisterEndpoints(
 			Summary:     "Get all role permissions" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Get all permissions with matching role id and support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/role/{roleId}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -99,7 +99,7 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.PermissionListResponse
 		}, error) {
-			result, errCode, err := controller.GetAllByRoleId(&ctx, input)
+			result, errCode, err := controller.GetAllByRoleID(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

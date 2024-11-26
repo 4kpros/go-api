@@ -27,7 +27,7 @@ func (controller *Controller) CreateWithEmail(
 		helpers.GetJwtContext(ctx),
 		&model.User{
 			Email:  input.Body.Email,
-			RoleId: input.Body.RoleId,
+			RoleID: input.Body.RoleID,
 		},
 	)
 	return
@@ -43,7 +43,7 @@ func (controller *Controller) CreateWithPhoneNumber(
 		helpers.GetJwtContext(ctx),
 		&model.User{
 			PhoneNumber: input.Body.PhoneNumber,
-			RoleId:      input.Body.RoleId,
+			RoleID:      input.Body.RoleID,
 		},
 	)
 	return
@@ -52,7 +52,7 @@ func (controller *Controller) CreateWithPhoneNumber(
 func (controller *Controller) UpdateUser(
 	ctx *context.Context,
 	input *struct {
-		data.UserId
+		data.UserID
 		Body data.UpdateUserRequest
 	},
 ) (result *model.User, errCode int, err error) {
@@ -61,7 +61,7 @@ func (controller *Controller) UpdateUser(
 		&model.User{
 			Email:       input.Body.Email,
 			PhoneNumber: input.Body.PhoneNumber,
-			RoleId:      input.Body.RoleId,
+			RoleID:      input.Body.RoleID,
 		},
 	)
 	return
@@ -70,7 +70,7 @@ func (controller *Controller) UpdateUser(
 func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
-		data.UserId
+		data.UserID
 	},
 ) (result int64, errCode int, err error) {
 	result, errCode, err = controller.Service.Delete(
@@ -83,7 +83,7 @@ func (controller *Controller) Delete(
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
-		data.UserId
+		data.UserID
 	},
 ) (result *model.User, errCode int, err error) {
 	result, errCode, err = controller.Service.Get(

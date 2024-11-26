@@ -57,8 +57,8 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 		var accessJwtToken *types.JwtToken
 		accessJwtToken, accessToken, err = security.EncodeJWTToken(
 			&types.JwtToken{
-				UserId:   userFound.ID,
-				RoleId:   userFound.RoleId,
+				UserID:   userFound.ID,
+				RoleID:   userFound.RoleID,
 				Platform: device.Platform,
 				Device:   device.DeviceName,
 				App:      device.App,
@@ -92,8 +92,8 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 	var activateAccountJwtToken *types.JwtToken
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -179,12 +179,12 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	newUser.Provider = input.Provider
 
 	// Save user if it's not in database
-	userFound, err := service.Repository.GetByProvider(input.Provider, newUser.ProviderUserId)
+	userFound, err := service.Repository.GetByProvider(input.Provider, newUser.ProviderUserID)
 	if err != nil || userFound == nil {
 		userFound, err = service.Repository.Create(
 			&model.User{
 				Provider:       input.Provider,
-				ProviderUserId: newUser.ProviderUserId,
+				ProviderUserID: newUser.ProviderUserID,
 				LoginMethod:    constants.AuthLoginMethodProvider,
 			},
 		)
@@ -207,8 +207,8 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	expiresTime := time.Unix(expires, 0)
 	jwtToken, accessToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: device.Platform,
 			Device:   device.DeviceName,
 			App:      device.App,
@@ -276,8 +276,8 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 	var activateAccountJwtToken *types.JwtToken
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   createdUser.ID,
-			RoleId:   createdUser.RoleId,
+			UserID:   createdUser.ID,
+			RoleID:   createdUser.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -329,7 +329,7 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthActivate {
+	if jwtToken == nil || jwtToken.UserID <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthActivate {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -350,7 +350,7 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	}
 
 	// Check if account is activated
-	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	userFound, err := service.Repository.GetByID(jwtToken.UserID)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
@@ -380,9 +380,9 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	tmpActivatedAt := time.Now()
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
-	userFound.UserInfoId = userInfo.ID
+	userFound.UserInfoID = userInfo.ID
 	userFound.UserInfo = userInfo
-	userFound.UserMfaId = userMfa.ID
+	userFound.UserMfaID = userMfa.ID
 	userFound.UserMfa = userMfa
 	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
 	if err != nil {
@@ -393,7 +393,7 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	activatedAt = updatedUser.ActivatedAt
 
 	// Invalidate token
-	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Send welcome message
 	if utils.IsEmailValid(updatedUser.Email) {
@@ -455,8 +455,8 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 	expires := security.NewExpiresDateDefault()
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -527,7 +527,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordCode {
+	if jwtToken == nil || jwtToken.UserID <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordCode {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -547,7 +547,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 	}
 
 	// Check if user exists
-	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	userFound, err := service.Repository.GetByID(jwtToken.UserID)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
@@ -555,13 +555,13 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 	}
 
 	// Invalidate token
-	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Generate new token
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -613,7 +613,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordNewPassword {
+	if jwtToken == nil || jwtToken.UserID <= 0 || jwtToken.Issuer != constants.JwtIssuerAuthForgotPasswordNewPassword {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -626,7 +626,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	}
 
 	// Check if user exists
-	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	userFound, err := service.Repository.GetByID(jwtToken.UserID)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
@@ -634,7 +634,7 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	}
 
 	// Update user password
-	userUpdated, err := service.Repository.UpdateUserPassword(jwtToken.UserId, input.NewPassword)
+	userUpdated, err := service.Repository.UpdateUserPassword(jwtToken.UserID, input.NewPassword)
 	if err != nil || userUpdated == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update password")
@@ -642,14 +642,14 @@ func (service *Service) ForgotPasswordNewPassword(input *data.ForgotPasswordNewP
 	}
 
 	// Invalidate token
-	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 	return
 }
 
 // Logout user with provided token
 func (service *Service) Logout(jwtToken *types.JwtToken, bearerToken string) (errCode int, err error) {
 	// Invalidate the token
-	sessions, err := config.GetRedisStringList(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	sessions, err := config.GetRedisStringList(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 	if err != nil {
 		errCode = http.StatusUnauthorized
 		err = constants.Http401InvalidTokenErrorMessage()
@@ -661,7 +661,7 @@ func (service *Service) Logout(jwtToken *types.JwtToken, bearerToken string) (er
 		err = constants.Http401InvalidTokenErrorMessage()
 		return
 	}
-	err = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserId), int64(tokenIndex))
+	err = config.RemoveFromRedisStringList(fmt.Sprintf("%d", jwtToken.UserID), int64(tokenIndex))
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete cached session")

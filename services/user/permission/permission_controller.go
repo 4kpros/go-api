@@ -16,22 +16,22 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdateByRoleIdFeatureName(
+func (controller *Controller) UpdateByRoleIDFeatureName(
 	ctx *context.Context,
-	roleId int64,
+	roleID int64,
 	featureName string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
 ) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateByRoleIdFeatureName(
+	result, errCode, err = controller.Service.UpdateByRoleIDFeatureName(
 		helpers.GetJwtContext(ctx),
-		roleId,
+		roleID,
 		featureName,
 		body,
 	)
 	return
 }
 
-func (controller *Controller) GetAllByRoleId(
+func (controller *Controller) GetAllByRoleID(
 	ctx *context.Context,
 	input *struct {
 		data.GetRolePermissionListRequest
@@ -40,7 +40,7 @@ func (controller *Controller) GetAllByRoleId(
 	},
 ) (result *data.PermissionListResponse, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	permissionList, errCode, err := controller.Service.GetAllByRoleId(helpers.GetJwtContext(ctx), input.RoleId, newFilter, newPagination)
+	permissionList, errCode, err := controller.Service.GetAllByRoleID(helpers.GetJwtContext(ctx), input.RoleID, newFilter, newPagination)
 	if err != nil {
 		return
 	}

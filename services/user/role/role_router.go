@@ -85,7 +85,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
+				data.RoleID
 				Body data.RoleRequest
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
@@ -123,7 +123,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
+				data.RoleID
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
@@ -160,7 +160,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.RoleId
+				data.RoleID
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
 			result, errCode, err := controller.Get(&ctx, input)

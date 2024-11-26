@@ -28,7 +28,7 @@ func (repository *Repository) UpdateUser(id int64, user *model.User) (*model.Use
 		map[string]interface{}{
 			"email":        user.Email,
 			"phone_number": user.PhoneNumber,
-			"role_id":      user.RoleId,
+			"role_id":      user.RoleID,
 		},
 	).Error
 }
@@ -38,7 +38,7 @@ func (repository *Repository) Delete(id int64) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.User, error) {
+func (repository *Repository) GetByID(id int64) (*model.User, error) {
 	var result *model.User
 	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
 }
@@ -61,14 +61,14 @@ func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User,
 	).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetByProvider(provider string, providerUserId string) (*model.User, error) {
+func (repository *Repository) GetByProvider(provider string, providerUserID string) (*model.User, error) {
 	var result *model.User
 	return result, repository.Db.Where(
 		"sign_in_method = ?", constants.AuthLoginMethodProvider,
 	).Where(
 		"provider = ?", provider,
 	).Where(
-		"provider_user_id = ?", providerUserId,
+		"provider_user_id = ?", providerUserID,
 	).Limit(1).Find(result).Error
 }
 
@@ -96,8 +96,8 @@ func (repository *Repository) UpdateUserActivation(id int64, user *model.User) (
 	var result *model.User
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
-			"user_info_id": user.UserInfoId,
-			"user_mfa_id":  user.UserMfaId,
+			"user_info_id": user.UserInfoID,
+			"user_mfa_id":  user.UserMfaID,
 			"is_activated": user.IsActivated,
 			"activated_at": user.ActivatedAt,
 		},

@@ -7,7 +7,7 @@ import (
 
 type PermissionTable struct {
 	types.BaseGormModel
-	RoleId    int64  `gorm:"default:null"`
+	RoleID    int64  `gorm:"default:null"`
 	TableName string `gorm:"default:null"`
 	Create    bool   `gorm:"default:null"`
 	Read      bool   `gorm:"default:null"`

@@ -36,7 +36,7 @@ func (controller *Controller) Create(
 func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
-		data.RoleId
+		data.RoleID
 		Body data.RoleRequest
 	},
 ) (result *model.Role, errCode int, err error) {
@@ -53,7 +53,7 @@ func (controller *Controller) Update(
 func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
-		data.RoleId
+		data.RoleID
 	},
 ) (result int64, errCode int, err error) {
 	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
@@ -67,7 +67,7 @@ func (controller *Controller) Delete(
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
-		data.RoleId
+		data.RoleID
 	},
 ) (result *model.Role, errCode int, err error) {
 	role, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)

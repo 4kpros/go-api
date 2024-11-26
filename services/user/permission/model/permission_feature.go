@@ -7,14 +7,14 @@ import (
 
 type PermissionFeature struct {
 	types.BaseGormModel
-	RoleId      int64  `gorm:"default:null"`
+	RoleID      int64  `gorm:"default:null"`
 	FeatureName string `gorm:"default:null"`
 	IsEnabled   bool   `gorm:"default:false"`
 }
 
 func (permission *PermissionFeature) ToResponse() *data.PermissionFeatureResponse {
 	resp := &data.PermissionFeatureResponse{
-		RoleId:      permission.RoleId,
+		RoleID:      permission.RoleID,
 		FeatureName: permission.FeatureName,
 		IsEnabled:   permission.IsEnabled,
 	}

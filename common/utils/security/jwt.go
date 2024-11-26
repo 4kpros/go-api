@@ -28,9 +28,9 @@ func NewExpiresDateLogin(stayConnected bool) (date *time.Time) {
 	return &tempDate
 }
 
-// GetJWTCachedKey Returns the key of Redis entry(combining userId and Issuer)
-func GetJWTCachedKey(userId int64, issuer string) (key string) {
-	return fmt.Sprintf("%d_%s", userId, issuer)
+// GetJWTCachedKey Returns the key of Redis entry(combining userID and Issuer)
+func GetJWTCachedKey(userID int64, issuer string) (key string) {
+	return fmt.Sprintf("%d_%s", userID, issuer)
 }
 
 // EncodeJWTToken Encodes the JWT token and store it in the cache. This returns a signed string token.
@@ -50,7 +50,7 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 	}
 
 	// Cache new token
-	errCache := cacheFunc(GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer), token)
+	errCache := cacheFunc(GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer), token)
 	if errCache != nil {
 		return nil, "", errCache
 	}
@@ -79,7 +79,7 @@ func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 
 // ValidateJWTToken Validates the token by checking if it is cached.
 func ValidateJWTToken(token string, jwtToken *types.JwtToken, loadCachedFunc func(string) (string, error)) bool {
-	tokenCached, errCached := loadCachedFunc(GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	tokenCached, errCached := loadCachedFunc(GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 	if errCached != nil || len(tokenCached) <= 0 {
 		return false
 	}

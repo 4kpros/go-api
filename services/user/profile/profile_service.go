@@ -39,7 +39,7 @@ func (service *Service) UpdateProfileEmail(inputJwtToken *types.JwtToken, email 
 	}
 
 	// Update
-	result, err = service.Repository.UpdateEmail(inputJwtToken.UserId, email)
+	result, err = service.Repository.UpdateEmail(inputJwtToken.UserID, email)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update user from database")
@@ -63,7 +63,7 @@ func (service *Service) UpdateProfilePhoneNumber(inputJwtToken *types.JwtToken, 
 	}
 
 	// Update
-	result, err = service.Repository.UpdatePhoneNumber(inputJwtToken.UserId, phoneNumber)
+	result, err = service.Repository.UpdatePhoneNumber(inputJwtToken.UserID, phoneNumber)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update user from database")
@@ -75,7 +75,7 @@ func (service *Service) UpdateProfilePhoneNumber(inputJwtToken *types.JwtToken, 
 func (service *Service) UpdateProfilePasswordInit(inputJwtToken *types.JwtToken) (token string, errCode int, err error) {
 	// Check if user exists
 	var userFound *model.User
-	userFound, err = service.Repository.GetById(inputJwtToken.UserId)
+	userFound, err = service.Repository.GetByID(inputJwtToken.UserID)
 	if err != nil || userFound.ID <= 0 {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("User not found")
@@ -92,8 +92,8 @@ func (service *Service) UpdateProfilePasswordInit(inputJwtToken *types.JwtToken)
 	expires := security.NewExpiresDateDefault()
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -164,7 +164,7 @@ func (service *Service) UpdateProfilePasswordCheckCode(inputJwtToken *types.JwtT
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtToken == nil || jwtToken.UserId <= 0 || jwtToken.Issuer != constants.JwtIssuerProfileUpdatePasswordCode {
+	if jwtToken == nil || jwtToken.UserID <= 0 || jwtToken.Issuer != constants.JwtIssuerProfileUpdatePasswordCode {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -184,7 +184,7 @@ func (service *Service) UpdateProfilePasswordCheckCode(inputJwtToken *types.JwtT
 	}
 
 	// Check if user exists
-	userFound, err := service.Repository.GetById(jwtToken.UserId)
+	userFound, err := service.Repository.GetByID(jwtToken.UserID)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
@@ -192,13 +192,13 @@ func (service *Service) UpdateProfilePasswordCheckCode(inputJwtToken *types.JwtT
 	}
 
 	// Invalidate token
-	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserId, jwtToken.Issuer))
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Generate new token
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
-			UserId:   userFound.ID,
-			RoleId:   userFound.RoleId,
+			UserID:   userFound.ID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -250,9 +250,9 @@ func (service *Service) UpdateProfilePasswordNewPassword(inputJwtToken *types.Jw
 		err = fmt.Errorf("%s", errMsg)
 		return
 	}
-	if jwtTokenDecoded == nil || jwtTokenDecoded.UserId <= 0 ||
+	if jwtTokenDecoded == nil || jwtTokenDecoded.UserID <= 0 ||
 		jwtTokenDecoded.Issuer != constants.JwtIssuerProfileUpdatePasswordNewPassword ||
-		jwtTokenDecoded.UserId != inputJwtToken.UserId || jwtTokenDecoded.RoleId != inputJwtToken.RoleId {
+		jwtTokenDecoded.UserID != inputJwtToken.UserID || jwtTokenDecoded.RoleID != inputJwtToken.RoleID {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", errMsg)
 		return
@@ -265,7 +265,7 @@ func (service *Service) UpdateProfilePasswordNewPassword(inputJwtToken *types.Jw
 	}
 
 	// Check if user exists
-	userFound, err := service.Repository.GetById(jwtTokenDecoded.UserId)
+	userFound, err := service.Repository.GetByID(jwtTokenDecoded.UserID)
 	if err != nil || userFound == nil {
 		errCode = http.StatusForbidden
 		err = fmt.Errorf("%s", "User not found! Please enter valid information.")
@@ -273,7 +273,7 @@ func (service *Service) UpdateProfilePasswordNewPassword(inputJwtToken *types.Jw
 	}
 
 	// Update user password
-	userUpdated, err := service.Repository.UpdateUserPassword(jwtTokenDecoded.UserId, password)
+	userUpdated, err := service.Repository.UpdateUserPassword(jwtTokenDecoded.UserID, password)
 	if err != nil || userUpdated == nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update password")
@@ -281,13 +281,13 @@ func (service *Service) UpdateProfilePasswordNewPassword(inputJwtToken *types.Jw
 	}
 
 	// Invalidate token
-	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtTokenDecoded.UserId, jwtTokenDecoded.Issuer))
+	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtTokenDecoded.UserID, jwtTokenDecoded.Issuer))
 	return
 }
 
 // UpdateProfileInfo Update profile info
 func (service *Service) UpdateProfileInfo(inputJwtToken *types.JwtToken, userInfo *model.UserInfo) (result *model.UserInfo, errCode int, err error) {
-	result, err = service.Repository.UpdateProfileInfo(inputJwtToken.UserId, userInfo)
+	result, err = service.Repository.UpdateProfileInfo(inputJwtToken.UserID, userInfo)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update profile info from database")
@@ -302,7 +302,7 @@ func (service *Service) UpdateProfileMfa(inputJwtToken *types.JwtToken, method s
 		err = fmt.Errorf("%s", "Invalid MFA method! Please enter valid method.")
 		return
 	}
-	result, err = service.Repository.UpdateProfileMfa(inputJwtToken.UserId, method, value)
+	result, err = service.Repository.UpdateProfileMfa(inputJwtToken.UserID, method, value)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update profile MFA from database")
@@ -312,7 +312,7 @@ func (service *Service) UpdateProfileMfa(inputJwtToken *types.JwtToken, method s
 
 // DeleteProfile Delete user account
 func (service *Service) DeleteProfile(inputJwtToken *types.JwtToken) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(inputJwtToken.UserId)
+	affectedRows, err = service.Repository.Delete(inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete account from database")
@@ -328,7 +328,7 @@ func (service *Service) DeleteProfile(inputJwtToken *types.JwtToken) (affectedRo
 
 // GetProfile Return profile information
 func (service *Service) GetProfile(inputJwtToken *types.JwtToken) (user *model.User, errCode int, err error) {
-	user, err = service.Repository.GetById(inputJwtToken.UserId)
+	user, err = service.Repository.GetByID(inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get profile from database")

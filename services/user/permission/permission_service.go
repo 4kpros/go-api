@@ -16,29 +16,29 @@ func NewService(repository *Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// UpdateByRoleIdFeatureName Update permission
-func (service *Service) UpdateByRoleIdFeatureName(
+// UpdateByRoleIDFeatureName Update permission
+func (service *Service) UpdateByRoleIDFeatureName(
 	inputJwtToken *types.JwtToken,
-	roleId int64,
+	roleID int64,
 	featureName string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
 ) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, err = service.Repository.UpdateByRoleIdFeatureName(
-		roleId, featureName, body.IsEnabled, body.Table,
+	result, err = service.Repository.UpdateByRoleIDFeatureName(
+		roleID, featureName, body.IsEnabled, body.Table,
 	)
 	return
 }
 
-// GetAllByRoleId GetAll Returns all permissions with matching role id and
+// GetAllByRoleID GetAll Returns all permissions with matching role id and
 // support for search, filter and pagination
-func (service *Service) GetAllByRoleId(
+func (service *Service) GetAllByRoleID(
 	inputJwtToken *types.JwtToken,
-	roleId int64,
+	roleID int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
 ) (result []data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, err = service.Repository.GetAllByRoleId(
-		roleId, filter, pagination,
+	result, err = service.Repository.GetAllByRoleID(
+		roleID, filter, pagination,
 	)
 	if err != nil {
 		errCode = http.StatusInternalServerError

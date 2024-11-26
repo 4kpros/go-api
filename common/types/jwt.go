@@ -6,8 +6,8 @@ import (
 
 type JwtToken struct {
 	jwt.RegisteredClaims
-	UserId   int64  `json:"userId"`
-	RoleId   int64  `json:"roleId"`
+	UserID   int64  `json:"userID"`
+	RoleID   int64  `json:"roleID"`
 	Platform string `json:"platform"`
 	Device   string `json:"device"`
 	App      string `json:"app"`
@@ -38,8 +38,8 @@ type FacebookAccessTokenResponse struct {
 
 type FacebookDebugAccessTokenResponse struct {
 	Data struct {
-		UserId            string   `json:"user_id"`
-		AppId             string   `json:"app_id"`
+		UserID            string   `json:"user_id"`
+		AppID             string   `json:"app_id"`
 		Type              string   `json:"type"`
 		Application       string   `json:"application"`
 		DataAccessExpires int64    `json:"data_access_expires_at"`
