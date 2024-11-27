@@ -72,11 +72,11 @@ type Environment struct {
 	TwilioSenderNumber string `mapstructure:"TWILIO_SENDER_NUMBER"`
 
 	// Login with Google
-	GooglePlusClientId string `mapstructure:"GOOGLE_PLUS_CLIENT_ID"`
+	GooglePlusClientID string `mapstructure:"GOOGLE_PLUS_CLIENT_ID"`
 
 	// Login with Facebook
 	FacebookAppName       string `mapstructure:"FACEBOOK_APP_NAME"`
-	FacebookAppId         string `mapstructure:"FACEBOOK_APP_ID"`
+	FacebookAppID         string `mapstructure:"FACEBOOK_APP_ID"`
 	FacebookClientSecret  string `mapstructure:"FACEBOOK_CLIENT_SECRET"`
 	FacebookDebugTokenUrl string `mapstructure:"FACEBOOK_DEBUG_TOKEN_URL"`
 	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`

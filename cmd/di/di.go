@@ -3,12 +3,13 @@ package di
 import (
 	"api/cmd/api"
 	"api/config"
-	"api/services/admin/history"
-	"api/services/admin/permission"
-	"api/services/admin/role"
-	"api/services/admin/user"
-	"api/services/common/auth"
-	"api/services/common/profile"
+	"api/services/history"
+	"api/services/school/common/school"
+	"api/services/user/auth"
+	"api/services/user/permission"
+	"api/services/user/profile"
+	"api/services/user/role"
+	"api/services/user/user"
 )
 
 // InjectDependencies Inject all dependencies
@@ -17,16 +18,25 @@ func InjectDependencies() {
 	var userRepo = user.NewRepository(config.DB)
 	var roleRepo = role.NewRepository(config.DB)
 	var permissionRepo = permission.NewRepository(config.DB)
-	// History
-	api.AllControllers.HistoryController = history.NewController(
-		history.NewService(
-			historyRepo,
-		),
-	)
+	var schoolRepo = school.NewRepository(config.DB)
+
 	// Auth
 	api.AllControllers.AuthController = auth.NewAuthController(
 		auth.NewAuthService(
 			userRepo,
+		),
+	)
+	// Profile
+	api.AllControllers.ProfileController = profile.NewController(
+		profile.NewService(
+			userRepo,
+		),
+	)
+
+	// History
+	api.AllControllers.HistoryController = history.NewController(
+		history.NewService(
+			historyRepo,
 		),
 	)
 	// Role
@@ -47,10 +57,17 @@ func InjectDependencies() {
 			userRepo,
 		),
 	)
-	// Profile
-	api.AllControllers.ProfileController = profile.NewProfileController(
-		profile.NewProfileService(
-			userRepo,
+	// School
+	api.AllControllers.SchoolController = school.NewController(
+		school.NewService(
+			schoolRepo,
+		),
+	)
+
+	// School Director
+	api.AllControllers.SchoolController = school.NewController(
+		school.NewService(
+			schoolRepo,
 		),
 	)
 }

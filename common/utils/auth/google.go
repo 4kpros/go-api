@@ -9,7 +9,7 @@ import (
 	"api/common/types"
 	"api/config"
 
-	googleIdToken "google.golang.org/api/idtoken"
+	googleIDToken "google.golang.org/api/idtoken"
 )
 
 var contextGoogle = context.Background()
@@ -23,11 +23,11 @@ func VerifyGoogleIDToken(token string) (*types.GoogleUserProfileResponse, error)
 	if len(token) <= 0 {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
-	tokenValidator, err := googleIdToken.NewValidator(contextGoogle)
+	tokenValidator, err := googleIDToken.NewValidator(contextGoogle)
 	if err != nil {
 		return nil, constants.Http500ErrorMessage("validate Google token")
 	}
-	payload, err := tokenValidator.Validate(contextGoogle, token, config.Env.GooglePlusClientId)
+	payload, err := tokenValidator.Validate(contextGoogle, token, config.Env.GooglePlusClientID)
 	if err != nil {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}

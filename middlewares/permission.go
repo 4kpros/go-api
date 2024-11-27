@@ -2,12 +2,12 @@ package middlewares
 
 import (
 	"api/common/helpers"
+	"api/services/user/permission"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
 
 	"api/common/constants"
-	"api/services/admin/permission"
 )
 
 // PermissionMiddleware Checks resource permissions
@@ -17,7 +17,7 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		ctxContext := ctx.Context()
 		jwtToken := helpers.GetJwtContext(&ctxContext)
 		tempErr := constants.Http403InvalidPermissionErrorMessage()
-		if jwtToken == nil || jwtToken.UserId <= 0 {
+		if jwtToken == nil || jwtToken.UserID <= 0 {
 			_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 			return
 		}
@@ -41,16 +41,16 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 
 		// Check for required permissions
 		if len(featureScope) >= 1 {
-			// Retrieve permission feature for roleId
-			permissionFeature, errFeature := repository.GetPermissionFeatureByRoleIdAndFeatureName(jwtToken.RoleId, featureScope)
+			// Retrieve permission feature for roleID
+			permissionFeature, errFeature := repository.GetPermissionFeatureByRoleIDAndFeatureName(jwtToken.RoleID, featureScope)
 			if errFeature != nil || permissionFeature == nil || permissionFeature.FeatureName != featureScope || !permissionFeature.IsEnabled {
 				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 				return
 			}
 
 			if len(tableName) >= 1 {
-				// Retrieve permission table for roleId
-				permissionTable, errTable := repository.GetPermissionTableByRoleIdAndTableName(jwtToken.RoleId, tableName)
+				// Retrieve permission table for roleID
+				permissionTable, errTable := repository.GetPermissionTableByRoleIDAndTableName(jwtToken.RoleID, tableName)
 				if errTable != nil || permissionTable == nil || permissionTable.TableName != tableName {
 					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 					return
@@ -75,6 +75,6 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		}
 
 		next(ctx)
-		return
+
 	}
 }

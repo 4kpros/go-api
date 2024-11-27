@@ -25,7 +25,7 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 			"%s%s&access_token=%s|%s",
 			config.Env.FacebookDebugTokenUrl,
 			token,
-			config.Env.FacebookAppId,
+			config.Env.FacebookAppID,
 			config.Env.FacebookClientSecret,
 		),
 		debugResp,
@@ -34,8 +34,8 @@ func VerifyFacebookToken(token string) (*types.FacebookUserProfileResponse, erro
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 
-	// Validate AppId, Application, DataAccessExpires, Expires, IsValid
-	if !debugResp.Data.IsValid || debugResp.Data.AppId != config.Env.FacebookAppId || debugResp.Data.Application != config.Env.FacebookAppName {
+	// Validate AppID, Application, DataAccessExpires, Expires, IsValid
+	if !debugResp.Data.IsValid || debugResp.Data.AppID != config.Env.FacebookAppID || debugResp.Data.Application != config.Env.FacebookAppName {
 		return nil, fmt.Errorf("%s", invalidTokenErrMessage)
 	}
 	// Validate scopes

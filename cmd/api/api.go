@@ -11,33 +11,46 @@ import (
 	"api/common/constants"
 	"api/config"
 	"api/middlewares"
-	"api/services/admin/history"
-	"api/services/admin/permission"
-	"api/services/admin/role"
-	"api/services/admin/user"
-	"api/services/common/auth"
-	"api/services/common/profile"
+	"api/services/history"
+	"api/services/school/common/school"
+	"api/services/user/auth"
+	"api/services/user/permission"
+	"api/services/user/profile"
+	"api/services/user/role"
+	"api/services/user/user"
 )
 
 type Controllers struct {
+	// History service
+	HistoryController *history.Controller
+
+	// User service
 	AuthController       *auth.Controller
-	HistoryController    *history.Controller
 	RoleController       *role.Controller
 	PermissionController *permission.Controller
 	UserController       *user.Controller
 	ProfileController    *profile.Controller
+
+	// School service
+	SchoolController *school.Controller
 }
 
 var AllControllers = &Controllers{}
 
 // Register all API endpoints
 func registerEndpoints(humaApi *huma.API) {
-	auth.RegisterEndpoints(humaApi, AllControllers.AuthController)
+	// History service
 	history.RegisterEndpoints(humaApi, AllControllers.HistoryController)
+
+	// User service
+	auth.RegisterEndpoints(humaApi, AllControllers.AuthController)
 	role.RegisterEndpoints(humaApi, AllControllers.RoleController)
 	permission.RegisterEndpoints(humaApi, AllControllers.PermissionController)
 	user.RegisterEndpoints(humaApi, AllControllers.UserController)
 	profile.RegisterEndpoints(humaApi, AllControllers.ProfileController)
+
+	// School service
+	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
 }
 
 // Start Set up and start the API: set up API documentation,

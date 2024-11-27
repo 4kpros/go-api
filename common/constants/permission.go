@@ -10,5 +10,14 @@ const (
 
 const (
 	FeatureAdmin    = "feature-admin"
-	FeatureShopping = "feature-shopping"
+	FeatureDirector = "feature-director"
+	FeatureTeacher  = "feature-teacher"
+	FeatureStudent  = "feature-student"
+)
+
+const (
+	FeatureAdminLabel    = "Admin"
+	FeatureDirectorLabel = "Director"
+	FeatureTeacherLabel  = "Teacher"
+	FeatureStudentLabel  = "Student"
 )
