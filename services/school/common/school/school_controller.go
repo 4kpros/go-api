@@ -77,7 +77,7 @@ func (controller *Controller) Delete(
 func (controller *Controller) DeleteDirector(
 	ctx *context.Context,
 	input *struct {
-		data.DirectorRequest
+		data.DeleteDirectorRequest
 	},
 ) (result int64, errCode int, err error) {
 	affectedRows, errCode, err := controller.Service.DeleteDirector(helpers.GetJwtContext(ctx), input.SchoolId, input.UserId)

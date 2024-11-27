@@ -105,7 +105,7 @@ func RegisterEndpoints(
 			Summary:     "Update school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing school with matching id and return the new school object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -143,7 +143,7 @@ func RegisterEndpoints(
 			Summary:     "Delete school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing school with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -180,7 +180,7 @@ func RegisterEndpoints(
 			Summary:     "Delete director" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete director with matching school id and user id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/director/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s{schoolId}/director/{userId}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -198,7 +198,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.DirectorRequest
+				data.DeleteDirectorRequest
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.DeleteDirector(&ctx, input)
@@ -217,7 +217,7 @@ func RegisterEndpoints(
 			Summary:     "Get school by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one school with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{

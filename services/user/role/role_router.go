@@ -67,7 +67,7 @@ func RegisterEndpoints(
 			Summary:     "Update role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing role with matching id and return the new role object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -105,7 +105,7 @@ func RegisterEndpoints(
 			Summary:     "Delete role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing role with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -142,7 +142,7 @@ func RegisterEndpoints(
 			Summary:     "Get role by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one role with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{

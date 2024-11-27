@@ -104,7 +104,7 @@ func RegisterEndpoints(
 			Summary:     "Update user" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing user with matching id and return the new user object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -142,7 +142,7 @@ func RegisterEndpoints(
 			Summary:     "Delete user" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing user with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -179,7 +179,7 @@ func RegisterEndpoints(
 			Summary:     "Get user by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one user with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{

@@ -13,3 +13,8 @@ type DirectorRequest struct {
 	SchoolId int64 `json:"schoolId" required:"true" doc:"School id" example:"1"`
 	UserId   int64 `json:"userId" required:"true" doc:"User id" example:"1"`
 }
+
+type DeleteDirectorRequest struct {
+	SchoolId int64 `json:"schoolId" path:"schoolId" required:"true" doc:"School id" example:"1"`
+	UserId   int64 `json:"userId" path:"userId" required:"true" doc:"User id" example:"1"`
+}

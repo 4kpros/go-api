@@ -27,6 +27,7 @@ func Start() {
 
 			&schoolModel.School{},
 			&schoolModel.SchoolInfo{},
+			&schoolModel.SchoolConfig{},
 			&schoolModel.SchoolDirector{},
 		),
 	)
