@@ -47,7 +47,7 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, faculty *model.Fac
 // Update faculty
 func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, faculty *model.Faculty) (result *model.Faculty, errCode int, err error) {
 	// Check if faculty already exists
-	foundFacultyByID, err := service.Repository.GetById(id)
+	foundFacultyByID, err := service.Repository.GetById(id, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get faculty by name from database")
@@ -74,7 +74,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, faculty 
 	}
 
 	// Update faculty
-	result, err = service.Repository.Update(id, faculty)
+	result, err = service.Repository.Update(id, inputJwtToken.UserID, faculty)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update faculty from database")
@@ -85,7 +85,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, faculty 
 
 // Delete faculty with matching id and return affected rows
 func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id)
+	affectedRows, err = service.Repository.Delete(id, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete faculty from database")
@@ -101,7 +101,7 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 
 // Get Returns faculty with matching id
 func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (faculty *model.Faculty, errCode int, err error) {
-	faculty, err = service.Repository.GetById(id)
+	faculty, err = service.Repository.GetById(id, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get faculty by id from database")
@@ -117,7 +117,7 @@ func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (faculty *m
 
 // GetAll Returns all faculties with support for search, filter and pagination
 func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (facultyList []model.Faculty, errCode int, err error) {
-	facultyList, err = service.Repository.GetAll(filter, pagination)
+	facultyList, err = service.Repository.GetAll(filter, pagination, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get faculties from database")

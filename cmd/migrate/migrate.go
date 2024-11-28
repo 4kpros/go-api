@@ -6,6 +6,8 @@ import (
 	historyModel "api/services/history/model"
 	schoolModel "api/services/school/common/school/model"
 	yearModel "api/services/school/common/year/model"
+	departmentModel "api/services/school/university/department/model"
+	domainModel "api/services/school/university/domain/model"
 	facultyModel "api/services/school/university/faculty/model"
 	permissionModel "api/services/user/permission/model"
 	roleModel "api/services/user/role/model"
@@ -38,6 +40,8 @@ func Start() {
 
 			// University
 			&facultyModel.Faculty{},
+			&departmentModel.Department{},
+			&domainModel.Domain{},
 		),
 	)
 }

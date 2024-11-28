@@ -6,6 +6,8 @@ import (
 	"api/services/history"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
+	"api/services/school/university/department"
+	"api/services/school/university/domain"
 	"api/services/school/university/faculty"
 	"api/services/user/auth"
 	"api/services/user/permission"
@@ -77,9 +79,21 @@ func InjectDependencies() {
 
 	// University
 	var facultyRepo = faculty.NewRepository(config.DB)
+	var departmentRepo = department.NewRepository(config.DB)
+	var domainRepo = domain.NewRepository(config.DB)
 	api.AllControllers.FacultyController = faculty.NewController(
 		faculty.NewService(
 			facultyRepo,
+		),
+	)
+	api.AllControllers.DepartmentController = department.NewController(
+		department.NewService(
+			departmentRepo,
+		),
+	)
+	api.AllControllers.DomainController = domain.NewController(
+		domain.NewService(
+			domainRepo,
 		),
 	)
 }

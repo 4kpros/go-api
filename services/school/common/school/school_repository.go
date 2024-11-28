@@ -45,7 +45,7 @@ func (repository *Repository) Delete(id int64) (int64, error) {
 }
 
 func (repository *Repository) DeleteDirector(schoolId int64, userId int64) (int64, error) {
-	result := repository.Db.Where("schoolId = ?", schoolId).Where("userId = ?", userId).Delete(&model.SchoolDirector{})
+	result := repository.Db.Where("school_id = ?", schoolId).Where("user_id = ?", userId).Delete(&model.SchoolDirector{})
 	return result.RowsAffected, result.Error
 }
 
@@ -61,10 +61,20 @@ func (repository *Repository) GetByName(name string) (*model.School, error) {
 
 func (repository *Repository) GetDirector(schoolId int64, userId int64) (*model.SchoolDirector, error) {
 	result := &model.SchoolDirector{}
-	return result, repository.Db.Where("schoolId = ?", schoolId).Where("userId = ?", userId).Limit(1).Find(result).Error
+	return result, repository.Db.Where("school_id = ?", schoolId).Where("user_id = ?", userId).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
 	var result []model.School
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+}
+
+func (repository *Repository) GetAllByUserID(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
+	var result []model.School
+	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Where("user_id = ?", userID).Find(result).Error
+}
+
+func (repository *Repository) GetAllDirectors(filter *types.Filter, pagination *types.Pagination) ([]model.SchoolDirector, error) {
+	var result []model.SchoolDirector
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

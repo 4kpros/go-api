@@ -21,7 +21,12 @@ func (repository *Repository) Create(faculty *model.Faculty) (*model.Faculty, er
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, faculty *model.Faculty) (*model.Faculty, error) {
+func (repository *Repository) Update(id int64, userID int64, faculty *model.Faculty) (*model.Faculty, error) {
+	tempFaculty, err := repository.GetById(id, userID)
+	if err != nil || tempFaculty == nil || tempFaculty.ID != id {
+		return nil, err
+	}
+
 	result := &model.Faculty{}
 	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
@@ -31,14 +36,22 @@ func (repository *Repository) Update(id int64, faculty *model.Faculty) (*model.F
 	).Error
 }
 
-func (repository *Repository) Delete(id int64) (int64, error) {
+func (repository *Repository) Delete(id int64, userID int64) (int64, error) {
+	tempFaculty, err := repository.GetById(id, userID)
+	if err != nil || tempFaculty == nil || tempFaculty.ID != id {
+		return -1, err
+	}
+
 	result := repository.Db.Where("id = ?", id).Delete(&model.Faculty{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.Faculty, error) {
+func (repository *Repository) GetById(id int64, userID int64) (*model.Faculty, error) {
 	result := &model.Faculty{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Model(&model.Faculty{}).
+		Select("faculties.*").
+		Joins("left join school_directors on faculties.school_id = school_directors.id").
+		Where("faculties.id = ?", id).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByObject(faculty *model.Faculty) (*model.Faculty, error) {
@@ -46,7 +59,11 @@ func (repository *Repository) GetByObject(faculty *model.Faculty) (*model.Facult
 	return result, repository.Db.Where(faculty).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Faculty, error) {
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Faculty, error) {
 	var result []model.Faculty
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	return result, repository.Db.Model(&model.Faculty{}).
+		Select("faculties.*").
+		Joins("left join school_directors on faculties.school_id = school_directors.id").
+		Where("school_directors.user_id = ?", userID).
+		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

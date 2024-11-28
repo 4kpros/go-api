@@ -6,7 +6,7 @@ import (
 
 type FacultyResponse struct {
 	types.BaseGormModelResponse
-	SchoolID    int64  `json:"schoolID" required:"false" doc:"School ID"`
+	SchoolID    int64  `json:"schoolID" required:"false" doc:"School id"`
 	Name        string `json:"name" required:"false" doc:"Faculty name"`
 	Description string `json:"description" required:"false" doc:"Faculty description"`
 }
