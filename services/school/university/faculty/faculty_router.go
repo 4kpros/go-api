@@ -1,4 +1,4 @@
-package year
+package faculty
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
-	"api/services/school/common/year/data"
+	"api/services/school/university/faculty/data"
 )
 
 func RegisterEndpoints(
@@ -17,18 +17,18 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/years",
-		Tag:   []string{"Years"},
+		Group: "/faculties",
+		Tag:   []string{"Faculties"},
 	}
-	const tableName = "years"
+	const tableName = "faculties"
 
-	// Create year
+	// Create faculty
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "post-year",
-			Summary:     "Create year" + " (" + constants.FeatureDirectorLabel + ")",
-			Description: "Create new year by providing name and description and return created object. The name year should be unique.",
+			OperationID: "post-faculty",
+			Summary:     "Create faculty" + " (" + constants.FeatureDirectorLabel + ")",
+			Description: "Create new faculty by providing name and description and return created object. The name faculty should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -48,24 +48,24 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.YearRequest
+				Body data.CreateFacultyRequest
 			},
-		) (*struct{ Body data.YearResponse }, error) {
+		) (*struct{ Body data.FacultyResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.YearResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.FacultyResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Update year with id
+	// Update faculty with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-year",
-			Summary:     "Update year" + " (" + constants.FeatureDirectorLabel + ")",
-			Description: "Update existing year with matching id and return the new year object.",
+			OperationID: "update-faculty",
+			Summary:     "Update faculty" + " (" + constants.FeatureDirectorLabel + ")",
+			Description: "Update existing faculty with matching id and return the new faculty object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -85,25 +85,25 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.YearID
-				Body data.YearRequest
+				data.FacultyID
+				Body data.UpdateFacultyRequest
 			},
-		) (*struct{ Body data.YearResponse }, error) {
+		) (*struct{ Body data.FacultyResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.YearResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.FacultyResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Delete year with id
+	// Delete faculty with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-year",
-			Summary:     "Delete year" + " (" + constants.FeatureDirectorLabel + ")",
-			Description: "Delete existing year with matching id and return affected rows in database.",
+			OperationID: "delete-faculty",
+			Summary:     "Delete faculty" + " (" + constants.FeatureDirectorLabel + ")",
+			Description: "Delete existing faculty with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -123,7 +123,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.YearID
+				data.FacultyID
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
@@ -134,13 +134,13 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Get year by id
+	// Get faculty by id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-year-id",
-			Summary:     "Get year by id" + " (" + constants.FeatureDirectorLabel + ")",
-			Description: "Return one year with matching id",
+			OperationID: "get-faculty-id",
+			Summary:     "Get faculty by id" + " (" + constants.FeatureDirectorLabel + ")",
+			Description: "Return one faculty with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -160,24 +160,24 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.YearID
+				data.FacultyID
 			},
-		) (*struct{ Body data.YearResponse }, error) {
+		) (*struct{ Body data.FacultyResponse }, error) {
 			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.YearResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.FacultyResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Get all years
+	// Get all faculties
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-year-list",
-			Summary:     "Get all years" + " (" + constants.FeatureDirectorLabel + ")",
-			Description: "Get all years with support for search, filter and pagination",
+			OperationID: "get-faculty-list",
+			Summary:     "Get all faculties" + " (" + constants.FeatureDirectorLabel + ")",
+			Description: "Get all faculties with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -201,14 +201,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.YearResponseList
+			Body data.FacultyResponseList
 		}, error) {
 			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.YearResponseList
+				Body data.FacultyResponseList
 			}{Body: *result}, nil
 		},
 	)
