@@ -5,6 +5,7 @@ import (
 	"api/config"
 	"api/services/history"
 	"api/services/school/common/school"
+	"api/services/school/common/year"
 	"api/services/user/auth"
 	"api/services/user/permission"
 	"api/services/user/profile"
@@ -14,57 +15,57 @@ import (
 
 // InjectDependencies Inject all dependencies
 func InjectDependencies() {
+	// History
 	var historyRepo = history.NewRepository(config.DB)
+	api.AllControllers.HistoryController = history.NewController(
+		history.NewService(
+			historyRepo,
+		),
+	)
+
+	// User
 	var userRepo = user.NewRepository(config.DB)
 	var roleRepo = role.NewRepository(config.DB)
 	var permissionRepo = permission.NewRepository(config.DB)
-	var schoolRepo = school.NewRepository(config.DB)
-
-	// Auth
 	api.AllControllers.AuthController = auth.NewAuthController(
 		auth.NewAuthService(
 			userRepo,
 		),
 	)
-	// Profile
+	api.AllControllers.RoleController = role.NewController(
+		role.NewService(
+			roleRepo,
+		),
+	)
+	api.AllControllers.PermissionController = permission.NewController(
+		permission.NewService(
+			permissionRepo,
+		),
+	)
+	api.AllControllers.UserController = user.NewController(
+		user.NewService(
+			userRepo,
+		),
+	)
 	api.AllControllers.ProfileController = profile.NewController(
 		profile.NewService(
 			userRepo,
 		),
 	)
 
-	// History
-	api.AllControllers.HistoryController = history.NewController(
-		history.NewService(
-			historyRepo,
-		),
-	)
-	// Role
-	api.AllControllers.RoleController = role.NewController(
-		role.NewService(
-			roleRepo,
-		),
-	)
-	// Permission
-	api.AllControllers.PermissionController = permission.NewController(
-		permission.NewService(
-			permissionRepo,
-		),
-	)
-	// User
-	api.AllControllers.UserController = user.NewController(
-		user.NewService(
-			userRepo,
-		),
-	)
 	// School
+	var yearRepo = year.NewRepository(config.DB)
+	var schoolRepo = school.NewRepository(config.DB)
+	api.AllControllers.YearController = year.NewController(
+		year.NewService(
+			yearRepo,
+		),
+	)
 	api.AllControllers.SchoolController = school.NewController(
 		school.NewService(
 			schoolRepo,
 		),
 	)
-
-	// School Director
 	api.AllControllers.SchoolController = school.NewController(
 		school.NewService(
 			schoolRepo,

@@ -36,17 +36,18 @@ func (controller *Controller) Create(
 func (controller *Controller) AddDirector(
 	ctx *context.Context,
 	input *struct {
-		Body data.DirectorRequest
+		data.AddDirectorRequestPath
+		Body data.AddDirectorRequestBody
 	},
 ) (result *model.SchoolDirector, errCode int, err error) {
-	result, errCode, err = controller.Service.AddDirector(helpers.GetJwtContext(ctx), input.Body.SchoolId, input.Body.UserId)
+	result, errCode, err = controller.Service.AddDirector(helpers.GetJwtContext(ctx), input.SchoolID, input.Body.UserID)
 	return
 }
 
 func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
-		data.SchoolId
+		data.SchoolID
 		Body data.SchoolRequest
 	},
 ) (result *model.School, errCode int, err error) {
@@ -63,7 +64,7 @@ func (controller *Controller) Update(
 func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
-		data.SchoolId
+		data.SchoolID
 	},
 ) (result int64, errCode int, err error) {
 	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
@@ -80,7 +81,7 @@ func (controller *Controller) DeleteDirector(
 		data.DeleteDirectorRequest
 	},
 ) (result int64, errCode int, err error) {
-	affectedRows, errCode, err := controller.Service.DeleteDirector(helpers.GetJwtContext(ctx), input.SchoolId, input.UserId)
+	affectedRows, errCode, err := controller.Service.DeleteDirector(helpers.GetJwtContext(ctx), input.SchoolID, input.UserID)
 	if err != nil {
 		return
 	}
@@ -91,7 +92,7 @@ func (controller *Controller) DeleteDirector(
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
-		data.SchoolId
+		data.SchoolID
 	},
 ) (result *model.School, errCode int, err error) {
 	school, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)

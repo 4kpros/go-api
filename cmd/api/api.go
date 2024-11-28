@@ -13,6 +13,7 @@ import (
 	"api/middlewares"
 	"api/services/history"
 	"api/services/school/common/school"
+	"api/services/school/common/year"
 	"api/services/user/auth"
 	"api/services/user/permission"
 	"api/services/user/profile"
@@ -32,6 +33,7 @@ type Controllers struct {
 	ProfileController    *profile.Controller
 
 	// School service
+	YearController   *year.Controller
 	SchoolController *school.Controller
 }
 
@@ -50,6 +52,7 @@ func registerEndpoints(humaApi *huma.API) {
 	profile.RegisterEndpoints(humaApi, AllControllers.ProfileController)
 
 	// School service
+	year.RegisterEndpoints(humaApi, AllControllers.YearController)
 	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
 }
 

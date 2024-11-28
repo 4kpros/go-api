@@ -5,6 +5,7 @@ import (
 	"api/config"
 	historyModel "api/services/history/model"
 	schoolModel "api/services/school/common/school/model"
+	yearModel "api/services/school/common/year/model"
 	permissionModel "api/services/user/permission/model"
 	roleModel "api/services/user/role/model"
 	userModel "api/services/user/user/model"
@@ -24,6 +25,8 @@ func Start() {
 			&userModel.User{},
 			&userModel.UserMfa{},
 			&userModel.UserMfa{},
+
+			&yearModel.Year{},
 
 			&schoolModel.School{},
 			&schoolModel.SchoolInfo{},
