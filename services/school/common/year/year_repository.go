@@ -21,9 +21,9 @@ func (repository *Repository) Create(year *model.Year) (*model.Year, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, year *model.Year) (*model.Year, error) {
+func (repository *Repository) Update(yearID int64, year *model.Year) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", yearID).Updates(
 		map[string]interface{}{
 			"start_date": year.StartDate,
 			"end_date":   year.EndDate,
@@ -31,14 +31,14 @@ func (repository *Repository) Update(id int64, year *model.Year) (*model.Year, e
 	).Error
 }
 
-func (repository *Repository) Delete(id int64) (int64, error) {
-	result := repository.Db.Where("id = ?", id).Delete(&model.Year{})
+func (repository *Repository) Delete(yearID int64) (int64, error) {
+	result := repository.Db.Where("id = ?", yearID).Delete(&model.Year{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.Year, error) {
+func (repository *Repository) GetById(yearID int64) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Where("id = ?", yearID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByObject(year *model.Year) (*model.Year, error) {

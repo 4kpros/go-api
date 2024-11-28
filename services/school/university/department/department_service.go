@@ -45,9 +45,9 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, department *model.
 }
 
 // Update department
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, department *model.Department) (result *model.Department, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, departmentID int64, department *model.Department) (result *model.Department, errCode int, err error) {
 	// Check if department already exists
-	foundDepartmentByID, err := service.Repository.GetById(id, inputJwtToken.UserID)
+	foundDepartmentByID, err := service.Repository.GetById(departmentID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get department by name from database")
@@ -74,7 +74,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, departme
 	}
 
 	// Update department
-	result, err = service.Repository.Update(id, inputJwtToken.UserID, department)
+	result, err = service.Repository.Update(departmentID, inputJwtToken.UserID, department)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update department from database")
@@ -84,8 +84,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, departme
 }
 
 // Delete department with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id, inputJwtToken.UserID)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, departmentID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(departmentID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete department from database")
@@ -100,8 +100,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns department with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (department *model.Department, errCode int, err error) {
-	department, err = service.Repository.GetById(id, inputJwtToken.UserID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, departmentID int64) (department *model.Department, errCode int, err error) {
+	department, err = service.Repository.GetById(departmentID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get department by id from database")

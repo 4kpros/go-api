@@ -29,9 +29,9 @@ func (repository *Repository) AddDirector(schoolID int64, userID int64) (*model.
 	return result, repository.Db.Create(result).Error
 }
 
-func (repository *Repository) Update(id int64, school *model.School) (*model.School, error) {
+func (repository *Repository) Update(schoolID int64, school *model.School) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", schoolID).Updates(
 		map[string]interface{}{
 			"name": school.Name,
 			"type": school.Type,
@@ -39,8 +39,8 @@ func (repository *Repository) Update(id int64, school *model.School) (*model.Sch
 	).Error
 }
 
-func (repository *Repository) Delete(id int64) (int64, error) {
-	result := repository.Db.Where("id = ?", id).Delete(&model.School{})
+func (repository *Repository) Delete(schoolID int64) (int64, error) {
+	result := repository.Db.Where("id = ?", schoolID).Delete(&model.School{})
 	return result.RowsAffected, result.Error
 }
 
@@ -49,9 +49,9 @@ func (repository *Repository) DeleteDirector(schoolID int64, userID int64) (int6
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetByID(id int64) (*model.School, error) {
+func (repository *Repository) GetByID(schoolID int64) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Where("id = ?", schoolID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByName(name string) (*model.School, error) {

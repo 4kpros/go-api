@@ -45,9 +45,9 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, level *model.Level
 }
 
 // Update level
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, level *model.Level) (result *model.Level, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, levelID int64, level *model.Level) (result *model.Level, errCode int, err error) {
 	// Check if level already exists
-	foundLevelByID, err := service.Repository.GetById(id, inputJwtToken.UserID)
+	foundLevelByID, err := service.Repository.GetById(levelID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get level by name from database")
@@ -74,7 +74,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, level *m
 	}
 
 	// Update level
-	result, err = service.Repository.Update(id, inputJwtToken.UserID, level)
+	result, err = service.Repository.Update(levelID, inputJwtToken.UserID, level)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update level from database")
@@ -84,8 +84,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, level *m
 }
 
 // Delete level with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id, inputJwtToken.UserID)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, levelID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(levelID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete level from database")
@@ -100,8 +100,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns level with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (level *model.Level, errCode int, err error) {
-	level, err = service.Repository.GetById(id, inputJwtToken.UserID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, levelID int64) (level *model.Level, errCode int, err error) {
+	level, err = service.Repository.GetById(levelID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get level by id from database")

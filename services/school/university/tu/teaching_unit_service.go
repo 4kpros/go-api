@@ -71,9 +71,9 @@ func (service *Service) AddProfessor(inputJwtToken *types.JwtToken, professor *m
 }
 
 // Update teaching unit
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, teachingUnit *model.TeachingUnit) (result *model.TeachingUnit, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, teachingUnitID int64, teachingUnit *model.TeachingUnit) (result *model.TeachingUnit, errCode int, err error) {
 	// Check if teaching unit already exists
-	foundTeachingUnitByID, err := service.Repository.GetById(id, inputJwtToken.UserID)
+	foundTeachingUnitByID, err := service.Repository.GetById(teachingUnitID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get teaching unit by name from database")
@@ -101,7 +101,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, teaching
 	}
 
 	// Update teaching unit
-	result, err = service.Repository.Update(id, inputJwtToken.UserID, teachingUnit)
+	result, err = service.Repository.Update(teachingUnitID, inputJwtToken.UserID, teachingUnit)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update teaching unit from database")
@@ -111,8 +111,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, teaching
 }
 
 // Delete teaching unit with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id, inputJwtToken.UserID)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, teachingUnitID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(teachingUnitID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete teaching unit from database")
@@ -127,8 +127,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Delete professor with matching id and return affected rows
-func (service *Service) DeleteProfessor(inputJwtToken *types.JwtToken, id int64, userID int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.DeleteProfessor(id, userID)
+func (service *Service) DeleteProfessor(inputJwtToken *types.JwtToken, teachingUnitProfessorID int64, userID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteProfessor(teachingUnitProfessorID, userID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete professor from database")
@@ -143,8 +143,8 @@ func (service *Service) DeleteProfessor(inputJwtToken *types.JwtToken, id int64,
 }
 
 // Get Returns teaching unit with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (teachingUnit *model.TeachingUnit, errCode int, err error) {
-	teachingUnit, err = service.Repository.GetById(id, inputJwtToken.UserID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, teachingUnitID int64) (teachingUnit *model.TeachingUnit, errCode int, err error) {
+	teachingUnit, err = service.Repository.GetById(teachingUnitID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get teaching unit by id from database")

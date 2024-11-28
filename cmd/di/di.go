@@ -11,6 +11,7 @@ import (
 	"api/services/school/university/exam"
 	"api/services/school/university/faculty"
 	"api/services/school/university/level"
+	"api/services/school/university/student"
 	"api/services/school/university/tu"
 	"api/services/user/auth"
 	"api/services/user/permission"
@@ -87,6 +88,7 @@ func InjectDependencies() {
 	var levelRepo = level.NewRepository(config.DB)
 	var tuRepo = tu.NewRepository(config.DB)
 	var examRepo = exam.NewRepository(config.DB)
+	var studentRepo = student.NewRepository(config.DB)
 	api.AllControllers.FacultyController = faculty.NewController(
 		faculty.NewService(
 			facultyRepo,
@@ -115,6 +117,11 @@ func InjectDependencies() {
 	api.AllControllers.ExamController = exam.NewController(
 		exam.NewService(
 			examRepo,
+		),
+	)
+	api.AllControllers.StudentController = student.NewController(
+		student.NewService(
+			studentRepo,
 		),
 	)
 }

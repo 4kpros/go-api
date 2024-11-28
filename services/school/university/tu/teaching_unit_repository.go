@@ -26,14 +26,14 @@ func (repository *Repository) AddProfessor(professor *model.TeachingUnitProfesso
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, userID int64, teachingUnit *model.TeachingUnit) (*model.TeachingUnit, error) {
-	tempTeachingUnit, err := repository.GetById(id, userID)
-	if err != nil || tempTeachingUnit == nil || tempTeachingUnit.ID != id {
+func (repository *Repository) Update(teachingUnitID int64, userID int64, teachingUnit *model.TeachingUnit) (*model.TeachingUnit, error) {
+	tempTeachingUnit, err := repository.GetById(teachingUnitID, userID)
+	if err != nil || tempTeachingUnit == nil || tempTeachingUnit.ID != teachingUnitID {
 		return nil, err
 	}
 
 	result := &model.TeachingUnit{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", teachingUnitID).Updates(
 		map[string]interface{}{
 			"name":         teachingUnit.Name,
 			"description":  teachingUnit.Description,
@@ -44,37 +44,37 @@ func (repository *Repository) Update(id int64, userID int64, teachingUnit *model
 	).Error
 }
 
-func (repository *Repository) Delete(id int64, userID int64) (int64, error) {
-	tempTeachingUnit, err := repository.GetById(id, userID)
-	if err != nil || tempTeachingUnit == nil || tempTeachingUnit.ID != id {
+func (repository *Repository) Delete(teachingUnitID int64, userID int64) (int64, error) {
+	tempTeachingUnit, err := repository.GetById(teachingUnitID, userID)
+	if err != nil || tempTeachingUnit == nil || tempTeachingUnit.ID != teachingUnitID {
 		return -1, err
 	}
 
-	result := repository.Db.Where("id = ?", id).Delete(&model.TeachingUnit{})
+	result := repository.Db.Where("id = ?", teachingUnitID).Delete(&model.TeachingUnit{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) DeleteProfessor(id int64, userID int64) (int64, error) {
-	professor, err := repository.GetProfessorById(id, userID)
-	if err != nil || professor == nil || professor.ID != id {
+func (repository *Repository) DeleteProfessor(teachingUnitID int64, userID int64) (int64, error) {
+	professor, err := repository.GetProfessorById(teachingUnitID, userID)
+	if err != nil || professor == nil || professor.ID != teachingUnitID {
 		return -1, err
 	}
 
-	result := repository.Db.Where("id = ?", id).Where("user_id = ?", userID).Delete(&model.TeachingUnitProfessor{})
+	result := repository.Db.Where("id = ?", teachingUnitID).Where("user_id = ?", userID).Delete(&model.TeachingUnitProfessor{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64, userID int64) (*model.TeachingUnit, error) {
+func (repository *Repository) GetById(teachingUnitID int64, userID int64) (*model.TeachingUnit, error) {
 	result := &model.TeachingUnit{}
 	return result, repository.Db.Model(&model.TeachingUnit{}).
 		Select("teaching_units.*").
 		Joins("left join school_directors on teaching_units.school_id = school_directors.id").
-		Where("teaching_units.id = ?", id).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
+		Where("teaching_units.id = ?", teachingUnitID).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetProfessorById(id int64, userID int64) (*model.TeachingUnitProfessor, error) {
+func (repository *Repository) GetProfessorById(teachingUnitProfessorID int64, userID int64) (*model.TeachingUnitProfessor, error) {
 	result := &model.TeachingUnitProfessor{}
-	return result, repository.Db.Where("id = ?", id).Where("user_id = ?", userID).Limit(1).Find(result).Error
+	return result, repository.Db.Where("id = ?", teachingUnitProfessorID).Where("user_id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByObject(teachingUnit *model.TeachingUnit) (*model.TeachingUnit, error) {

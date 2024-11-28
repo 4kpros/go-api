@@ -100,8 +100,8 @@ func (service *Service) UpdateUser(inputJwtToken *types.JwtToken, user *model.Us
 }
 
 // Delete user with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, userID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(userID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete user from database")
@@ -116,8 +116,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns user with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (user *model.User, errCode int, err error) {
-	user, err = service.Repository.GetByID(id)
+func (service *Service) Get(inputJwtToken *types.JwtToken, userID int64) (user *model.User, errCode int, err error) {
+	user, err = service.Repository.GetByID(userID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get user by id from database")

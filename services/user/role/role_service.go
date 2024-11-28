@@ -42,7 +42,7 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, role *model.Role) 
 }
 
 // Update role
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, role *model.Role) (result *model.Role, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, roleID int64, role *model.Role) (result *model.Role, errCode int, err error) {
 	// Check if role already exists
 	foundRole, err := service.Repository.GetByName(role.Name)
 	if err != nil {
@@ -57,7 +57,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, role *mo
 	}
 
 	// Update role
-	result, err = service.Repository.Update(id, role)
+	result, err = service.Repository.Update(roleID, role)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update role from database")
@@ -67,8 +67,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, role *mo
 }
 
 // Delete role with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, roleID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(roleID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete role from database")
@@ -83,8 +83,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns role with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (role *model.Role, errCode int, err error) {
-	role, err = service.Repository.GetById(id)
+func (service *Service) Get(inputJwtToken *types.JwtToken, roleID int64) (role *model.Role, errCode int, err error) {
+	role, err = service.Repository.GetById(roleID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get role by id from database")

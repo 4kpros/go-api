@@ -21,14 +21,14 @@ func (repository *Repository) Create(exam *model.Exam) (*model.Exam, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, userID int64, exam *model.Exam) (*model.Exam, error) {
-	tempExam, err := repository.GetById(id, userID)
-	if err != nil || tempExam == nil || tempExam.ID != id {
+func (repository *Repository) Update(examID int64, userID int64, exam *model.Exam) (*model.Exam, error) {
+	tempExam, err := repository.GetById(examID, userID)
+	if err != nil || tempExam == nil || tempExam.ID != examID {
 		return nil, err
 	}
 
 	result := &model.Exam{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", examID).Updates(
 		map[string]interface{}{
 			"type":        exam.Type,
 			"percentage":  exam.Percentage,
@@ -37,22 +37,22 @@ func (repository *Repository) Update(id int64, userID int64, exam *model.Exam) (
 	).Error
 }
 
-func (repository *Repository) Delete(id int64, userID int64) (int64, error) {
-	tempExam, err := repository.GetById(id, userID)
-	if err != nil || tempExam == nil || tempExam.ID != id {
+func (repository *Repository) Delete(examID int64, userID int64) (int64, error) {
+	tempExam, err := repository.GetById(examID, userID)
+	if err != nil || tempExam == nil || tempExam.ID != examID {
 		return -1, err
 	}
 
-	result := repository.Db.Where("id = ?", id).Delete(&model.Exam{})
+	result := repository.Db.Where("id = ?", examID).Delete(&model.Exam{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64, userID int64) (*model.Exam, error) {
+func (repository *Repository) GetById(examID int64, userID int64) (*model.Exam, error) {
 	result := &model.Exam{}
 	return result, repository.Db.Model(&model.Exam{}).
 		Select("exams.*").
 		Joins("left join school_directors on exams.school_id = school_directors.id").
-		Where("exams.id = ?", id).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
+		Where("exams.id = ?", examID).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByObject(exam *model.Exam) (*model.Exam, error) {

@@ -21,14 +21,14 @@ func (repository *Repository) Create(department *model.Department) (*model.Depar
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, userID int64, department *model.Department) (*model.Department, error) {
-	tempDepartment, err := repository.GetById(id, userID)
-	if err != nil || tempDepartment == nil || tempDepartment.ID != id {
+func (repository *Repository) Update(departmentID int64, userID int64, department *model.Department) (*model.Department, error) {
+	tempDepartment, err := repository.GetById(departmentID, userID)
+	if err != nil || tempDepartment == nil || tempDepartment.ID != departmentID {
 		return nil, err
 	}
 
 	result := &model.Department{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", departmentID).Updates(
 		map[string]interface{}{
 			"name":        department.Name,
 			"description": department.Description,
@@ -36,22 +36,22 @@ func (repository *Repository) Update(id int64, userID int64, department *model.D
 	).Error
 }
 
-func (repository *Repository) Delete(id int64, userID int64) (int64, error) {
-	tempDepartment, err := repository.GetById(id, userID)
-	if err != nil || tempDepartment == nil || tempDepartment.ID != id {
+func (repository *Repository) Delete(departmentID int64, userID int64) (int64, error) {
+	tempDepartment, err := repository.GetById(departmentID, userID)
+	if err != nil || tempDepartment == nil || tempDepartment.ID != departmentID {
 		return -1, err
 	}
 
-	result := repository.Db.Where("id = ?", id).Delete(&model.Department{})
+	result := repository.Db.Where("id = ?", departmentID).Delete(&model.Department{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64, userID int64) (*model.Department, error) {
+func (repository *Repository) GetById(departmentID int64, userID int64) (*model.Department, error) {
 	result := &model.Department{}
 	return result, repository.Db.Model(&model.Department{}).
 		Select("departments.*").
 		Joins("left join school_directors on departments.school_id = school_directors.id").
-		Where("departments.id = ?", id).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
+		Where("departments.id = ?", departmentID).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByObject(department *model.Department) (*model.Department, error) {

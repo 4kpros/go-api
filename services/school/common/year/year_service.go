@@ -42,7 +42,7 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, year *model.Year) 
 }
 
 // Update year
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, year *model.Year) (result *model.Year, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, yearID int64, year *model.Year) (result *model.Year, errCode int, err error) {
 	// Check if year already exists
 	foundYear, err := service.Repository.GetByObject(year)
 	if err != nil {
@@ -57,7 +57,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, year *mo
 	}
 
 	// Update year
-	result, err = service.Repository.Update(id, year)
+	result, err = service.Repository.Update(yearID, year)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update year from database")
@@ -67,8 +67,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, year *mo
 }
 
 // Delete year with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(id)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, yearID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(yearID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete year from database")
@@ -83,8 +83,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns year with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (year *model.Year, errCode int, err error) {
-	year, err = service.Repository.GetById(id)
+func (service *Service) Get(inputJwtToken *types.JwtToken, yearID int64) (year *model.Year, errCode int, err error) {
+	year, err = service.Repository.GetById(yearID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get year by id from database")

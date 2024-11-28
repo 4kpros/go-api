@@ -11,6 +11,7 @@ import (
 	examModel "api/services/school/university/exam/model"
 	facultyModel "api/services/school/university/faculty/model"
 	levelModel "api/services/school/university/level/model"
+	studentModel "api/services/school/university/student/model"
 	tuModel "api/services/school/university/tu/model"
 	permissionModel "api/services/user/permission/model"
 	roleModel "api/services/user/role/model"
@@ -21,25 +22,31 @@ import (
 func Start() {
 	helpers.LogMigrations(
 		config.DB.AutoMigrate(
+			// History
 			&historyModel.History{},
 
+			// User
 			&roleModel.Role{},
-
 			&permissionModel.PermissionFeature{},
 			&permissionModel.PermissionTable{},
-
 			&userModel.User{},
 			&userModel.UserMfa{},
 			&userModel.UserMfa{},
 
+			// School
 			&yearModel.Year{},
-
 			&schoolModel.School{},
 			&schoolModel.SchoolInfo{},
 			&schoolModel.SchoolConfig{},
 			&schoolModel.SchoolDirector{},
 
 			// Secondary
+			&sectionModel.Section{},
+			&classModel.Level{},
+			&subjectModel.Subject{},
+			&subjectModel.SubjectProfessor{},
+			&pupilModel.Pupil{},
+			&testModel.Test{},
 
 			// University
 			&facultyModel.Faculty{},
@@ -48,6 +55,7 @@ func Start() {
 			&levelModel.Level{},
 			&tuModel.TeachingUnit{},
 			&tuModel.TeachingUnitProfessor{},
+			&studentModel.Student{},
 			&examModel.Exam{},
 		),
 	)

@@ -21,9 +21,9 @@ func (repository *Repository) Create(role *model.Role) (*model.Role, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, role *model.Role) (*model.Role, error) {
+func (repository *Repository) Update(roleID int64, role *model.Role) (*model.Role, error) {
 	result := &model.Role{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Model(result).Where("id = ?", roleID).Updates(
 		map[string]interface{}{
 			"name":        role.Name,
 			"description": role.Description,
@@ -31,14 +31,14 @@ func (repository *Repository) Update(id int64, role *model.Role) (*model.Role, e
 	).Error
 }
 
-func (repository *Repository) Delete(id int64) (int64, error) {
-	result := repository.Db.Where("id = ?", id).Delete(&model.Role{})
+func (repository *Repository) Delete(roleID int64) (int64, error) {
+	result := repository.Db.Where("id = ?", roleID).Delete(&model.Role{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.Role, error) {
+func (repository *Repository) GetById(roleID int64) (*model.Role, error) {
 	result := &model.Role{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Where("id = ?", roleID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByName(name string) (*model.Role, error) {

@@ -46,9 +46,9 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, exam *model.Exam) 
 }
 
 // Update exam
-func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, exam *model.Exam) (result *model.Exam, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, examID int64, exam *model.Exam) (result *model.Exam, errCode int, err error) {
 	// Check if exam already exists
-	foundExamByID, err := service.Repository.GetById(id, inputJwtToken.UserID)
+	foundExamByID, err := service.Repository.GetById(examID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get exam by name from database")
@@ -76,7 +76,7 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, exam *mo
 	}
 
 	// Update exam
-	result, err = service.Repository.Update(id, inputJwtToken.UserID, exam)
+	result, err = service.Repository.Update(examID, inputJwtToken.UserID, exam)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update exam from database")
@@ -102,8 +102,8 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 }
 
 // Get Returns exam with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (exam *model.Exam, errCode int, err error) {
-	exam, err = service.Repository.GetById(id, inputJwtToken.UserID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, examID int64) (exam *model.Exam, errCode int, err error) {
+	exam, err = service.Repository.GetById(examID, inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get exam by id from database")
