@@ -16,7 +16,7 @@ type School struct {
 	SchoolConfig   *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	SchoolConfigID int64         `gorm:"default:null"`
 
-	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (school *School) ToResponse() *data.SchoolResponse {

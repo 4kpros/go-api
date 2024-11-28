@@ -21,10 +21,10 @@ func (repository *Repository) Create(school *model.School) (*model.School, error
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) AddDirector(schoolId int64, userId int64) (*model.SchoolDirector, error) {
+func (repository *Repository) AddDirector(schoolID int64, userID int64) (*model.SchoolDirector, error) {
 	result := &model.SchoolDirector{
-		SchoolId: schoolId,
-		UserId:   userId,
+		SchoolID: schoolID,
+		UserID:   userID,
 	}
 	return result, repository.Db.Create(result).Error
 }
@@ -44,12 +44,12 @@ func (repository *Repository) Delete(id int64) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) DeleteDirector(schoolId int64, userId int64) (int64, error) {
-	result := repository.Db.Where("school_id = ?", schoolId).Where("user_id = ?", userId).Delete(&model.SchoolDirector{})
+func (repository *Repository) DeleteDirector(schoolID int64, userID int64) (int64, error) {
+	result := repository.Db.Where("school_id = ?", schoolID).Where("user_id = ?", userID).Delete(&model.SchoolDirector{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64) (*model.School, error) {
+func (repository *Repository) GetByID(id int64) (*model.School, error) {
 	result := &model.School{}
 	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
 }
@@ -59,9 +59,9 @@ func (repository *Repository) GetByName(name string) (*model.School, error) {
 	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetDirector(schoolId int64, userId int64) (*model.SchoolDirector, error) {
+func (repository *Repository) GetDirector(schoolID int64, userID int64) (*model.SchoolDirector, error) {
 	result := &model.SchoolDirector{}
-	return result, repository.Db.Where("school_id = ?", schoolId).Where("user_id = ?", userId).Limit(1).Find(result).Error
+	return result, repository.Db.Where("school_id = ?", schoolID).Where("user_id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {

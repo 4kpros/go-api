@@ -21,7 +21,6 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, level *model.Level
 	// Check if level already exists
 	foundLevel, err := service.Repository.GetByObject(&model.Level{
 		SchoolID: level.SchoolID,
-		DomainID: level.DomainID,
 		Name:     level.Name,
 	})
 	if err != nil {
@@ -61,7 +60,6 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, level *m
 	}
 	foundLevel, err := service.Repository.GetByObject(&model.Level{
 		SchoolID: foundLevelByID.SchoolID,
-		DomainID: foundLevelByID.DomainID,
 		Name:     level.Name,
 	})
 	if err != nil {

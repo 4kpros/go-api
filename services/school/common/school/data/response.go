@@ -47,8 +47,8 @@ type SchoolConfigResponse struct {
 }
 
 type SchoolDirectorResponse struct {
-	SchoolId int64 `json:"schoolId" doc:"SchoolI id"`
-	UserId   int64 `json:"userId" doc:"User id"`
+	SchoolID int64 `json:"schoolID" doc:"SchoolI id"`
+	UserID   int64 `json:"userID" doc:"User id"`
 }
 
 type SchoolResponseList struct {

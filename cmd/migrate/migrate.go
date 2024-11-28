@@ -8,8 +8,10 @@ import (
 	yearModel "api/services/school/common/year/model"
 	departmentModel "api/services/school/university/department/model"
 	domainModel "api/services/school/university/domain/model"
+	examModel "api/services/school/university/exam/model"
 	facultyModel "api/services/school/university/faculty/model"
 	levelModel "api/services/school/university/level/model"
+	tuModel "api/services/school/university/tu/model"
 	permissionModel "api/services/user/permission/model"
 	roleModel "api/services/user/role/model"
 	userModel "api/services/user/user/model"
@@ -44,6 +46,9 @@ func Start() {
 			&departmentModel.Department{},
 			&domainModel.Domain{},
 			&levelModel.Level{},
+			&tuModel.TeachingUnit{},
+			&tuModel.TeachingUnitProfessor{},
+			&examModel.Exam{},
 		),
 	)
 }

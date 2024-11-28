@@ -7,7 +7,6 @@ import (
 type LevelResponse struct {
 	types.BaseGormModelResponse
 	SchoolID    int64  `json:"schoolID" required:"false" doc:"School id"`
-	DomainID    int64  `json:"domainID" required:"false" doc:"Domain id"`
 	Name        string `json:"name" required:"false" doc:"Level name"`
 	Description string `json:"description" required:"false" doc:"Level description"`
 }

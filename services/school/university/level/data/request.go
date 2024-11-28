@@ -6,7 +6,6 @@ type LevelID struct {
 
 type CreateLevelRequest struct {
 	SchoolID    int64  `json:"schoolID" required:"true" doc:"School id" example:"1"`
-	DomainID    int64  `json:"domainID" required:"true" doc:"Domain id" example:"1"`
 	Name        string `json:"name" required:"true" doc:"Level name" example:"Computer Science"`
 	Description string `json:"description" required:"false" doc:"Level description" example:""`
 }

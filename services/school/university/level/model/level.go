@@ -8,14 +8,12 @@ import (
 type Level struct {
 	types.BaseGormModel
 	SchoolID    int64  `gorm:"not null"`
-	DomainID    int64  `gorm:"not null"`
 	Name        string `gorm:"not null"`
 	Description string `gorm:"not null"`
 }
 
 func (level *Level) ToResponse() *data.LevelResponse {
 	resp := &data.LevelResponse{}
-	resp.DomainID = level.DomainID
 	resp.Name = level.Name
 	resp.Description = level.Description
 	return resp
