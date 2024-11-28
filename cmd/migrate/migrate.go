@@ -9,6 +9,7 @@ import (
 	departmentModel "api/services/school/university/department/model"
 	domainModel "api/services/school/university/domain/model"
 	facultyModel "api/services/school/university/faculty/model"
+	levelModel "api/services/school/university/level/model"
 	permissionModel "api/services/user/permission/model"
 	roleModel "api/services/user/role/model"
 	userModel "api/services/user/user/model"
@@ -42,6 +43,7 @@ func Start() {
 			&facultyModel.Faculty{},
 			&departmentModel.Department{},
 			&domainModel.Domain{},
+			&levelModel.Level{},
 		),
 	)
 }

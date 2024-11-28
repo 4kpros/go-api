@@ -17,6 +17,7 @@ import (
 	"api/services/school/university/department"
 	"api/services/school/university/domain"
 	"api/services/school/university/faculty"
+	"api/services/school/university/level"
 	"api/services/user/auth"
 	"api/services/user/permission"
 	"api/services/user/profile"
@@ -43,6 +44,7 @@ type Controllers struct {
 	FacultyController    *faculty.Controller
 	DepartmentController *department.Controller
 	DomainController     *domain.Controller
+	LevelController      *level.Controller
 }
 
 var AllControllers = &Controllers{}
@@ -66,6 +68,7 @@ func registerEndpoints(humaApi *huma.API) {
 	faculty.RegisterEndpoints(humaApi, AllControllers.FacultyController)
 	department.RegisterEndpoints(humaApi, AllControllers.DepartmentController)
 	domain.RegisterEndpoints(humaApi, AllControllers.DomainController)
+	level.RegisterEndpoints(humaApi, AllControllers.LevelController)
 }
 
 // Start Set up and start the API: set up API documentation,

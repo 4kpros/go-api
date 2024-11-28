@@ -9,6 +9,7 @@ import (
 	"api/services/school/university/department"
 	"api/services/school/university/domain"
 	"api/services/school/university/faculty"
+	"api/services/school/university/level"
 	"api/services/user/auth"
 	"api/services/user/permission"
 	"api/services/user/profile"
@@ -81,6 +82,7 @@ func InjectDependencies() {
 	var facultyRepo = faculty.NewRepository(config.DB)
 	var departmentRepo = department.NewRepository(config.DB)
 	var domainRepo = domain.NewRepository(config.DB)
+	var levelRepo = level.NewRepository(config.DB)
 	api.AllControllers.FacultyController = faculty.NewController(
 		faculty.NewService(
 			facultyRepo,
@@ -94,6 +96,11 @@ func InjectDependencies() {
 	api.AllControllers.DomainController = domain.NewController(
 		domain.NewService(
 			domainRepo,
+		),
+	)
+	api.AllControllers.LevelController = level.NewController(
+		level.NewService(
+			levelRepo,
 		),
 	)
 }
