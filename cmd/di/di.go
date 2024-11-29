@@ -6,6 +6,11 @@ import (
 	"api/services/history"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
+	"api/services/school/secondary/class"
+	"api/services/school/secondary/pupil"
+	"api/services/school/secondary/section"
+	"api/services/school/secondary/subject"
+	"api/services/school/secondary/test"
 	"api/services/school/university/department"
 	"api/services/school/university/domain"
 	"api/services/school/university/exam"
@@ -80,6 +85,36 @@ func InjectDependencies() {
 	)
 
 	// Secondary
+	var sectionRepo = section.NewRepository(config.DB)
+	var classRepo = class.NewRepository(config.DB)
+	var subjectRepo = subject.NewRepository(config.DB)
+	var pupilRepo = pupil.NewRepository(config.DB)
+	var testRepo = test.NewRepository(config.DB)
+	api.AllControllers.SectionController = section.NewController(
+		section.NewService(
+			sectionRepo,
+		),
+	)
+	api.AllControllers.ClassController = class.NewController(
+		class.NewService(
+			classRepo,
+		),
+	)
+	api.AllControllers.SubjectController = subject.NewController(
+		subject.NewService(
+			subjectRepo,
+		),
+	)
+	api.AllControllers.PupilController = pupil.NewController(
+		pupil.NewService(
+			pupilRepo,
+		),
+	)
+	api.AllControllers.TestController = test.NewController(
+		test.NewService(
+			testRepo,
+		),
+	)
 
 	// University
 	var facultyRepo = faculty.NewRepository(config.DB)

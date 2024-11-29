@@ -18,7 +18,7 @@ func RegisterEndpoints(
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
 		Group: "/years",
-		Tag:   []string{"Years"},
+		Tag:   []string{"Years", "Service-school"},
 	}
 	const tableName = "years"
 

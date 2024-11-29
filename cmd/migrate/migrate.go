@@ -6,6 +6,11 @@ import (
 	historyModel "api/services/history/model"
 	schoolModel "api/services/school/common/school/model"
 	yearModel "api/services/school/common/year/model"
+	classModel "api/services/school/secondary/class/model"
+	pupilModel "api/services/school/secondary/pupil/model"
+	sectionModel "api/services/school/secondary/section/model"
+	subjectModel "api/services/school/secondary/subject/model"
+	testModel "api/services/school/secondary/test/model"
 	departmentModel "api/services/school/university/department/model"
 	domainModel "api/services/school/university/domain/model"
 	examModel "api/services/school/university/exam/model"
@@ -42,7 +47,7 @@ func Start() {
 
 			// Secondary
 			&sectionModel.Section{},
-			&classModel.Level{},
+			&classModel.Class{},
 			&subjectModel.Subject{},
 			&subjectModel.SubjectProfessor{},
 			&pupilModel.Pupil{},
