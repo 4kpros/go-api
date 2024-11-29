@@ -8,11 +8,13 @@ WORKDIR /app
 RUN apk update &&\
     apk add --update --no-cache bash make
 
-# Copy the project files
-COPY . .
-
 # Install dependencies and build the app
+COPY ./go.mod .
+COPY ./go.sum .
 RUN go mod download
+
+# Build the app
+COPY . .
 RUN GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./.build/main ./cmd/main.go
 
 
