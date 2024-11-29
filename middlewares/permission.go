@@ -16,9 +16,8 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		// Retrieve jwtToken
 		ctxContext := ctx.Context()
 		jwtToken := helpers.GetJwtContext(&ctxContext)
-		tempErr := constants.Http403InvalidPermissionErrorMessage()
 		if jwtToken == nil || jwtToken.UserID <= 0 {
-			_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
+			next(ctx)
 			return
 		}
 
@@ -43,6 +42,7 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		if len(featureScope) >= 1 {
 			// Retrieve permission feature for roleID
 			permissionFeature, errFeature := repository.GetPermissionFeatureByRoleIDAndFeatureName(jwtToken.RoleID, featureScope)
+			tempErr := constants.Http403InvalidPermissionErrorMessage()
 			if errFeature != nil || permissionFeature == nil || permissionFeature.FeatureName != featureScope || !permissionFeature.IsEnabled {
 				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 				return
