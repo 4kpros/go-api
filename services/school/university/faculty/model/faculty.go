@@ -14,6 +14,11 @@ type Faculty struct {
 
 func (faculty *Faculty) ToResponse() *data.FacultyResponse {
 	resp := &data.FacultyResponse{}
+	resp.ID = faculty.ID
+	resp.CreatedAt = faculty.CreatedAt
+	resp.UpdatedAt = faculty.UpdatedAt
+	resp.DeletedAt = faculty.DeletedAt
+
 	resp.SchoolID = faculty.SchoolID
 	resp.Name = faculty.Name
 	resp.Description = faculty.Description

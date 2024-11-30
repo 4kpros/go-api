@@ -14,6 +14,11 @@ type Class struct {
 
 func (class *Class) ToResponse() *data.ClassResponse {
 	resp := &data.ClassResponse{}
+	resp.ID = class.ID
+	resp.CreatedAt = class.CreatedAt
+	resp.UpdatedAt = class.UpdatedAt
+	resp.DeletedAt = class.DeletedAt
+
 	resp.Name = class.Name
 	resp.Description = class.Description
 	return resp

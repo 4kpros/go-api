@@ -14,6 +14,11 @@ type Student struct {
 
 func (student *Student) ToResponse() *data.StudentResponse {
 	resp := &data.StudentResponse{}
+	resp.ID = student.ID
+	resp.CreatedAt = student.CreatedAt
+	resp.UpdatedAt = student.UpdatedAt
+	resp.DeletedAt = student.DeletedAt
+
 	resp.SchoolID = student.SchoolID
 	resp.UserID = student.UserID
 	resp.LevelID = student.LevelID

@@ -15,6 +15,11 @@ type Domain struct {
 
 func (domain *Domain) ToResponse() *data.DomainResponse {
 	resp := &data.DomainResponse{}
+	resp.ID = domain.ID
+	resp.CreatedAt = domain.CreatedAt
+	resp.UpdatedAt = domain.UpdatedAt
+	resp.DeletedAt = domain.DeletedAt
+
 	resp.DepartmentID = domain.DepartmentID
 	resp.Name = domain.Name
 	resp.Description = domain.Description

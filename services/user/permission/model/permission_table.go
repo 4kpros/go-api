@@ -19,8 +19,8 @@ func (permission *PermissionTable) ToResponse() *data.PermissionTableResponse {
 	resp := &data.PermissionTableResponse{
 		TableName: permission.TableName,
 		Create:    permission.Create,
-		Read:      permission.Create,
-		Update:    permission.Create,
+		Read:      permission.Read,
+		Update:    permission.Update,
 		Delete:    permission.Delete,
 	}
 	return resp

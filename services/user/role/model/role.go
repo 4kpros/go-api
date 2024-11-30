@@ -12,13 +12,15 @@ type Role struct {
 }
 
 func (role *Role) ToResponse() *data.RoleResponse {
-	resp := &data.RoleResponse{}
+	resp := &data.RoleResponse{
+		Name:        role.Name,
+		Description: role.Description,
+	}
+
 	resp.ID = role.ID
 	resp.CreatedAt = role.CreatedAt
 	resp.UpdatedAt = role.UpdatedAt
 	resp.DeletedAt = role.DeletedAt
-	resp.Name = role.Name
-	resp.Description = role.Description
 	return resp
 }
 

@@ -13,9 +13,14 @@ type Year struct {
 }
 
 func (year *Year) ToResponse() *data.YearResponse {
-	resp := &data.YearResponse{}
-	resp.StartDate = year.StartDate
-	resp.EndDate = year.EndDate
+	resp := &data.YearResponse{
+		StartDate: year.StartDate,
+		EndDate:   year.EndDate,
+	}
+	resp.ID = year.ID
+	resp.CreatedAt = year.CreatedAt
+	resp.UpdatedAt = year.UpdatedAt
+	resp.DeletedAt = year.DeletedAt
 	return resp
 }
 

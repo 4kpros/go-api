@@ -15,6 +15,11 @@ type Department struct {
 
 func (department *Department) ToResponse() *data.DepartmentResponse {
 	resp := &data.DepartmentResponse{}
+	resp.ID = department.ID
+	resp.CreatedAt = department.CreatedAt
+	resp.UpdatedAt = department.UpdatedAt
+	resp.DeletedAt = department.DeletedAt
+
 	resp.FacultyID = department.FacultyID
 	resp.Name = department.Name
 	resp.Description = department.Description

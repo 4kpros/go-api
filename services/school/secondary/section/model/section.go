@@ -14,6 +14,11 @@ type Section struct {
 
 func (section *Section) ToResponse() *data.SectionResponse {
 	resp := &data.SectionResponse{}
+	resp.ID = section.ID
+	resp.CreatedAt = section.CreatedAt
+	resp.UpdatedAt = section.UpdatedAt
+	resp.DeletedAt = section.DeletedAt
+
 	resp.SchoolID = section.SchoolID
 	resp.Name = section.Name
 	resp.Description = section.Description

@@ -19,6 +19,11 @@ type Subject struct {
 
 func (subject *Subject) ToResponse() *data.SubjectResponse {
 	resp := &data.SubjectResponse{}
+	resp.ID = subject.ID
+	resp.CreatedAt = subject.CreatedAt
+	resp.UpdatedAt = subject.UpdatedAt
+	resp.DeletedAt = subject.DeletedAt
+
 	resp.SchoolID = subject.SchoolID
 	resp.ClassID = subject.ClassID
 	resp.Name = subject.Name

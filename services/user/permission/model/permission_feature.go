@@ -18,6 +18,7 @@ func (permission *PermissionFeature) ToResponse() *data.PermissionFeatureRespons
 		FeatureName: permission.FeatureName,
 		IsEnabled:   permission.IsEnabled,
 	}
+
 	resp.ID = permission.ID
 	resp.CreatedAt = permission.CreatedAt
 	resp.UpdatedAt = permission.UpdatedAt

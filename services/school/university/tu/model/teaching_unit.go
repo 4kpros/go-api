@@ -21,6 +21,11 @@ type TeachingUnit struct {
 
 func (teachingUnit *TeachingUnit) ToResponse() *data.TeachingUnitResponse {
 	resp := &data.TeachingUnitResponse{}
+	resp.ID = teachingUnit.ID
+	resp.CreatedAt = teachingUnit.CreatedAt
+	resp.UpdatedAt = teachingUnit.UpdatedAt
+	resp.DeletedAt = teachingUnit.DeletedAt
+
 	resp.SchoolID = teachingUnit.SchoolID
 	resp.DomainID = teachingUnit.DomainID
 	resp.LevelID = teachingUnit.LevelID

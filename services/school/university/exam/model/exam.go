@@ -16,6 +16,11 @@ type Exam struct {
 
 func (exam *Exam) ToResponse() *data.ExamResponse {
 	resp := &data.ExamResponse{}
+	resp.ID = exam.ID
+	resp.CreatedAt = exam.CreatedAt
+	resp.UpdatedAt = exam.UpdatedAt
+	resp.DeletedAt = exam.DeletedAt
+
 	resp.SchoolID = exam.SchoolID
 	resp.TeachingUnitID = exam.TeachingUnitID
 	resp.Type = exam.Type

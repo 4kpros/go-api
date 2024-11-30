@@ -62,6 +62,7 @@ func (user *User) ToResponse() *data.UserResponse {
 		UserInfo: user.UserInfo.ToResponse(),
 		UserMfa:  user.UserMfa.ToResponse(),
 	}
+
 	resp.ID = user.ID
 	resp.CreatedAt = user.CreatedAt
 	resp.UpdatedAt = user.UpdatedAt

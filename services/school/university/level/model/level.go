@@ -14,6 +14,11 @@ type Level struct {
 
 func (level *Level) ToResponse() *data.LevelResponse {
 	resp := &data.LevelResponse{}
+	resp.ID = level.ID
+	resp.CreatedAt = level.CreatedAt
+	resp.UpdatedAt = level.UpdatedAt
+	resp.DeletedAt = level.DeletedAt
+
 	resp.Name = level.Name
 	resp.Description = level.Description
 	return resp

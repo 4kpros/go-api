@@ -14,6 +14,11 @@ type Pupil struct {
 
 func (pupil *Pupil) ToResponse() *data.PupilResponse {
 	resp := &data.PupilResponse{}
+	resp.ID = pupil.ID
+	resp.CreatedAt = pupil.CreatedAt
+	resp.UpdatedAt = pupil.UpdatedAt
+	resp.DeletedAt = pupil.DeletedAt
+
 	resp.SchoolID = pupil.SchoolID
 	resp.UserID = pupil.UserID
 	resp.ClassID = pupil.ClassID

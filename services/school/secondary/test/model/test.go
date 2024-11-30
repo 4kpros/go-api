@@ -16,6 +16,11 @@ type Test struct {
 
 func (test *Test) ToResponse() *data.TestResponse {
 	resp := &data.TestResponse{}
+	resp.ID = test.ID
+	resp.CreatedAt = test.CreatedAt
+	resp.UpdatedAt = test.UpdatedAt
+	resp.DeletedAt = test.DeletedAt
+
 	resp.SchoolID = test.SchoolID
 	resp.SubjectID = test.SubjectID
 	resp.Type = test.Type

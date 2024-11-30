@@ -20,16 +20,18 @@ type School struct {
 }
 
 func (school *School) ToResponse() *data.SchoolResponse {
-	resp := &data.SchoolResponse{}
+	resp := &data.SchoolResponse{
+		Name:            school.Name,
+		Type:            school.Type,
+		SchoolInfo:      school.SchoolInfo.ToResponse(),
+		SchoolConfig:    school.SchoolConfig.ToResponse(),
+		SchoolDirectors: ToSchoolDirectorResponseList(school.SchoolDirectors),
+	}
+
 	resp.ID = school.ID
 	resp.CreatedAt = school.CreatedAt
 	resp.UpdatedAt = school.UpdatedAt
 	resp.DeletedAt = school.DeletedAt
-	resp.Name = school.Name
-	resp.Type = school.Type
-	resp.SchoolInfo = school.SchoolInfo.ToResponse()
-	resp.SchoolConfig = school.SchoolConfig.ToResponse()
-	resp.SchoolDirectors = ToSchoolDirectorResponseList(school.SchoolDirectors)
 	return resp
 }
 
