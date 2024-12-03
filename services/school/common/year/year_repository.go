@@ -47,6 +47,6 @@ func (repository *Repository) GetByObject(year *model.Year) (*model.Year, error)
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Year, error) {
-	var result []model.Year
+	result := make([]model.Year, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

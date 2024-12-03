@@ -65,16 +65,16 @@ func (repository *Repository) GetDirector(schoolID int64, userID int64) (*model.
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
+	result := make([]model.School, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
 
 func (repository *Repository) GetAllByUserID(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
+	result := make([]model.School, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Where("user_id = ?", userID).Find(result).Error
 }
 
 func (repository *Repository) GetAllDirectors(filter *types.Filter, pagination *types.Pagination) ([]model.SchoolDirector, error) {
-	var result []model.SchoolDirector
+	result := make([]model.SchoolDirector, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

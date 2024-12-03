@@ -26,7 +26,7 @@ func (repository *Repository) UpdateByRoleIDFeatureName(
 	table data.UpdatePermissionTableRequest,
 ) (*data.PermissionFeatureTableResponse, error) {
 	var err error
-	var result = &data.PermissionFeatureTableResponse{}
+	result := &data.PermissionFeatureTableResponse{}
 	// Update permission feature
 	if tmpErr := repository.Db.Model(&model.PermissionFeature{}).
 		Where("role_id = ?", roleID).
@@ -81,7 +81,7 @@ func (repository *Repository) GetPermissionFeatureByRoleIDAndFeatureName(
 	roleID int64,
 	featureName string,
 ) (*model.PermissionFeature, error) {
-	var result *model.PermissionFeature
+	result := &model.PermissionFeature{}
 	return result, repository.Db.Where("role_id = ?", roleID).Where("feature_name = ?", featureName).First(result).Error
 }
 
@@ -89,7 +89,7 @@ func (repository *Repository) GetPermissionTableByRoleIDAndTableName(
 	roleID int64,
 	tableName string,
 ) (*model.PermissionTable, error) {
-	var result *model.PermissionTable
+	result := &model.PermissionTable{}
 	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ?", tableName).First(result).Error
 }
 
@@ -98,7 +98,7 @@ func (repository *Repository) GetAllByRoleID(
 	filter *types.Filter,
 	pagination *types.Pagination,
 ) ([]data.PermissionFeatureTableResponse, error) {
-	var result []data.PermissionFeatureTableResponse
+	result := make([]data.PermissionFeatureTableResponse, 0)
 	return result, repository.Db.Model(&model.PermissionFeature{}).
 		Select("permission_features.*, permission_tables.*").Where("role_id = ?", roleID).
 		Joins("INNER JOIN permission_tables ON permission_features.role_id = permission_tables.role_id").

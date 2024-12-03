@@ -47,6 +47,6 @@ func (repository *Repository) GetByName(name string) (*model.Role, error) {
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
-	var result []model.Role
+	result := make([]model.Role, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

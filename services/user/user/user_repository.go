@@ -23,7 +23,7 @@ func (repository *Repository) Create(user *model.User) (*model.User, error) {
 }
 
 func (repository *Repository) UpdateUser(userID int64, user *model.User) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"email":        user.Email,
@@ -39,32 +39,32 @@ func (repository *Repository) Delete(userID int64) (int64, error) {
 }
 
 func (repository *Repository) GetByID(userID int64) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Where("id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByEmail(email string) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodDefault,
+		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"email = ?", email,
 	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodDefault,
+		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"phone_number = ?", phoneNumber,
 	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByProvider(provider string, providerUserID string) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodProvider,
+		"login_method = ?", constants.AuthLoginMethodProvider,
 	).Where(
 		"provider = ?", provider,
 	).Where(
@@ -73,7 +73,7 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
-	var result []model.User
+	result := make([]model.User, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
 
@@ -88,12 +88,12 @@ func (repository *Repository) CreateUserMfa(userMfa *model.UserMfa) (*model.User
 	return &result, repository.Db.Create(&result).Error
 }
 func (repository *Repository) UpdateUserPassword(userID int64, password string) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Update("password", password).Error
 }
 
 func (repository *Repository) UpdateUserActivation(userID int64, user *model.User) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"user_info_id": user.UserInfoID,
@@ -106,7 +106,7 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 
 // ----------------- Profile service -----------------
 func (repository *Repository) UpdateEmail(userID int64, email string) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"email": email,
@@ -114,7 +114,7 @@ func (repository *Repository) UpdateEmail(userID int64, email string) (*model.Us
 	).Error
 }
 func (repository *Repository) UpdatePhoneNumber(userID int64, phoneNumber uint64) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"phone_number": phoneNumber,
@@ -122,7 +122,7 @@ func (repository *Repository) UpdatePhoneNumber(userID int64, phoneNumber uint64
 	).Error
 }
 func (repository *Repository) UpdatePassword(userID int64, password string) (*model.User, error) {
-	var result *model.User
+	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"password": password,
@@ -131,7 +131,7 @@ func (repository *Repository) UpdatePassword(userID int64, password string) (*mo
 }
 
 func (repository *Repository) UpdateProfileInfo(userInfoID int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
-	var result *model.UserInfo
+	result := &model.UserInfo{}
 	return result, repository.Db.Model(result).Where("id = ?", userInfoID).Updates(
 		map[string]interface{}{
 			"user_name":  userInfo.Username,
@@ -145,7 +145,7 @@ func (repository *Repository) UpdateProfileInfo(userInfoID int64, userInfo *mode
 }
 
 func (repository *Repository) UpdateProfileMfa(userMfaID int64, column string, value bool) (*model.UserMfa, error) {
-	var result *model.UserMfa
+	result := &model.UserMfa{}
 	return result, repository.Db.Model(result).Where("id = ?", userMfaID).Updates(
 		map[string]interface{}{
 			"" + column: value,

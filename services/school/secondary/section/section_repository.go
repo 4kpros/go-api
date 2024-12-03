@@ -60,7 +60,7 @@ func (repository *Repository) GetByObject(section *model.Section) (*model.Sectio
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Section, error) {
-	var result []model.Section
+	result := make([]model.Section, 0)
 	return result, repository.Db.Model(&model.Section{}).
 		Select("sections.*").
 		Joins("left join school_directors on sections.school_id = school_directors.id").

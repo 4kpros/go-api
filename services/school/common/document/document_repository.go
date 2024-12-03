@@ -37,6 +37,6 @@ func (repository *Repository) GetByObject(document *model.Document) (*model.Docu
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Document, error) {
-	var result []model.Document
+	result := make([]model.Document, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }
