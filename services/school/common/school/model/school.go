@@ -19,26 +19,26 @@ type School struct {
 	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (school *School) ToResponse() *data.SchoolResponse {
+func (item *School) ToResponse() *data.SchoolResponse {
 	resp := &data.SchoolResponse{
-		Name:            school.Name,
-		Type:            school.Type,
-		SchoolInfo:      school.SchoolInfo.ToResponse(),
-		SchoolConfig:    school.SchoolConfig.ToResponse(),
-		SchoolDirectors: ToSchoolDirectorResponseList(school.SchoolDirectors),
+		Name:            item.Name,
+		Type:            item.Type,
+		SchoolInfo:      item.SchoolInfo.ToResponse(),
+		SchoolConfig:    item.SchoolConfig.ToResponse(),
+		SchoolDirectors: ToSchoolDirectorResponseList(item.SchoolDirectors),
 	}
 
-	resp.ID = school.ID
-	resp.CreatedAt = school.CreatedAt
-	resp.UpdatedAt = school.UpdatedAt
-	resp.DeletedAt = school.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 
-func ToSchoolResponseList(schoolList []School) []data.SchoolResponse {
-	resp := make([]data.SchoolResponse, len(schoolList))
-	for index, school := range schoolList {
-		resp[index] = *school.ToResponse()
+func ToSchoolResponseList(itemList []School) []data.SchoolResponse {
+	resp := make([]data.SchoolResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

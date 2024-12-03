@@ -11,17 +11,17 @@ type SubjectProfessor struct {
 	UserID    int64 `gorm:"not null"`
 }
 
-func (subjectProfessor *SubjectProfessor) ToResponse() *data.SubjectProfessorResponse {
+func (item *SubjectProfessor) ToResponse() *data.SubjectProfessorResponse {
 	resp := &data.SubjectProfessorResponse{}
-	resp.SubjectID = subjectProfessor.SubjectID
-	resp.UserID = subjectProfessor.UserID
+	resp.SubjectID = item.SubjectID
+	resp.UserID = item.UserID
 	return resp
 }
 
-func ToSubjectProfessorResponseList(subjectProfessorList []SubjectProfessor) []data.SubjectProfessorResponse {
-	resp := make([]data.SubjectProfessorResponse, len(subjectProfessorList))
-	for index, subjectProfessor := range subjectProfessorList {
-		resp[index] = *subjectProfessor.ToResponse()
+func ToSubjectProfessorResponseList(itemList []SubjectProfessor) []data.SubjectProfessorResponse {
+	resp := make([]data.SubjectProfessorResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

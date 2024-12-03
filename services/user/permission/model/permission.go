@@ -5,7 +5,7 @@ import (
 	"api/services/user/permission/data"
 )
 
-type PermissionTable struct {
+type Permission struct {
 	types.BaseGormModel
 	RoleID    int64  `gorm:"default:null"`
 	TableName string `gorm:"default:null"`
@@ -15,13 +15,17 @@ type PermissionTable struct {
 	Delete    bool   `gorm:"default:null"`
 }
 
-func (permission *PermissionTable) ToResponse() *data.PermissionTableResponse {
-	resp := &data.PermissionTableResponse{
-		TableName: permission.TableName,
-		Create:    permission.Create,
-		Read:      permission.Read,
-		Update:    permission.Update,
-		Delete:    permission.Delete,
+func (item *Permission) ToResponse() *data.PermissionResponse {
+	resp := &data.PermissionResponse{}
+	if item == nil {
+		return resp
+	}
+	resp = &data.PermissionResponse{
+		TableName: item.TableName,
+		Create:    item.Create,
+		Read:      item.Read,
+		Update:    item.Update,
+		Delete:    item.Delete,
 	}
 	return resp
 }

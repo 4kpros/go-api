@@ -12,23 +12,23 @@ type Pupil struct {
 	ClassID  int64 `gorm:"default:null"`
 }
 
-func (pupil *Pupil) ToResponse() *data.PupilResponse {
+func (item *Pupil) ToResponse() *data.PupilResponse {
 	resp := &data.PupilResponse{}
-	resp.ID = pupil.ID
-	resp.CreatedAt = pupil.CreatedAt
-	resp.UpdatedAt = pupil.UpdatedAt
-	resp.DeletedAt = pupil.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = pupil.SchoolID
-	resp.UserID = pupil.UserID
-	resp.ClassID = pupil.ClassID
+	resp.SchoolID = item.SchoolID
+	resp.UserID = item.UserID
+	resp.ClassID = item.ClassID
 	return resp
 }
 
-func ToResponseList(pupilList []Pupil) []data.PupilResponse {
-	resp := make([]data.PupilResponse, len(pupilList))
-	for index, pupil := range pupilList {
-		resp[index] = *pupil.ToResponse()
+func ToResponseList(itemList []Pupil) []data.PupilResponse {
+	resp := make([]data.PupilResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

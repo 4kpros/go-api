@@ -38,12 +38,12 @@ func (repository *Repository) Delete(roleID int64) (int64, error) {
 
 func (repository *Repository) GetById(roleID int64) (*model.Role, error) {
 	result := &model.Role{}
-	return result, repository.Db.Where("id = ?", roleID).First(result).Error
+	return result, repository.Db.Where("id = ?", roleID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByName(name string) (*model.Role, error) {
 	result := &model.Role{}
-	return result, repository.Db.Where("name = ?", name).First(result).Error
+	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {

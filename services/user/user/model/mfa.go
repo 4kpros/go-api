@@ -12,11 +12,15 @@ type UserMfa struct {
 	Authenticator bool `gorm:"default:false"`
 }
 
-func (userMfa *UserMfa) ToResponse() *data.UserMfaResponse {
-	userMfaResp := &data.UserMfaResponse{
-		Email:         userMfa.Email,
-		PhoneNumber:   userMfa.PhoneNumber,
-		Authenticator: userMfa.Authenticator,
+func (item *UserMfa) ToResponse() *data.UserMfaResponse {
+	resp := &data.UserMfaResponse{}
+	if item == nil {
+		return resp
 	}
-	return userMfaResp
+	resp = &data.UserMfaResponse{
+		Email:         item.Email,
+		PhoneNumber:   item.PhoneNumber,
+		Authenticator: item.Authenticator,
+	}
+	return resp
 }

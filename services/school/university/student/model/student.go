@@ -12,23 +12,23 @@ type Student struct {
 	LevelID  int64 `gorm:"default:null"`
 }
 
-func (student *Student) ToResponse() *data.StudentResponse {
+func (item *Student) ToResponse() *data.StudentResponse {
 	resp := &data.StudentResponse{}
-	resp.ID = student.ID
-	resp.CreatedAt = student.CreatedAt
-	resp.UpdatedAt = student.UpdatedAt
-	resp.DeletedAt = student.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = student.SchoolID
-	resp.UserID = student.UserID
-	resp.LevelID = student.LevelID
+	resp.SchoolID = item.SchoolID
+	resp.UserID = item.UserID
+	resp.LevelID = item.LevelID
 	return resp
 }
 
-func ToResponseList(studentList []Student) []data.StudentResponse {
-	resp := make([]data.StudentResponse, len(studentList))
-	for index, student := range studentList {
-		resp[index] = *student.ToResponse()
+func ToResponseList(itemList []Student) []data.StudentResponse {
+	resp := make([]data.StudentResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

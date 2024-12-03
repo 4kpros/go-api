@@ -12,22 +12,22 @@ type Year struct {
 	EndDate   *time.Time `gorm:"not null"`
 }
 
-func (year *Year) ToResponse() *data.YearResponse {
+func (item *Year) ToResponse() *data.YearResponse {
 	resp := &data.YearResponse{
-		StartDate: year.StartDate,
-		EndDate:   year.EndDate,
+		StartDate: item.StartDate,
+		EndDate:   item.EndDate,
 	}
-	resp.ID = year.ID
-	resp.CreatedAt = year.CreatedAt
-	resp.UpdatedAt = year.UpdatedAt
-	resp.DeletedAt = year.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 
-func ToResponseList(yearList []Year) []data.YearResponse {
-	resp := make([]data.YearResponse, len(yearList))
-	for index, year := range yearList {
-		resp[index] = *year.ToResponse()
+func ToResponseList(itemList []Year) []data.YearResponse {
+	resp := make([]data.YearResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

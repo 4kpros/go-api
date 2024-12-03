@@ -17,34 +17,18 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdatePermissionFeature(
+func (controller *Controller) UpdatePermission(
 	ctx *context.Context,
 	input *struct {
 		data.PermissionPathRequest
-		Body data.UpdatePermissionFeatureRequest
+		Body data.UpdatePermissionRequest
 	},
-) (result *data.PermissionFeatureResponse, errCode int, err error) {
-	tmpResult, errCode, err := controller.Service.UpdatePermissionFeature(
-		helpers.GetJwtContext(ctx),
-		input.RoleID,
-		input.Body.Feature,
-	)
-	result = tmpResult.ToResponse()
-	return
-}
-
-func (controller *Controller) UpdatePermissionTable(
-	ctx *context.Context,
-	input *struct {
-		data.PermissionPathRequest
-		Body data.UpdatePermissionTableRequest
-	},
-) (result *data.PermissionTableResponse, errCode int, err error) {
-	tmpResult, errCode, err := controller.Service.UpdatePermissionTable(
+) (result *data.PermissionResponse, errCode int, err error) {
+	tmpResult, errCode, err := controller.Service.UpdatePermission(
 		helpers.GetJwtContext(ctx),
 		input.RoleID,
 		input.Body.TableName,
-		&model.PermissionTable{
+		&model.Permission{
 			Create: input.Body.Create,
 			Read:   input.Body.Read,
 			Update: input.Body.Update,

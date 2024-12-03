@@ -13,23 +13,23 @@ type Department struct {
 	Description string `gorm:"not null"`
 }
 
-func (department *Department) ToResponse() *data.DepartmentResponse {
+func (item *Department) ToResponse() *data.DepartmentResponse {
 	resp := &data.DepartmentResponse{}
-	resp.ID = department.ID
-	resp.CreatedAt = department.CreatedAt
-	resp.UpdatedAt = department.UpdatedAt
-	resp.DeletedAt = department.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.FacultyID = department.FacultyID
-	resp.Name = department.Name
-	resp.Description = department.Description
+	resp.FacultyID = item.FacultyID
+	resp.Name = item.Name
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(departmentList []Department) []data.DepartmentResponse {
-	resp := make([]data.DepartmentResponse, len(departmentList))
-	for index, department := range departmentList {
-		resp[index] = *department.ToResponse()
+func ToResponseList(itemList []Department) []data.DepartmentResponse {
+	resp := make([]data.DepartmentResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

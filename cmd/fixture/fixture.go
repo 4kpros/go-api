@@ -18,52 +18,53 @@ func Load() (err error) {
 	var userRepo = user.NewRepository(config.DB)
 	var permissionRepo = permission.NewRepository(config.DB)
 
-	// Create roles
-	roleRepo.Create(&roleModel.Role{
-		Name:        config.Env.RoleAdmin,
-		Description: "Administrator role",
-	})
-	roleRepo.Create(&roleModel.Role{
-		Name:        config.Env.RoleDefault,
-		Description: "Default role",
-	})
+	// Add role admin
 	roleAdmin, _ := roleRepo.GetByName(config.Env.RoleAdmin)
-
-	// Find admin user
-	foundAdmin, _ := userRepo.GetByEmail(config.Env.UserAdminEmail)
-	if foundAdmin != nil && foundAdmin.Email == config.Env.UserAdminEmail {
-		return
+	if !(roleAdmin != nil && roleAdmin.Name == config.Env.RoleAdmin) {
+		roleAdmin, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleAdmin,
+			Feature:     constants.FeatureAdmin,
+			Description: "Administrator role",
+		})
+	}
+	// Add role default
+	roleDefault, _ := roleRepo.GetByName(config.Env.RoleDefault)
+	if !(roleDefault != nil && roleDefault.Name == config.Env.RoleDefault) {
+		_, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleDefault,
+			Feature:     constants.FeatureDefault,
+			Description: "Default role",
+		})
 	}
 
-	// Create new admin
-	userInfo, _ := userRepo.CreateUserInfo(&userModel.UserInfo{
-		Username: "Admin",
-		Language: "en",
-	})
-	userMfa, _ := userRepo.CreateUserMfa(&userModel.UserMfa{})
-	tmpActivatedAt := time.Now()
-	_, err = userRepo.Create(&userModel.User{
-		Email:    config.Env.UserAdminEmail,
-		Password: config.Env.UserAdminPassword,
-		RoleID:   roleAdmin.ID,
+	// Add user admin
+	userAdmin, _ := userRepo.GetByEmail(config.Env.UserAdminEmail)
+	if !(userAdmin != nil && userAdmin.Email == config.Env.UserAdminEmail) {
+		userInfo, _ := userRepo.CreateUserInfo(&userModel.UserInfo{
+			Username: "Admin",
+			Language: "en",
+		})
+		userMfa, _ := userRepo.CreateUserMfa(&userModel.UserMfa{})
+		tmpActivatedAt := time.Now()
+		userAdmin, _ = userRepo.Create(&userModel.User{
+			Email:    config.Env.UserAdminEmail,
+			Password: config.Env.UserAdminPassword,
+			RoleID:   roleAdmin.ID,
 
-		LoginMethod: constants.AuthLoginMethodDefault,
-		IsActivated: true,
-		ActivatedAt: &tmpActivatedAt,
+			LoginMethod: constants.AuthLoginMethodDefault,
+			IsActivated: true,
+			ActivatedAt: &tmpActivatedAt,
 
-		UserInfoID: userInfo.ID,
-		UserMfaID:  userMfa.ID,
-	})
+			UserInfoID: userInfo.ID,
+			UserMfaID:  userMfa.ID,
+		})
+	}
 
-	// Add admin permissions
-	permissionRepo.UpdatePermissionFeature(
-		roleAdmin.ID,
-		constants.FeatureAdmin,
-	)
-	permissionRepo.UpdatePermissionTable(
-		roleAdmin.ID,
+	// Add permissions for admin
+	_, _ = permissionRepo.UpdatePermission(
+		userAdmin.RoleID,
 		"*",
-		&permissionModel.PermissionTable{
+		&permissionModel.Permission{
 			Create: true,
 			Read:   true,
 			Update: true,

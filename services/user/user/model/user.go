@@ -33,47 +33,51 @@ type User struct {
 	UserMfaID int64    `gorm:"default:null"`
 }
 
-func (user *User) BeforeCreate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeCreate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) BeforeUpdate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeUpdate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) ToResponse() *data.UserResponse {
-	resp := &data.UserResponse{
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
+func (item *User) ToResponse() *data.UserResponse {
+	resp := &data.UserResponse{}
+	if item == nil {
+		return resp
+	}
+	resp = &data.UserResponse{
+		Email:       item.Email,
+		PhoneNumber: item.PhoneNumber,
 
-		LoginMethod:    user.LoginMethod,
-		Provider:       user.Provider,
-		ProviderUserID: user.ProviderUserID,
-		IsActivated:    user.IsActivated,
-		ActivatedAt:    user.ActivatedAt,
+		LoginMethod:    item.LoginMethod,
+		Provider:       item.Provider,
+		ProviderUserID: item.ProviderUserID,
+		IsActivated:    item.IsActivated,
+		ActivatedAt:    item.ActivatedAt,
 
 		Role: &data.UserRoleResponse{
-			ID:          user.Role.ID,
-			Name:        user.Role.Name,
-			Description: user.Role.Description,
+			ID:          item.Role.ID,
+			Name:        item.Role.Name,
+			Description: item.Role.Description,
 		},
-		UserInfo: user.UserInfo.ToResponse(),
-		UserMfa:  user.UserMfa.ToResponse(),
+		UserInfo: item.UserInfo.ToResponse(),
+		UserMfa:  item.UserMfa.ToResponse(),
 	}
 
-	resp.ID = user.ID
-	resp.CreatedAt = user.CreatedAt
-	resp.UpdatedAt = user.UpdatedAt
-	resp.DeletedAt = user.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 
-func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
-	user.ProviderUserID = googleUser.ID
-	user.Email = googleUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
+	item.ProviderUserID = googleUser.ID
+	item.Email = googleUser.Email
+	item.UserInfo = &UserInfo{
 		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
@@ -81,10 +85,10 @@ func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 		Image: googleUser.Picture,
 	}
 }
-func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
-	user.ProviderUserID = facebookUser.ID
-	user.Email = facebookUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
+	item.ProviderUserID = facebookUser.ID
+	item.Email = facebookUser.Email
+	item.UserInfo = &UserInfo{
 		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,
@@ -93,10 +97,10 @@ func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileRespon
 	}
 }
 
-func ToResponseList(userList []User) []data.UserResponse {
-	resp := make([]data.UserResponse, len(userList))
-	for index, user := range userList {
-		resp[index] = *user.ToResponse()
+func ToResponseList(itemList []User) []data.UserResponse {
+	resp := make([]data.UserResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

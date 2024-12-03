@@ -14,25 +14,25 @@ type Test struct {
 	Description string `gorm:"not null"`
 }
 
-func (test *Test) ToResponse() *data.TestResponse {
+func (item *Test) ToResponse() *data.TestResponse {
 	resp := &data.TestResponse{}
-	resp.ID = test.ID
-	resp.CreatedAt = test.CreatedAt
-	resp.UpdatedAt = test.UpdatedAt
-	resp.DeletedAt = test.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = test.SchoolID
-	resp.SubjectID = test.SubjectID
-	resp.Type = test.Type
-	resp.Percentage = test.Percentage
-	resp.Description = test.Description
+	resp.SchoolID = item.SchoolID
+	resp.SubjectID = item.SubjectID
+	resp.Type = item.Type
+	resp.Percentage = item.Percentage
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(testList []Test) []data.TestResponse {
-	resp := make([]data.TestResponse, len(testList))
-	for index, test := range testList {
-		resp[index] = *test.ToResponse()
+func ToResponseList(itemList []Test) []data.TestResponse {
+	resp := make([]data.TestResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

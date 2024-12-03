@@ -17,28 +17,20 @@ func NewService(repository *Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// UpdatePermissionFeature Update permission feature
-func (service *Service) UpdatePermissionFeature(
-	inputJwtToken *types.JwtToken,
-	roleID int64,
-	feature string,
-) (result *model.PermissionFeature, errCode int, err error) {
-	result, err = service.Repository.UpdatePermissionFeature(
-		roleID, feature,
-	)
-	return
-}
-
-// UpdatePermissionTable Update permission table
-func (service *Service) UpdatePermissionTable(
+// UpdatePermission Update permission
+func (service *Service) UpdatePermission(
 	inputJwtToken *types.JwtToken,
 	roleID int64,
 	tableName string,
-	data *model.PermissionTable,
-) (result *model.PermissionTable, errCode int, err error) {
-	result, err = service.Repository.UpdatePermissionTable(
+	data *model.Permission,
+) (result *model.Permission, errCode int, err error) {
+	result, err = service.Repository.UpdatePermission(
 		roleID, tableName, data,
 	)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("update permissions from database")
+	}
 	return
 }
 
@@ -49,7 +41,7 @@ func (service *Service) GetAllByRoleID(
 	roleID int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
-) (result []data.PermissionFeatureTableResponse, errCode int, err error) {
+) (result []data.PermissionResponse, errCode int, err error) {
 	result, err = service.Repository.GetAllByRoleID(
 		roleID, filter, pagination,
 	)

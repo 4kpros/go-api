@@ -17,28 +17,28 @@ type Subject struct {
 	SubjectProfessors []SubjectProfessor `gorm:"default:null;foreignKey:SubjectID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (subject *Subject) ToResponse() *data.SubjectResponse {
+func (item *Subject) ToResponse() *data.SubjectResponse {
 	resp := &data.SubjectResponse{}
-	resp.ID = subject.ID
-	resp.CreatedAt = subject.CreatedAt
-	resp.UpdatedAt = subject.UpdatedAt
-	resp.DeletedAt = subject.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = subject.SchoolID
-	resp.ClassID = subject.ClassID
-	resp.Name = subject.Name
-	resp.Description = subject.Description
-	resp.Coefficient = subject.Coefficient
-	resp.Program = subject.Program
-	resp.Requirements = subject.Requirements
-	resp.SubjectProfessors = ToSubjectProfessorResponseList(subject.SubjectProfessors)
+	resp.SchoolID = item.SchoolID
+	resp.ClassID = item.ClassID
+	resp.Name = item.Name
+	resp.Description = item.Description
+	resp.Coefficient = item.Coefficient
+	resp.Program = item.Program
+	resp.Requirements = item.Requirements
+	resp.SubjectProfessors = ToSubjectProfessorResponseList(item.SubjectProfessors)
 	return resp
 }
 
-func ToSubjectResponseList(subjectList []Subject) []data.SubjectResponse {
-	resp := make([]data.SubjectResponse, len(subjectList))
-	for index, subject := range subjectList {
-		resp[index] = *subject.ToResponse()
+func ToSubjectResponseList(itemList []Subject) []data.SubjectResponse {
+	resp := make([]data.SubjectResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

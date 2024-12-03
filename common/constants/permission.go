@@ -12,6 +12,8 @@ const (
 	FeatureDirector = "feature-director"
 	FeatureTeacher  = "feature-teacher"
 	FeatureStudent  = "feature-student"
+
+	FeatureDefault = "feature-default"
 )
 
 const (

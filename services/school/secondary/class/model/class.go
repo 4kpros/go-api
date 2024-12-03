@@ -12,22 +12,22 @@ type Class struct {
 	Description string `gorm:"not null"`
 }
 
-func (class *Class) ToResponse() *data.ClassResponse {
+func (item *Class) ToResponse() *data.ClassResponse {
 	resp := &data.ClassResponse{}
-	resp.ID = class.ID
-	resp.CreatedAt = class.CreatedAt
-	resp.UpdatedAt = class.UpdatedAt
-	resp.DeletedAt = class.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.Name = class.Name
-	resp.Description = class.Description
+	resp.Name = item.Name
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(classList []Class) []data.ClassResponse {
-	resp := make([]data.ClassResponse, len(classList))
-	for index, class := range classList {
-		resp[index] = *class.ToResponse()
+func ToResponseList(itemList []Class) []data.ClassResponse {
+	resp := make([]data.ClassResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

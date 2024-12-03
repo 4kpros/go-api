@@ -99,7 +99,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "delete-profile",
 			Summary:     "Delete user account",
-			Description: "Delete current user account with provided bearer token",
+			Description: "Delete current user account",
 			Method:      http.MethodDelete,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -133,7 +133,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "get-profile",
 			Summary:     "Get profile info",
-			Description: "Retrieve profile information for the current user with provided bearer token",
+			Description: "Retrieve profile information for the current user",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -165,11 +165,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-profile-login",
-			Summary:     "Get profile login",
-			Description: "Retrieve profile permissions from login success for the current user with provided bearer token",
+			OperationID: "get-profile-logged",
+			Summary:     "Get profile logged",
+			Description: "Retrieve profile information after successful logged for the current user",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/login", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/logged", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -187,7 +187,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct{},
 		) (*struct{ Body data.UserLoginResponse }, error) {
-			result, errCode, err := controller.GetProfileLogin(&ctx, input)
+			result, errCode, err := controller.GetProfileLogged(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

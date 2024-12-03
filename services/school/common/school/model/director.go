@@ -11,17 +11,17 @@ type SchoolDirector struct {
 	UserID   int64 `gorm:"not null"`
 }
 
-func (schoolDirector *SchoolDirector) ToResponse() *data.SchoolDirectorResponse {
-	schoolDirectorResp := &data.SchoolDirectorResponse{
-		SchoolID: schoolDirector.SchoolID,
-		UserID:   schoolDirector.UserID,
+func (item *SchoolDirector) ToResponse() *data.SchoolDirectorResponse {
+	resp := &data.SchoolDirectorResponse{
+		SchoolID: item.SchoolID,
+		UserID:   item.UserID,
 	}
-	return schoolDirectorResp
+	return resp
 }
 
-func ToSchoolDirectorResponseList(schoolDirectorList []SchoolDirector) []data.SchoolDirectorResponse {
-	resp := make([]data.SchoolDirectorResponse, len(schoolDirectorList))
-	for index, school := range schoolDirectorList {
+func ToSchoolDirectorResponseList(itemList []SchoolDirector) []data.SchoolDirectorResponse {
+	resp := make([]data.SchoolDirectorResponse, len(itemList))
+	for index, school := range itemList {
 		resp[index] = *school.ToResponse()
 	}
 	return resp

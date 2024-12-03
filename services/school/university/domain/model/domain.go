@@ -13,23 +13,23 @@ type Domain struct {
 	Description  string `gorm:"not null"`
 }
 
-func (domain *Domain) ToResponse() *data.DomainResponse {
+func (item *Domain) ToResponse() *data.DomainResponse {
 	resp := &data.DomainResponse{}
-	resp.ID = domain.ID
-	resp.CreatedAt = domain.CreatedAt
-	resp.UpdatedAt = domain.UpdatedAt
-	resp.DeletedAt = domain.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.DepartmentID = domain.DepartmentID
-	resp.Name = domain.Name
-	resp.Description = domain.Description
+	resp.DepartmentID = item.DepartmentID
+	resp.Name = item.Name
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(domainList []Domain) []data.DomainResponse {
-	resp := make([]data.DomainResponse, len(domainList))
-	for index, domain := range domainList {
-		resp[index] = *domain.ToResponse()
+func ToResponseList(itemList []Domain) []data.DomainResponse {
+	resp := make([]data.DomainResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

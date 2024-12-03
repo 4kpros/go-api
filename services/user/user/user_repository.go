@@ -41,7 +41,7 @@ func (repository *Repository) Delete(userID int64) (int64, error) {
 
 func (repository *Repository) GetByID(userID int64) (*model.User, error) {
 	result := &model.User{}
-	return result, repository.Db.Where("id = ?", userID).First(result).Error
+	return result, repository.Db.Where("id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByEmail(email string) (*model.User, error) {
@@ -50,7 +50,7 @@ func (repository *Repository) GetByEmail(email string) (*model.User, error) {
 		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"email = ?", email,
-	).First(result).Error
+	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
@@ -59,7 +59,7 @@ func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User,
 		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"phone_number = ?", phoneNumber,
-	).First(result).Error
+	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByProvider(provider string, providerUserID string) (*model.User, error) {
@@ -70,7 +70,7 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 		"provider = ?", provider,
 	).Where(
 		"provider_user_id = ?", providerUserID,
-	).First(result).Error
+	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
@@ -107,16 +107,14 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 
 // ----------------- Profile service -----------------
 
-func (repository *Repository) GetByIDLogin(userID int64) (*data.UserLoginResponse, error) {
+func (repository *Repository) GetByIDLogged(userID int64) (*data.UserLoginResponse, error) {
 	result := &data.UserLoginResponse{}
 	return result, repository.Db.Raw(
-		// "SELECT user_infos.image, user_infos.first_name, user_infos.last_name FROM users "+
-		"SELECT user_infos.image, user_infos.first_name, user_infos.last_name, roles.name AS role, permission_features.feature_name AS feature FROM users "+
+		"SELECT user_infos.image, user_infos.username, user_infos.first_name, user_infos.last_name, roles.name AS role, roles.feature FROM users "+
 			"JOIN user_infos ON users.user_info_id = user_infos.id "+
 			"JOIN roles ON users.role_id = roles.id "+
-			"JOIN permission_features ON permission_features.role_id = users.role_id "+
 			"WHERE users.id = ?;", userID,
-	).First(result).Error
+	).Limit(1).Find(result).Error
 }
 func (repository *Repository) UpdateEmail(userID int64, email string) (*model.User, error) {
 	result := &model.User{}

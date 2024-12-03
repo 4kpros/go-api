@@ -14,25 +14,25 @@ type Exam struct {
 	Description    string `gorm:"not null"`
 }
 
-func (exam *Exam) ToResponse() *data.ExamResponse {
+func (item *Exam) ToResponse() *data.ExamResponse {
 	resp := &data.ExamResponse{}
-	resp.ID = exam.ID
-	resp.CreatedAt = exam.CreatedAt
-	resp.UpdatedAt = exam.UpdatedAt
-	resp.DeletedAt = exam.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = exam.SchoolID
-	resp.TeachingUnitID = exam.TeachingUnitID
-	resp.Type = exam.Type
-	resp.Percentage = exam.Percentage
-	resp.Description = exam.Description
+	resp.SchoolID = item.SchoolID
+	resp.TeachingUnitID = item.TeachingUnitID
+	resp.Type = item.Type
+	resp.Percentage = item.Percentage
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(examList []Exam) []data.ExamResponse {
-	resp := make([]data.ExamResponse, len(examList))
-	for index, exam := range examList {
-		resp[index] = *exam.ToResponse()
+func ToResponseList(itemList []Exam) []data.ExamResponse {
+	resp := make([]data.ExamResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

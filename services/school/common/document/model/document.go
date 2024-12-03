@@ -17,28 +17,28 @@ type Document struct {
 	Description    string `gorm:"default:null"`
 }
 
-func (document *Document) ToResponse() *data.DocumentResponse {
+func (item *Document) ToResponse() *data.DocumentResponse {
 	resp := &data.DocumentResponse{
-		SchoolID:       document.SchoolID,
-		YearID:         document.YearID,
-		SubjectID:      document.SubjectID,
-		TeachingUnitID: document.TeachingUnitID,
-		Type:           document.Type,
-		URL:            document.URL,
-		Description:    document.Description,
+		SchoolID:       item.SchoolID,
+		YearID:         item.YearID,
+		SubjectID:      item.SubjectID,
+		TeachingUnitID: item.TeachingUnitID,
+		Type:           item.Type,
+		URL:            item.URL,
+		Description:    item.Description,
 	}
 
-	resp.ID = document.ID
-	resp.CreatedAt = document.CreatedAt
-	resp.UpdatedAt = document.UpdatedAt
-	resp.DeletedAt = document.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 
-func ToResponseList(documentList []Document) []data.DocumentResponse {
-	resp := make([]data.DocumentResponse, len(documentList))
-	for index, document := range documentList {
-		resp[index] = *document.ToResponse()
+func ToResponseList(itemList []Document) []data.DocumentResponse {
+	resp := make([]data.DocumentResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

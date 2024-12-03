@@ -343,9 +343,9 @@ func (service *Service) GetProfile(inputJwtToken *types.JwtToken) (user *model.U
 	return
 }
 
-// GetProfile Return profile permissions information
-func (service *Service) GetProfileLogin(inputJwtToken *types.JwtToken) (user *data.UserLoginResponse, errCode int, err error) {
-	user, err = service.Repository.GetByIDLogin(inputJwtToken.UserID)
+// GetProfile Return profile information after successful logged
+func (service *Service) GetProfileLogged(inputJwtToken *types.JwtToken) (user *data.UserLoginResponse, errCode int, err error) {
+	user, err = service.Repository.GetByIDLogged(inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get profile from database")

@@ -31,8 +31,7 @@ func Start() error {
 
 		// User
 		&roleModel.Role{},
-		&permissionModel.PermissionFeature{},
-		&permissionModel.PermissionTable{},
+		&permissionModel.Permission{},
 		&userModel.User{},
 		&userModel.UserMfa{},
 		&userModel.UserMfa{},

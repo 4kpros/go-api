@@ -12,22 +12,22 @@ type Level struct {
 	Description string `gorm:"not null"`
 }
 
-func (level *Level) ToResponse() *data.LevelResponse {
+func (item *Level) ToResponse() *data.LevelResponse {
 	resp := &data.LevelResponse{}
-	resp.ID = level.ID
-	resp.CreatedAt = level.CreatedAt
-	resp.UpdatedAt = level.UpdatedAt
-	resp.DeletedAt = level.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.Name = level.Name
-	resp.Description = level.Description
+	resp.Name = item.Name
+	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(levelList []Level) []data.LevelResponse {
-	resp := make([]data.LevelResponse, len(levelList))
-	for index, level := range levelList {
-		resp[index] = *level.ToResponse()
+func ToResponseList(itemList []Level) []data.LevelResponse {
+	resp := make([]data.LevelResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

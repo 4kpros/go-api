@@ -3,6 +3,7 @@ package middlewares
 import (
 	"api/common/helpers"
 	"api/services/user/permission"
+	"api/services/user/role"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -11,7 +12,7 @@ import (
 )
 
 // PermissionMiddleware Checks resource permissions
-func PermissionMiddleware(api huma.API, repository *permission.Repository) func(huma.Context, func(huma.Context)) {
+func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRepo *permission.Repository) func(huma.Context, func(huma.Context)) {
 	return func(ctx huma.Context, next func(huma.Context)) {
 		// Retrieve jwtToken
 		ctxContext := ctx.Context()
@@ -40,17 +41,17 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 
 		// Check for required permissions
 		if len(featureScope) >= 1 {
-			// Retrieve permission feature for role
-			permissionFeature, errFeature := repository.GetPermissionFeature(jwtToken.RoleID, featureScope)
+			// Retrieve role
+			role, errFeature := roleRepo.GetById(jwtToken.RoleID)
 			tempErr := constants.Http403InvalidPermissionErrorMessage()
-			if errFeature != nil || permissionFeature == nil || permissionFeature.Feature != featureScope {
+			if errFeature != nil || role == nil || role.Feature != featureScope {
 				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 				return
 			}
 
 			if len(tableName) >= 1 {
-				// Retrieve permission table for role
-				permissionTable, errTable := repository.GetPermissionTable(jwtToken.RoleID, tableName)
+				// Retrieve permissions for role
+				permissionTable, errTable := permissionRepo.GetPermission(jwtToken.RoleID, tableName)
 				if errTable != nil || permissionTable == nil || (permissionTable.TableName != tableName && permissionTable.TableName != "*") {
 					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 					return

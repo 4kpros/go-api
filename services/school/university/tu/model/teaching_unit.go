@@ -19,30 +19,30 @@ type TeachingUnit struct {
 	TeachingUnitProfessors []TeachingUnitProfessor `gorm:"default:null;foreignKey:TeachingUnitID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (teachingUnit *TeachingUnit) ToResponse() *data.TeachingUnitResponse {
+func (item *TeachingUnit) ToResponse() *data.TeachingUnitResponse {
 	resp := &data.TeachingUnitResponse{}
-	resp.ID = teachingUnit.ID
-	resp.CreatedAt = teachingUnit.CreatedAt
-	resp.UpdatedAt = teachingUnit.UpdatedAt
-	resp.DeletedAt = teachingUnit.DeletedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
+	resp.DeletedAt = item.DeletedAt
 
-	resp.SchoolID = teachingUnit.SchoolID
-	resp.DomainID = teachingUnit.DomainID
-	resp.LevelID = teachingUnit.LevelID
-	resp.Name = teachingUnit.Name
-	resp.Description = teachingUnit.Description
-	resp.Credit = teachingUnit.Credit
-	resp.Semester = teachingUnit.Semester
-	resp.Program = teachingUnit.Program
-	resp.Requirements = teachingUnit.Requirements
-	resp.TeachingUnitProfessors = ToTeachingUnitProfessorResponseList(teachingUnit.TeachingUnitProfessors)
+	resp.SchoolID = item.SchoolID
+	resp.DomainID = item.DomainID
+	resp.LevelID = item.LevelID
+	resp.Name = item.Name
+	resp.Description = item.Description
+	resp.Credit = item.Credit
+	resp.Semester = item.Semester
+	resp.Program = item.Program
+	resp.Requirements = item.Requirements
+	resp.TeachingUnitProfessors = ToTeachingUnitProfessorResponseList(item.TeachingUnitProfessors)
 	return resp
 }
 
-func ToTeachingUnitResponseList(teachingUnitList []TeachingUnit) []data.TeachingUnitResponse {
-	resp := make([]data.TeachingUnitResponse, len(teachingUnitList))
-	for index, teachingUnit := range teachingUnitList {
-		resp[index] = *teachingUnit.ToResponse()
+func ToTeachingUnitResponseList(itemList []TeachingUnit) []data.TeachingUnitResponse {
+	resp := make([]data.TeachingUnitResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

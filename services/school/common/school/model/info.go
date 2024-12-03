@@ -36,33 +36,33 @@ type SchoolInfo struct {
 	Image4 string `gorm:"default:null"`
 }
 
-func (schoolInfo *SchoolInfo) ToResponse() *data.SchoolInfoResponse {
-	schoolInfoResp := &data.SchoolInfoResponse{
-		FullName:    schoolInfo.FullName,
-		Description: schoolInfo.Description,
-		Slogan:      schoolInfo.Slogan,
+func (item *SchoolInfo) ToResponse() *data.SchoolInfoResponse {
+	resp := &data.SchoolInfoResponse{
+		FullName:    item.FullName,
+		Description: item.Description,
+		Slogan:      item.Slogan,
 
-		PhoneNumber1: schoolInfo.PhoneNumber1,
-		PhoneNumber2: schoolInfo.PhoneNumber2,
-		PhoneNumber3: schoolInfo.PhoneNumber3,
+		PhoneNumber1: item.PhoneNumber1,
+		PhoneNumber2: item.PhoneNumber2,
+		PhoneNumber3: item.PhoneNumber3,
 
-		Email1: schoolInfo.Email1,
-		Email2: schoolInfo.Email2,
-		Email3: schoolInfo.Email3,
+		Email1: item.Email1,
+		Email2: item.Email2,
+		Email3: item.Email3,
 
-		Founder:   schoolInfo.Founder,
-		FoundedAt: schoolInfo.FoundedAt,
+		Founder:   item.Founder,
+		FoundedAt: item.FoundedAt,
 
-		Address:           schoolInfo.Address,
-		LocationLongitude: schoolInfo.LocationLongitude,
-		LocationLatitude:  schoolInfo.LocationLatitude,
+		Address:           item.Address,
+		LocationLongitude: item.LocationLongitude,
+		LocationLatitude:  item.LocationLatitude,
 
-		Logo: schoolInfo.Logo,
+		Logo: item.Logo,
 
-		Image1: schoolInfo.Image1,
-		Image2: schoolInfo.Image2,
-		Image3: schoolInfo.Image3,
-		Image4: schoolInfo.Image4,
+		Image1: item.Image1,
+		Image2: item.Image2,
+		Image3: item.Image3,
+		Image4: item.Image4,
 	}
-	return schoolInfoResp
+	return resp
 }

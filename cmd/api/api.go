@@ -138,7 +138,11 @@ func Start() {
 		middlewares.HeadersMiddleware(humaApi),
 		middlewares.CorsMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
-		middlewares.PermissionMiddleware(humaApi, AllControllers.PermissionController.Service.Repository),
+		middlewares.PermissionMiddleware(
+			humaApi,
+			AllControllers.RoleController.Service.Repository,
+			AllControllers.PermissionController.Service.Repository,
+		),
 	)
 
 	// Register endpoints
