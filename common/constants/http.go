@@ -21,3 +21,5 @@ var Http404ErrorMessage = func(message string) error {
 var Http302ErrorMessage = func(message string) error {
 	return fmt.Errorf("%s", fmt.Sprintf("This %s already exists! Please enter valid information.", message))
 }
+
+const DefaultBodySize = 10000 // 10Kb

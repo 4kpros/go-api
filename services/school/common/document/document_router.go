@@ -41,7 +41,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -78,7 +78,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -115,7 +115,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -152,7 +152,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
