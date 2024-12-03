@@ -23,19 +23,28 @@ func (repository *Repository) Create(user *model.User) (*model.User, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
+func (repository *Repository) AssignUserRole(userRole *model.UserRole) (*model.UserRole, error) {
+	result := *userRole
+	return &result, repository.Db.Create(&result).Error
+}
+
 func (repository *Repository) UpdateUser(userID int64, user *model.User) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"email":        user.Email,
 			"phone_number": user.PhoneNumber,
-			"role_id":      user.RoleID,
 		},
 	).Error
 }
 
 func (repository *Repository) Delete(userID int64) (int64, error) {
 	result := repository.Db.Where("id = ?", userID).Delete(&model.User{})
+	return result.RowsAffected, result.Error
+}
+
+func (repository *Repository) DeleteUserRole(userID int64, roleID int64) (int64, error) {
+	result := repository.Db.Where("user_id = ?", userID).Where("role_id = ?", roleID).Delete(&model.UserRole{})
 	return result.RowsAffected, result.Error
 }
 
@@ -97,8 +106,6 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
-			"user_info_id": user.UserInfoID,
-			"user_mfa_id":  user.UserMfaID,
 			"is_activated": user.IsActivated,
 			"activated_at": user.ActivatedAt,
 		},

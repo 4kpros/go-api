@@ -7,7 +7,6 @@ import (
 
 	"api/common/types"
 	"api/common/utils/security"
-	"api/services/user/role/model"
 	"api/services/user/user/data"
 )
 
@@ -23,14 +22,11 @@ type User struct {
 	IsActivated    bool       `gorm:"default:null"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
-	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	RoleID int64       `gorm:"default:null"`
+	UserRole *UserRole `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserInfoID int64     `gorm:"default:null"`
+	UserInfo *UserInfo `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserMfaID int64    `gorm:"default:null"`
+	UserMfa *UserMfa `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *User) BeforeCreate(db *gorm.DB) (err error) {
@@ -59,9 +55,7 @@ func (item *User) ToResponse() *data.UserResponse {
 		ActivatedAt:    item.ActivatedAt,
 
 		Role: &data.UserRoleResponse{
-			ID:          item.Role.ID,
-			Name:        item.Role.Name,
-			Description: item.Role.Description,
+			ID: item.UserRole.RoleID,
 		},
 		UserInfo: item.UserInfo.ToResponse(),
 		UserMfa:  item.UserMfa.ToResponse(),

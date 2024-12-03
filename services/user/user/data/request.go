@@ -5,6 +5,9 @@ import "time"
 type UserID struct {
 	ID int64 `json:"id" path:"id" required:"true" doc:"User id" example:"1"`
 }
+type UserRoleRequest struct {
+	RoleID int64 `json:"roleID" required:"true" doc:"Role id" example:"1"`
+}
 
 type CreateUserWithEmailRequest struct {
 	Email  string `json:"email" required:"true" minLength:"3" maxLength:"100" doc:"Email" example:"example@domain.com"`

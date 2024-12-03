@@ -9,6 +9,7 @@ import (
 
 type UserInfo struct {
 	types.BaseGormModel
+	UserID        int64      `gorm:"unique;not null"`
 	Username      string     `gorm:"default:null"`
 	FirstName     string     `gorm:"default:null"`
 	LastName      string     `gorm:"default:null"`
@@ -25,6 +26,7 @@ func (item *UserInfo) ToResponse() *data.UserInfoResponse {
 		return resp
 	}
 	resp = &data.UserInfoResponse{
+		UserID:        item.UserID,
 		Username:      item.Username,
 		FirstName:     item.FirstName,
 		LastName:      item.LastName,

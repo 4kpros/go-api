@@ -30,11 +30,12 @@ func Start() error {
 		&historyModel.History{},
 
 		// User
-		&roleModel.Role{},
 		&permissionModel.Permission{},
 		&userModel.User{},
+		&userModel.UserRole{},
+		&roleModel.Role{},
 		&userModel.UserMfa{},
-		&userModel.UserMfa{},
+		&userModel.UserInfo{},
 
 		// School
 		&yearModel.Year{},

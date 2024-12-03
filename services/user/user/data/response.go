@@ -10,7 +10,6 @@ type UserResponse struct {
 	types.BaseGormModelResponse
 	Email       string `json:"email" required:"false" doc:"Email"`
 	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number"`
-	RoleID      int64  `json:"roleID" required:"false" doc:"Role id"`
 
 	LoginMethod    string     `json:"loginMethod" required:"false" doc:"How the user should login ? with email, phone number or external provider?"`
 	Provider       string     `json:"provider" required:"false" doc:"Provider name"`
@@ -30,6 +29,7 @@ type UserRoleResponse struct {
 }
 
 type UserInfoResponse struct {
+	UserID    int64  `json:"userID" required:"false" doc:"User id"`
 	Username  string `json:"username" required:"false" doc:"User name"`
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
@@ -42,9 +42,10 @@ type UserInfoResponse struct {
 }
 
 type UserMfaResponse struct {
-	Email         bool `json:"email" required:"false" doc:"Is 2FA enabled with email ?"`
-	PhoneNumber   bool `json:"phoneNumber" required:"false" doc:"Is 2FA enabled with phone number ?"`
-	Authenticator bool `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
+	UserID        int64 `json:"userID" required:"false" doc:"User id"`
+	Email         bool  `json:"email" required:"false" doc:"Is 2FA enabled with email ?"`
+	PhoneNumber   bool  `json:"phoneNumber" required:"false" doc:"Is 2FA enabled with phone number ?"`
+	Authenticator bool  `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
 }
 
 type UserResponseList struct {

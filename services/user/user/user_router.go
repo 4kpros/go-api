@@ -96,6 +96,44 @@ func RegisterEndpoints(
 		},
 	)
 
+	// Assign user role
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "assign-user-role",
+			Summary:     "Assign user role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Assign new role to the user.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/{id}/role", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionCreate, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.UserID
+				Body data.UserRoleRequest
+			},
+		) (*struct{ Body data.UserRoleResponse }, error) {
+			result, errCode, err := controller.AssignUserRole(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body data.UserRoleResponse }{Body: *result.ToResponse()}, nil
+		},
+	)
+
 	// Update user with id
 	huma.Register(
 		*humaApi,
@@ -164,6 +202,44 @@ func RegisterEndpoints(
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete user role
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-user-role",
+			Summary:     "Delete user role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Delete existing user role and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/{id}/role", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.UserID
+				Body data.UserRoleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteUserRole(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

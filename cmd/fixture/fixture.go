@@ -40,29 +40,35 @@ func Load() (err error) {
 	// Add user admin
 	userAdmin, _ := userRepo.GetByEmail(config.Env.UserAdminEmail)
 	if !(userAdmin != nil && userAdmin.Email == config.Env.UserAdminEmail) {
-		userInfo, _ := userRepo.CreateUserInfo(&userModel.UserInfo{
-			Username: "Admin",
-			Language: "en",
-		})
-		userMfa, _ := userRepo.CreateUserMfa(&userModel.UserMfa{})
 		tmpActivatedAt := time.Now()
 		userAdmin, _ = userRepo.Create(&userModel.User{
 			Email:    config.Env.UserAdminEmail,
 			Password: config.Env.UserAdminPassword,
-			RoleID:   roleAdmin.ID,
 
 			LoginMethod: constants.AuthLoginMethodDefault,
 			IsActivated: true,
 			ActivatedAt: &tmpActivatedAt,
+		})
 
-			UserInfoID: userInfo.ID,
-			UserMfaID:  userMfa.ID,
+		_, _ = userRepo.CreateUserInfo(&userModel.UserInfo{
+			UserID:   userAdmin.ID,
+			Username: "Admin",
+			Language: "en",
+		})
+		_, _ = userRepo.CreateUserMfa(&userModel.UserMfa{
+			UserID: userAdmin.ID,
 		})
 	}
 
+	// Add role to the user
+	_, _ = userRepo.AssignUserRole(&userModel.UserRole{
+		UserID: userAdmin.ID,
+		RoleID: roleAdmin.ID,
+	})
+
 	// Add permissions for admin
 	_, _ = permissionRepo.UpdatePermission(
-		userAdmin.RoleID,
+		roleAdmin.ID,
 		"*",
 		&permissionModel.Permission{
 			Create: true,

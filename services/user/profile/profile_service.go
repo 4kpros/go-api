@@ -91,10 +91,14 @@ func (service *Service) UpdateProfilePasswordInit(inputJwtToken *types.JwtToken)
 		return
 	}
 	expires := security.NewExpiresDateDefault()
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -196,10 +200,14 @@ func (service *Service) UpdateProfilePasswordCheckCode(inputJwtToken *types.JwtT
 	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Generate new token
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -345,6 +353,7 @@ func (service *Service) GetProfile(inputJwtToken *types.JwtToken) (user *model.U
 
 // GetProfile Return profile information after successful logged
 func (service *Service) GetProfileLogged(inputJwtToken *types.JwtToken) (user *data.UserLoginResponse, errCode int, err error) {
+	user, err = service.Repository.GetByIDLogged(inputJwtToken.UserID)
 	user, err = service.Repository.GetByIDLogged(inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError

@@ -55,10 +55,14 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 	if userFound.IsActivated {
 		// Generate new token
 		var accessJwtToken *types.JwtToken
+		var tempRoleID int64 = 0
+		if userFound.UserRole != nil {
+			tempRoleID = userFound.UserRole.RoleID
+		}
 		accessJwtToken, accessToken, err = security.EncodeJWTToken(
 			&types.JwtToken{
 				UserID:   userFound.ID,
-				RoleID:   userFound.RoleID,
+				RoleID:   tempRoleID,
 				Platform: device.Platform,
 				Device:   device.DeviceName,
 				App:      device.App,
@@ -90,10 +94,14 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 
 	// Generate new token
 	var activateAccountJwtToken *types.JwtToken
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -205,10 +213,14 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 
 	// Generate new token
 	expiresTime := time.Unix(expires, 0)
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	jwtToken, accessToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: device.Platform,
 			Device:   device.DeviceName,
 			App:      device.App,
@@ -274,10 +286,14 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 
 	// Generate new token
 	var activateAccountJwtToken *types.JwtToken
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   createdUser.ID,
-			RoleID:   createdUser.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -363,13 +379,13 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	}
 
 	// Create user info and MFA
-	userInfo, err := service.Repository.CreateUserInfo(&model.UserInfo{})
+	_, err = service.Repository.CreateUserInfo(&model.UserInfo{UserID: userFound.ID})
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create user info")
 		return
 	}
-	userMfa, err := service.Repository.CreateUserMfa(&model.UserMfa{})
+	_, err = service.Repository.CreateUserMfa(&model.UserMfa{UserID: userFound.ID})
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create user MFA")
@@ -380,10 +396,6 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	tmpActivatedAt := time.Now()
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
-	userFound.UserInfoID = userInfo.ID
-	userFound.UserInfo = userInfo
-	userFound.UserMfaID = userMfa.ID
-	userFound.UserMfa = userMfa
 	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
 	if err != nil {
 		errCode = http.StatusInternalServerError
@@ -453,10 +465,14 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 		return
 	}
 	expires := security.NewExpiresDateDefault()
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -558,10 +574,14 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Generate new token
+	var tempRoleID int64 = 0
+	if userFound.UserRole != nil {
+		tempRoleID = userFound.UserRole.RoleID
+	}
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",

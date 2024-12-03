@@ -19,7 +19,7 @@ func NewService(repository *Repository) *Service {
 }
 
 // Create user
-func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+func (service *Service) Create(inputJwtToken *types.JwtToken, roleID int64, user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
 	var foundUser *model.User
 	var errMsg string = ""
@@ -50,7 +50,6 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) 
 	newUser := &model.User{
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
-		RoleID:      user.RoleID,
 		Password:    randomPassword,
 		LoginMethod: constants.AuthLoginMethodDefault,
 	}
@@ -63,8 +62,19 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, user *model.User) 
 	return
 }
 
+// CreateUserRole assign role to user
+func (service *Service) AssignUserRole(inputJwtToken *types.JwtToken, userRole *model.UserRole) (result *model.UserRole, errCode int, err error) {
+	result, err = service.Repository.AssignUserRole(userRole)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("assign role to user from database")
+		return
+	}
+	return
+}
+
 // UpdateUser Update user
-func (service *Service) UpdateUser(inputJwtToken *types.JwtToken, user *model.User) (result *model.User, errCode int, err error) {
+func (service *Service) UpdateUser(inputJwtToken *types.JwtToken, roleID int64, user *model.User) (result *model.User, errCode int, err error) {
 	// Check if user exists
 	var foundUser *model.User
 	var errMsg string = ""
@@ -110,6 +120,22 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, userID int64) (aff
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("User")
+		return
+	}
+	return
+}
+
+// DeleteUserRole remove user role and return affected rows
+func (service *Service) DeleteUserRole(inputJwtToken *types.JwtToken, userID int64, roleID int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteUserRole(userID, roleID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("delete user role from database")
+		return
+	}
+	if affectedRows <= 0 {
+		errCode = http.StatusNotFound
+		err = constants.Http404ErrorMessage("User role")
 		return
 	}
 	return
