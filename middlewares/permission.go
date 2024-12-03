@@ -41,7 +41,7 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 		// Check for required permissions
 		if len(featureScope) >= 1 {
 			// Retrieve permission feature for role
-			permissionFeature, errFeature := repository.GetPermissionFeatureByRoleID(jwtToken.RoleID, featureScope)
+			permissionFeature, errFeature := repository.GetPermissionFeature(jwtToken.RoleID, featureScope)
 			tempErr := constants.Http403InvalidPermissionErrorMessage()
 			if errFeature != nil || permissionFeature == nil || permissionFeature.Feature != featureScope {
 				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
@@ -50,7 +50,7 @@ func PermissionMiddleware(api huma.API, repository *permission.Repository) func(
 
 			if len(tableName) >= 1 {
 				// Retrieve permission table for role
-				permissionTable, errTable := repository.GetPermissionTableByRoleIDAndTableName(jwtToken.RoleID, tableName)
+				permissionTable, errTable := repository.GetPermissionTable(jwtToken.RoleID, tableName)
 				if errTable != nil || permissionTable == nil || (permissionTable.TableName != tableName && permissionTable.TableName != "*") {
 					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 					return

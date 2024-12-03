@@ -41,7 +41,7 @@ func (repository *Repository) Delete(userID int64) (int64, error) {
 
 func (repository *Repository) GetByID(userID int64) (*model.User, error) {
 	result := &model.User{}
-	return result, repository.Db.Where("id = ?", userID).Limit(1).Find(result).Error
+	return result, repository.Db.Where("id = ?", userID).First(result).Error
 }
 
 func (repository *Repository) GetByEmail(email string) (*model.User, error) {
@@ -50,7 +50,7 @@ func (repository *Repository) GetByEmail(email string) (*model.User, error) {
 		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"email = ?", email,
-	).Limit(1).Find(result).Error
+	).First(result).Error
 }
 
 func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
@@ -59,7 +59,7 @@ func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User,
 		"login_method = ?", constants.AuthLoginMethodDefault,
 	).Where(
 		"phone_number = ?", phoneNumber,
-	).Limit(1).Find(result).Error
+	).First(result).Error
 }
 
 func (repository *Repository) GetByProvider(provider string, providerUserID string) (*model.User, error) {
@@ -70,7 +70,7 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 		"provider = ?", provider,
 	).Where(
 		"provider_user_id = ?", providerUserID,
-	).Limit(1).Find(result).Error
+	).First(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {

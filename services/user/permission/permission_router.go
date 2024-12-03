@@ -22,15 +22,15 @@ func RegisterEndpoints(
 	}
 	const tableName = "permissions"
 
-	// Update permission
+	// Update permission feature
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Update permission with matching role id and feature name",
+			OperationID: "update-permission-feature",
+			Summary:     "Update permission feature" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Update permission feature with matching role id and feature name",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleID}/{feature}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}/feature", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -48,20 +48,64 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.UpdateRoleFeaturePermissionPathRequest
-				Body data.UpdateRoleFeaturePermissionBodyRequest
+				data.PermissionPathRequest
+				Body data.UpdatePermissionFeatureRequest
 			},
 		) (*struct {
-			Body data.PermissionFeatureTableResponse
+			Body data.PermissionFeatureResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleID(
-				&ctx, input.RoleID, input.Feature, input.Body,
+			result, errCode, err := controller.UpdatePermissionFeature(
+				&ctx, input,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.PermissionFeatureTableResponse
+				Body data.PermissionFeatureResponse
+			}{Body: *result}, nil
+		},
+	)
+
+	// Update permission table
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "update-permission-table",
+			Summary:     "Update permission table" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Update permission table with matching role id and table name with actions(CRUD)",
+			Method:      http.MethodPut,
+			Path:        fmt.Sprintf("%s/role/{roleID}/table", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionUpdate, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.PermissionPathRequest
+				Body data.UpdatePermissionTableRequest
+			},
+		) (*struct {
+			Body data.PermissionTableResponse
+		}, error) {
+			result, errCode, err := controller.UpdatePermissionTable(
+				&ctx, input,
+			)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct {
+				Body data.PermissionTableResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -92,7 +136,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.GetRolePermissionListRequest
+				data.PermissionPathRequest
 				types.Filter
 				types.PaginationRequest
 			},

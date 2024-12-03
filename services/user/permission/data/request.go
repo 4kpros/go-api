@@ -1,21 +1,11 @@
 package data
 
-type GetRoleFeaturePermissionRequest struct {
-	RoleID  int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
-	Feature string `json:"feature" path:"feature" required:"true" doc:"Feature name" example:"feature-admin"`
-}
-
-type GetRolePermissionListRequest struct {
+type PermissionPathRequest struct {
 	RoleID int64 `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
 }
 
-type UpdateRoleFeaturePermissionPathRequest struct {
-	RoleID  int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
-	Feature string `json:"feature" path:"feature" required:"true" doc:"Feature name" example:"feature-admin"`
-}
-
-type UpdateRoleFeaturePermissionBodyRequest struct {
-	Table UpdatePermissionTableRequest `json:"table" required:"true" doc:"Table  permission"`
+type UpdatePermissionFeatureRequest struct {
+	Feature string `json:"feature" required:"true" doc:"Feature permission"`
 }
 
 type UpdatePermissionTableRequest struct {
