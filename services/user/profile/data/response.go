@@ -40,12 +40,14 @@ type UserProfileMfaResponse struct {
 }
 
 type UserLoginResponse struct {
-	Role      string `json:"role" required:"false" doc:"Role"`
-	Feature   string `json:"feature" required:"false" doc:"Feature"`
-	Username  string `json:"username" required:"false" doc:"Username"`
-	FirstName string `json:"firstName" required:"false" doc:"First name"`
-	LastName  string `json:"lastName" required:"false" doc:"Last name"`
-	Image     string `json:"image" required:"false" doc:"Image"`
+	LoginMethod string `json:"loginMethod" required:"false" doc:"Login method"`
+	Provider    string `json:"provider" required:"false" doc:"Provider"`
+	Role        string `json:"role" required:"false" doc:"Role"`
+	Feature     string `json:"feature" required:"false" doc:"Feature"`
+	Username    string `json:"username" required:"false" doc:"Username"`
+	FirstName   string `json:"firstName" required:"false" doc:"First name"`
+	LastName    string `json:"lastName" required:"false" doc:"Last name"`
+	Image       string `json:"image" required:"false" doc:"Image"`
 }
 
 func FromUser(item *model.User) *UserProfileResponse {

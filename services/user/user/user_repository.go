@@ -117,9 +117,12 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 func (repository *Repository) GetByIDLogged(userID int64) (*data.UserLoginResponse, error) {
 	result := &data.UserLoginResponse{}
 	return result, repository.Db.Raw(
-		"SELECT user_infos.image, user_infos.username, user_infos.first_name, user_infos.last_name, roles.name AS role, roles.feature FROM users "+
-			"JOIN user_infos ON users.user_info_id = user_infos.id "+
-			"JOIN roles ON users.role_id = roles.id "+
+		"SELECT users.login_method, users.provider, user_infos.image, user_infos.username, "+
+			"user_infos.first_name, user_infos.last_name, user_roles.role_id AS role_id, roles.name AS role "+
+			"FROM users "+
+			"JOIN user_infos ON users.id = user_infos.user_id "+
+			"JOIN user_roles ON users.id = user_roles.user_id "+
+			"JOIN roles ON role_id = roles.id "+
 			"WHERE users.id = ?;", userID,
 	).Limit(1).Find(result).Error
 }

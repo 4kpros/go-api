@@ -354,7 +354,6 @@ func (service *Service) GetProfile(inputJwtToken *types.JwtToken) (user *model.U
 // GetProfile Return profile information after successful logged
 func (service *Service) GetProfileLogged(inputJwtToken *types.JwtToken) (user *data.UserLoginResponse, errCode int, err error) {
 	user, err = service.Repository.GetByIDLogged(inputJwtToken.UserID)
-	user, err = service.Repository.GetByIDLogged(inputJwtToken.UserID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get profile from database")
