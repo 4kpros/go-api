@@ -4,6 +4,7 @@ import (
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
+	"api/services/user/profile/data"
 	"api/services/user/user/model"
 
 	"gorm.io/gorm"
@@ -105,6 +106,18 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 }
 
 // ----------------- Profile service -----------------
+
+func (repository *Repository) GetByIDLogin(userID int64) (*data.UserLoginResponse, error) {
+	result := &data.UserLoginResponse{}
+	return result, repository.Db.Raw(
+		// "SELECT user_infos.image, user_infos.first_name, user_infos.last_name FROM users "+
+		"SELECT user_infos.image, user_infos.first_name, user_infos.last_name, roles.name AS role, permission_features.feature_name AS feature FROM users "+
+			"JOIN user_infos ON users.user_info_id = user_infos.id "+
+			"JOIN roles ON users.role_id = roles.id "+
+			"JOIN permission_features ON permission_features.role_id = users.role_id "+
+			"WHERE users.id = ?;", userID,
+	).First(result).Error
+}
 func (repository *Repository) UpdateEmail(userID int64, email string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
@@ -134,7 +147,7 @@ func (repository *Repository) UpdateProfileInfo(userInfoID int64, userInfo *mode
 	result := &model.UserInfo{}
 	return result, repository.Db.Model(result).Where("id = ?", userInfoID).Updates(
 		map[string]interface{}{
-			"user_name":  userInfo.Username,
+			"username":   userInfo.Username,
 			"first_name": userInfo.FirstName,
 			"last_name":  userInfo.LastName,
 			"address":    userInfo.Address,

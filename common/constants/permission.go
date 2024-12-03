@@ -1,7 +1,6 @@
 package constants
 
 const (
-	PermissionNone   = "-"
 	PermissionCreate = "c"
 	PermissionRead   = "r"
 	PermissionUpdate = "u"

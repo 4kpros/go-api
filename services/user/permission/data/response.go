@@ -6,9 +6,8 @@ import (
 
 type PermissionFeatureResponse struct {
 	types.BaseGormModelResponse
-	RoleID      int64  `json:"roleID" required:"false" doc:"Role id"`
-	FeatureName string `json:"featureName" required:"false" minLength:"2" doc:"Feature name"`
-	IsEnabled   bool   `json:"isEnabled" required:"false" doc:"Is this feature enabled ?"`
+	RoleID  int64  `json:"roleID" required:"false" doc:"Role id"`
+	Feature string `json:"feature" required:"false" minLength:"2" doc:"Feature name"`
 }
 
 type PermissionTableResponse struct {

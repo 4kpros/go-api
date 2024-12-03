@@ -30,7 +30,7 @@ func RegisterEndpoints(
 			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update permission with matching role id and feature name",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleID}/{featureName}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}/{feature}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -54,8 +54,8 @@ func RegisterEndpoints(
 		) (*struct {
 			Body data.PermissionFeatureTableResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleIDFeatureName(
-				&ctx, input.RoleID, input.FeatureName, input.Body,
+			result, errCode, err := controller.UpdateByRoleID(
+				&ctx, input.RoleID, input.Feature, input.Body,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)

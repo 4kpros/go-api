@@ -65,3 +65,15 @@ func (controller *Controller) GetProfile(
 	result = user
 	return
 }
+
+func (controller *Controller) GetProfileLogin(
+	ctx *context.Context,
+	input *struct{},
+) (result *data.UserLoginResponse, errCode int, err error) {
+	user, errCode, err := controller.Service.GetProfileLogin(helpers.GetJwtContext(ctx))
+	if err != nil {
+		return
+	}
+	result = user
+	return
+}

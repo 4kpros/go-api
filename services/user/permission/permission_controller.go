@@ -16,16 +16,16 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdateByRoleIDFeatureName(
+func (controller *Controller) UpdateByRoleID(
 	ctx *context.Context,
 	roleID int64,
-	featureName string,
+	feature string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
 ) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateByRoleIDFeatureName(
+	result, errCode, err = controller.Service.UpdateByRoleID(
 		helpers.GetJwtContext(ctx),
 		roleID,
-		featureName,
+		feature,
 		body,
 	)
 	return

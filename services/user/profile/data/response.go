@@ -40,6 +40,14 @@ type UserProfileMfaResponse struct {
 	Authenticator bool `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
 }
 
+type UserLoginResponse struct {
+	Role      string `json:"role" required:"false" doc:"Role"`
+	Feature   string `json:"feature" required:"false" doc:"Feature"`
+	FirstName string `json:"firstName" required:"false" doc:"FirstName"`
+	LastName  string `json:"lastName" required:"false" doc:"LastName"`
+	Image     string `json:"image" required:"false" doc:"Image"`
+}
+
 func FromUser(user *model.User) *UserProfileResponse {
 	resp := &UserProfileResponse{}
 	resp.ID = user.ID

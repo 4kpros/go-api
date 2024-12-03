@@ -16,15 +16,15 @@ func NewService(repository *Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// UpdateByRoleIDFeatureName Update permission
-func (service *Service) UpdateByRoleIDFeatureName(
+// UpdateByRoleID Update permission
+func (service *Service) UpdateByRoleID(
 	inputJwtToken *types.JwtToken,
 	roleID int64,
-	featureName string,
+	feature string,
 	body data.UpdateRoleFeaturePermissionBodyRequest,
 ) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, err = service.Repository.UpdateByRoleIDFeatureName(
-		roleID, featureName, body.IsEnabled, body.Table,
+	result, err = service.Repository.UpdateByRoleID(
+		roleID, feature, body.Table,
 	)
 	return
 }

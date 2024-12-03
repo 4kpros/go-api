@@ -42,7 +42,7 @@ func AuthMiddleware(api huma.API) func(huma.Context, func(huma.Context)) {
 			config.Keys.JwtPublicKey,
 		)
 		if errDecoded != nil || jwtDecoded == nil {
-			tempErr := constants.Http401InvalidTokenErrorMessage()
+			tempErr := errDecoded
 			_ = huma.WriteErr(api, ctx, http.StatusUnauthorized, tempErr.Error(), tempErr)
 			return
 		}

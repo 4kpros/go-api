@@ -19,10 +19,9 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) UpdateByRoleIDFeatureName(
+func (repository *Repository) UpdateByRoleID(
 	roleID int64,
-	featureName string,
-	isEnabled bool,
+	feature string,
 	table data.UpdatePermissionTableRequest,
 ) (*data.PermissionFeatureTableResponse, error) {
 	var err error
@@ -30,13 +29,11 @@ func (repository *Repository) UpdateByRoleIDFeatureName(
 	// Update permission feature
 	if tmpErr := repository.Db.Model(&model.PermissionFeature{}).
 		Where("role_id = ?", roleID).
-		Where("feature_name = ?", featureName).
-		Update("is_enabled", isEnabled).Error; tmpErr != nil {
+		Update("feature", feature).Error; tmpErr != nil {
 		if errors.Is(tmpErr, gorm.ErrRecordNotFound) {
 			newPermissionFeature := &model.PermissionFeature{
-				RoleID:      roleID,
-				FeatureName: featureName,
-				IsEnabled:   isEnabled,
+				RoleID:  roleID,
+				Feature: feature,
 			}
 			err = repository.Db.Create(&newPermissionFeature).Error
 			if err != nil {
@@ -77,12 +74,12 @@ func (repository *Repository) UpdateByRoleIDFeatureName(
 	return result, err
 }
 
-func (repository *Repository) GetPermissionFeatureByRoleIDAndFeatureName(
+func (repository *Repository) GetPermissionFeatureByRoleID(
 	roleID int64,
-	featureName string,
+	feature string,
 ) (*model.PermissionFeature, error) {
 	result := &model.PermissionFeature{}
-	return result, repository.Db.Where("role_id = ?", roleID).Where("feature_name = ?", featureName).First(result).Error
+	return result, repository.Db.Where("role_id = ?", roleID).First(result).Error
 }
 
 func (repository *Repository) GetPermissionTableByRoleIDAndTableName(

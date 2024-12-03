@@ -160,4 +160,38 @@ func RegisterEndpoints(
 			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
 		},
 	)
+
+	// Get profile from login
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "get-profile-login",
+			Summary:     "Get profile login",
+			Description: "Retrieve profile permissions from login success for the current user with provided bearer token",
+			Method:      http.MethodGet,
+			Path:        fmt.Sprintf("%s/login", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+						// Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct{},
+		) (*struct{ Body data.UserLoginResponse }, error) {
+			result, errCode, err := controller.GetProfileLogin(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body data.UserLoginResponse }{Body: *result}, nil
+		},
+	)
 }

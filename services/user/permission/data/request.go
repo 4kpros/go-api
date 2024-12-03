@@ -1,8 +1,8 @@
 package data
 
 type GetRoleFeaturePermissionRequest struct {
-	RoleID      int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
-	FeatureName string `json:"featureName" path:"featureName" required:"true" doc:"Feature name" example:"feature-admin"`
+	RoleID  int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
+	Feature string `json:"feature" path:"feature" required:"true" doc:"Feature name" example:"feature-admin"`
 }
 
 type GetRolePermissionListRequest struct {
@@ -10,13 +10,12 @@ type GetRolePermissionListRequest struct {
 }
 
 type UpdateRoleFeaturePermissionPathRequest struct {
-	RoleID      int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
-	FeatureName string `json:"featureName" path:"featureName" required:"true" doc:"Feature name" example:"feature-admin"`
+	RoleID  int64  `json:"roleID" path:"roleID" required:"true" doc:"Role id" example:"1"`
+	Feature string `json:"feature" path:"feature" required:"true" doc:"Feature name" example:"feature-admin"`
 }
 
 type UpdateRoleFeaturePermissionBodyRequest struct {
-	IsEnabled bool                         `json:"isEnabled" required:"true" doc:"Is this feature enabled ?" example:"false"`
-	Table     UpdatePermissionTableRequest `json:"table" required:"true" doc:"Table  permission"`
+	Table UpdatePermissionTableRequest `json:"table" required:"true" doc:"Table  permission"`
 }
 
 type UpdatePermissionTableRequest struct {
