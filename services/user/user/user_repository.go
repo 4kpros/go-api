@@ -118,7 +118,7 @@ func (repository *Repository) GetByIDLogged(userID int64) (*data.UserLoginRespon
 	result := &data.UserLoginResponse{}
 	return result, repository.Db.Raw(
 		"SELECT users.login_method, users.provider, user_infos.image, user_infos.username, "+
-			"user_infos.first_name, user_infos.last_name, user_roles.role_id AS role_id, roles.name AS role "+
+			"user_infos.first_name, user_infos.last_name, user_roles.role_id AS role_id, roles.name AS role, roles.feature "+
 			"FROM users "+
 			"JOIN user_infos ON users.id = user_infos.user_id "+
 			"JOIN user_roles ON users.id = user_roles.user_id "+
