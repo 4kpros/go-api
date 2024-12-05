@@ -1,6 +1,8 @@
 package school
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -65,16 +67,61 @@ func (repository *Repository) GetDirector(schoolID int64, userID int64) (*model.
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	result := make([]model.School, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.School
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE type ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"schools",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }
 
 func (repository *Repository) GetAllByUserID(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	result := make([]model.School, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Where("user_id = ?", userID).Find(result).Error
+	var result []model.School
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE type ILIKE %s AND user_id = %d",
+			filter.Search,
+			filter.Search,
+			userID,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"schools",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }
 
 func (repository *Repository) GetAllDirectors(filter *types.Filter, pagination *types.Pagination) ([]model.SchoolDirector, error) {
-	result := make([]model.SchoolDirector, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.SchoolDirector
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = ""
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"school_directors",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

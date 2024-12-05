@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -60,10 +62,28 @@ func (repository *Repository) GetByObject(domain *model.Domain) (*model.Domain, 
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Domain, error) {
-	result := make([]model.Domain, 0)
-	return result, repository.Db.Model(&model.Domain{}).
-		Select("domains.*").
-		Joins("left join school_directors on domains.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Domain
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"domains",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Domain{}).
+	// 	Select("domains.*").
+	// 	Joins("left join school_directors on domains.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

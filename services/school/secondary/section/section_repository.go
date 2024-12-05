@@ -1,6 +1,8 @@
 package section
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -60,10 +62,28 @@ func (repository *Repository) GetByObject(section *model.Section) (*model.Sectio
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Section, error) {
-	result := make([]model.Section, 0)
-	return result, repository.Db.Model(&model.Section{}).
-		Select("sections.*").
-		Joins("left join school_directors on sections.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Section
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"sections",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Section{}).
+	// 	Select("sections.*").
+	// 	Joins("left join school_directors on sections.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

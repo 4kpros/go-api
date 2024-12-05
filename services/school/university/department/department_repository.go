@@ -1,6 +1,8 @@
 package department
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -61,9 +63,25 @@ func (repository *Repository) GetByObject(department *model.Department) (*model.
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Department, error) {
 	var result []model.Department
-	return result, repository.Db.Model(&model.Department{}).
-		Select("departments.*").
-		Joins("left join school_directors on departments.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var selection string = fmt.Sprintf(
+		"departments.* from departments left join school_directors on departments.school_id = school_directors.id WHERE school_directors.user_id = %d",
+		userID,
+	)
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			selection,
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

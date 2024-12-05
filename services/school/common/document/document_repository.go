@@ -1,6 +1,8 @@
 package document
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -37,6 +39,23 @@ func (repository *Repository) GetByObject(document *model.Document) (*model.Docu
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Document, error) {
-	result := make([]model.Document, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Document
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s OR WHERE type ILIKE %s",
+			filter.Search,
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"documents",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

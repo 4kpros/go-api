@@ -1,6 +1,8 @@
 package exam
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -61,10 +63,28 @@ func (repository *Repository) GetByObject(exam *model.Exam) (*model.Exam, error)
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Exam, error) {
-	result := make([]model.Exam, 0)
-	return result, repository.Db.Model(&model.Exam{}).
-		Select("exams.*").
-		Joins("left join school_directors on exams.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Exam
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE type ILIKE %s OR WHERE description ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"exams",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Exam{}).
+	// 	Select("exams.*").
+	// 	Joins("left join school_directors on exams.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

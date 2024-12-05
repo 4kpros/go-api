@@ -1,6 +1,8 @@
 package level
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -60,10 +62,28 @@ func (repository *Repository) GetByObject(level *model.Level) (*model.Level, err
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Level, error) {
-	result := make([]model.Level, 0)
-	return result, repository.Db.Model(&model.Level{}).
-		Select("levels.*").
-		Joins("left join school_directors on levels.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Level
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"levels",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Level{}).
+	// 	Select("levels.*").
+	// 	Joins("left join school_directors on levels.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

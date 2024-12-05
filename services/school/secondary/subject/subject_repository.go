@@ -1,6 +1,8 @@
 package subject
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -83,10 +85,30 @@ func (repository *Repository) GetByObject(subject *model.Subject) (*model.Subjec
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Subject, error) {
-	result := make([]model.Subject, 0)
-	return result, repository.Db.Model(&model.Subject{}).
-		Select("subjects.*").
-		Joins("left join school_directors on subjects.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Subject
+	var condition string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		condition = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s OR WHERE program ILIKE %s OR WHERE requirements ILIKE %s",
+			filter.Search,
+			filter.Search,
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"subjects",
+			condition,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Subject{}).
+	// 	Select("subjects.*").
+	// 	Joins("left join school_directors on subjects.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

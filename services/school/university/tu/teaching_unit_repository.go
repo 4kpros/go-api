@@ -1,6 +1,8 @@
 package tu
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -83,10 +85,30 @@ func (repository *Repository) GetByObject(teachingUnit *model.TeachingUnit) (*mo
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.TeachingUnit, error) {
-	result := make([]model.TeachingUnit, 0)
-	return result, repository.Db.Model(&model.TeachingUnit{}).
-		Select("teaching_units.*").
-		Joins("left join school_directors on teaching_units.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.TeachingUnit
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE name ILIKE %s OR WHERE description ILIKE %s OR WHERE program ILIKE %s OR WHERE requirements ILIKE %s",
+			filter.Search,
+			filter.Search,
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"teaching_units",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.TeachingUnit{}).
+	// 	Select("teaching_units.*").
+	// 	Joins("left join school_directors on teaching_units.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

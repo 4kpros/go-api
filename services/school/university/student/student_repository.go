@@ -60,10 +60,24 @@ func (repository *Repository) GetByObject(student *model.Student) (*model.Studen
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Student, error) {
-	result := make([]model.Student, 0)
-	return result, repository.Db.Model(&model.Student{}).
-		Select("students.*").
-		Joins("left join school_directors on students.school_id = school_directors.id").
-		Where("school_directors.user_id = ?", userID).
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.Student
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = ""
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"students",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	// return result, repository.Db.Model(&model.Student{}).
+	// 	Select("students.*").
+	// 	Joins("left join school_directors on students.school_id = school_directors.id").
+	// 	Where("school_directors.user_id = ?", userID).
+	// 	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
 }

@@ -1,6 +1,8 @@
 package history
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -22,6 +24,22 @@ func (repository *Repository) Create(history *model.History) (*model.History, er
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
-	result := make([]model.History, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.History
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE action ILIKE %s OR WHERE table ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"histories",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

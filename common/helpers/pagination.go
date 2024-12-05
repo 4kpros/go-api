@@ -11,7 +11,9 @@ import (
 
 // PaginationScope Returns *gorm.DB pointer with applied search, filter and pagination
 //
-// - Search performs a full-text search on every row of the table. It searches all fields.
+// - Search performs a full-text search on a specific rows of the table.
+// searchColumns is the specific rows.
+// E.g: whereSearch = "title || ' ' || description".
 // The official documentation for full text search in PostgresSQL can be found here
 // https://www.postgresql.org/docs/17/textsearch-tables.html#TEXTSEARCH-TABLES-SEARCH
 //
@@ -19,14 +21,24 @@ import (
 // sorting the results in ascending or descending based on the Sort parameter.
 //
 // - Pagination applies an offset and limit to the results, determining which subset of data to display.
-func PaginationScope(model any, pagination *types.Pagination, filter *types.Filter, db *gorm.DB) func(*gorm.DB) *gorm.DB {
+func PaginationScope(db *gorm.DB, selection string, where string, pagination *types.Pagination, filter *types.Filter) func(*gorm.DB) *gorm.DB {
 	var count *int64 = new(int64)
-	db.Model(model).Count(count)
+	db.Raw(fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS subquery;", selection)).Count(count)
 	pagination.UpdateFields(*count)
+
+	paginationFilter := fmt.Sprintf(
+		"ORDER BY %s %s LIMIT %d OFFSET %d",
+		filter.OrderBy,
+		filter.Sort,
+		pagination.Limit,
+		pagination.Offset,
+	)
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Offset(pagination.Offset).Limit(pagination.Limit).Order(
-			fmt.Sprintf("%s %s", filter.OrderBy, filter.Sort),
-		).Where("to_tsvector(body) @@ to_tsquery(?)", filter.Search)
+		return db.Raw(fmt.Sprintf("%s %s %s;",
+			selection,
+			where,
+			paginationFilter,
+		))
 	}
 }
 
@@ -44,8 +56,8 @@ func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.Pagin
 	if len(strings.TrimSpace(filter.OrderBy)) <= 0 {
 		filter.OrderBy = "updated_at"
 	}
-	if filter.Sort != "asc" {
-		filter.Sort = "desc"
+	if filter.Sort != "desc" {
+		filter.Sort = "asc"
 	}
 
 	return NewPaginationData(page, limit), filter

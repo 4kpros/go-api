@@ -1,6 +1,8 @@
 package permission
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
 	"api/common/helpers"
@@ -69,6 +71,22 @@ func (repository *Repository) GetAllByRoleID(
 	filter *types.Filter,
 	pagination *types.Pagination,
 ) ([]data.PermissionResponse, error) {
-	result := make([]data.PermissionResponse, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Where("role_id = ?", roleID).Find(result).Error
+	var result []data.PermissionResponse
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE table_name ILIKE %s OR WHERE role-id ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"permissions",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

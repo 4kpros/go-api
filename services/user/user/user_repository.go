@@ -6,6 +6,7 @@ import (
 	"api/common/types"
 	"api/services/user/profile/data"
 	"api/services/user/user/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -90,8 +91,25 @@ func (repository *Repository) GetUserRoleByUserID(userID int64) (*model.UserRole
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
-	result := make([]model.User, 0)
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var result []model.User
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE name ILIKE '%s' OR feature ILIKE '%s' OR description ILIKE '%s'",
+			filter.Search,
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"SELECT * FROM users",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }
 
 // ----------------- Authentication service -----------------
