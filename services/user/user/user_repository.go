@@ -82,6 +82,13 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 	).Limit(1).Find(result).Error
 }
 
+func (repository *Repository) GetUserRoleByUserID(userID int64) (*model.UserRole, error) {
+	result := &model.UserRole{}
+	return result, repository.Db.Where(
+		"user_id = ?", userID,
+	).Limit(1).Find(result).Error
+}
+
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
 	result := make([]model.User, 0)
 	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error

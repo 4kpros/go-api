@@ -42,6 +42,7 @@ func InjectDependencies() {
 	api.AllControllers.AuthController = auth.NewAuthController(
 		auth.NewAuthService(
 			userRepo,
+			roleRepo,
 		),
 	)
 	api.AllControllers.RoleController = role.NewController(

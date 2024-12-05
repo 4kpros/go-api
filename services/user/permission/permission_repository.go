@@ -55,6 +55,15 @@ func (repository *Repository) GetPermission(
 	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ?", tableName).Limit(1).Find(result).Error
 }
 
+func (repository *Repository) GetPermissionOR(
+	roleID int64,
+	tableName1 string,
+	tableName2 string,
+) (*model.Permission, error) {
+	result := &model.Permission{}
+	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ? or table_name = ?", tableName1, tableName2).Limit(1).Find(result).Error
+}
+
 func (repository *Repository) GetAllByRoleID(
 	roleID int64,
 	filter *types.Filter,
