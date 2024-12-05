@@ -161,7 +161,7 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Get profile from login
+	// Get profile from logged
 	huma.Register(
 		*humaApi,
 		huma.Operation{
