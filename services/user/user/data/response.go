@@ -23,9 +23,8 @@ type UserResponse struct {
 }
 
 type UserRoleResponse struct {
-	types.BaseGormModelResponse
-	UserID int64 `json:"UserID" doc:"User id"`
-	RoleID int64 `json:"RoleID" doc:"Role id"`
+	UserID int64 `json:"userID" doc:"User id"`
+	RoleID int64 `json:"roleID" doc:"Role id"`
 }
 
 type UserInfoResponse struct {
