@@ -103,7 +103,8 @@ func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filt
 	roleList, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get roles from database")
+		err = constants.Http500ErrorMessage(err.Error())
+		// err = constants.Http500ErrorMessage("get roles from database")
 	}
 	return
 }
