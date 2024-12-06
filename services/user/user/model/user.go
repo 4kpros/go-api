@@ -7,7 +7,6 @@ import (
 
 	"api/common/types"
 	"api/common/utils/security"
-	"api/services/user/role/model"
 	"api/services/user/user/data"
 )
 
@@ -23,56 +22,56 @@ type User struct {
 	IsActivated    bool       `gorm:"default:null"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
-	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	RoleID int64       `gorm:"default:null"`
+	UserRole *UserRole `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserInfoID int64     `gorm:"default:null"`
+	UserInfo *UserInfo `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-	UserMfaID int64    `gorm:"default:null"`
+	UserMfa *UserMfa `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (user *User) BeforeCreate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeCreate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) BeforeUpdate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeUpdate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) ToResponse() *data.UserResponse {
-	resp := &data.UserResponse{
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-
-		LoginMethod:    user.LoginMethod,
-		Provider:       user.Provider,
-		ProviderUserID: user.ProviderUserID,
-		IsActivated:    user.IsActivated,
-		ActivatedAt:    user.ActivatedAt,
-
-		Role: &data.UserRoleResponse{
-			ID:          user.Role.ID,
-			Name:        user.Role.Name,
-			Description: user.Role.Description,
-		},
-		UserInfo: user.UserInfo.ToResponse(),
-		UserMfa:  user.UserMfa.ToResponse(),
+func (item *User) ToResponse() *data.UserResponse {
+	resp := &data.UserResponse{}
+	if item == nil {
+		return resp
 	}
-	resp.ID = user.ID
-	resp.CreatedAt = user.CreatedAt
-	resp.UpdatedAt = user.UpdatedAt
-	resp.DeletedAt = user.DeletedAt
+	resp = &data.UserResponse{
+		Email:       item.Email,
+		PhoneNumber: item.PhoneNumber,
+
+		LoginMethod:    item.LoginMethod,
+		Provider:       item.Provider,
+		ProviderUserID: item.ProviderUserID,
+		IsActivated:    item.IsActivated,
+		ActivatedAt:    item.ActivatedAt,
+
+		UserRole: &data.UserRoleResponse{
+			UserID: item.UserRole.UserID,
+			RoleID: item.UserRole.RoleID,
+		},
+		UserInfo: item.UserInfo.ToResponse(),
+		UserMfa:  item.UserMfa.ToResponse(),
+	}
+
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 	return resp
 }
 
-func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
-	user.ProviderUserID = googleUser.ID
-	user.Email = googleUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
+	item.ProviderUserID = googleUser.ID
+	item.Email = googleUser.Email
+	item.UserInfo = &UserInfo{
 		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
@@ -80,10 +79,10 @@ func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 		Image: googleUser.Picture,
 	}
 }
-func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
-	user.ProviderUserID = facebookUser.ID
-	user.Email = facebookUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
+	item.ProviderUserID = facebookUser.ID
+	item.Email = facebookUser.Email
+	item.UserInfo = &UserInfo{
 		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,
@@ -92,10 +91,10 @@ func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileRespon
 	}
 }
 
-func ToResponseList(userList []User) []data.UserResponse {
-	resp := make([]data.UserResponse, len(userList))
-	for index, user := range userList {
-		resp[index] = *user.ToResponse()
+func ToResponseList(itemList []User) []data.UserResponse {
+	resp := make([]data.UserResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

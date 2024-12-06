@@ -10,7 +10,6 @@ type UserProfileResponse struct {
 	types.BaseGormModelResponse
 	Email       string `json:"email" required:"false" doc:"Email"`
 	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number"`
-	RoleID      int64  `json:"roleID" required:"false" doc:"Role id"`
 
 	LoginMethod    string     `json:"loginMethod" required:"false" doc:"How the user should login ? with email, phone number or external provider?"`
 	Provider       string     `json:"provider" required:"false" doc:"Provider name"`
@@ -40,45 +39,63 @@ type UserProfileMfaResponse struct {
 	Authenticator bool `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
 }
 
-func FromUser(user *model.User) *UserProfileResponse {
+type UserLoginResponse struct {
+	LoginMethod string `json:"loginMethod" required:"false" doc:"Login method"`
+	Provider    string `json:"provider" required:"false" doc:"Provider"`
+	Role        string `json:"role" required:"false" doc:"Role"`
+	Feature     string `json:"feature" required:"false" doc:"Feature"`
+	Username    string `json:"username" required:"false" doc:"Username"`
+	FirstName   string `json:"firstName" required:"false" doc:"First name"`
+	LastName    string `json:"lastName" required:"false" doc:"Last name"`
+	Image       string `json:"image" required:"false" doc:"Image"`
+}
+
+func FromUser(item *model.User) *UserProfileResponse {
 	resp := &UserProfileResponse{}
-	resp.ID = user.ID
-	resp.CreatedAt = user.CreatedAt
-	resp.UpdatedAt = user.UpdatedAt
-	resp.DeletedAt = user.DeletedAt
+	if item == nil {
+		return resp
+	}
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 
-	resp.Email = user.Email
-	resp.PhoneNumber = user.PhoneNumber
-	resp.RoleID = user.RoleID
+	resp.Email = item.Email
+	resp.PhoneNumber = item.PhoneNumber
 
-	resp.LoginMethod = user.LoginMethod
-	resp.Provider = user.Provider
-	resp.ProviderUserID = user.ProviderUserID
-	resp.IsActivated = user.IsActivated
-	resp.ActivatedAt = user.ActivatedAt
+	resp.LoginMethod = item.LoginMethod
+	resp.Provider = item.Provider
+	resp.ProviderUserID = item.ProviderUserID
+	resp.IsActivated = item.IsActivated
+	resp.ActivatedAt = item.ActivatedAt
 
-	resp.UserInfo = FromUserInfo(user.UserInfo)
-	resp.UserMfa = FromUserMfa(user.UserMfa)
+	resp.UserInfo = FromUserInfo(item.UserInfo)
+	resp.UserMfa = FromUserMfa(item.UserMfa)
 	return resp
 }
 
-func FromUserInfo(userInfo *model.UserInfo) *UserProfileInfoResponse {
+func FromUserInfo(item *model.UserInfo) *UserProfileInfoResponse {
 	resp := &UserProfileInfoResponse{}
-	resp.Username = userInfo.Username
-	resp.FirstName = userInfo.FirstName
-	resp.LastName = userInfo.LastName
-	resp.Birthday = userInfo.Birthday
-	resp.BirthLocation = userInfo.BirthLocation
-	resp.Address = userInfo.Address
-	resp.Language = userInfo.Language
-	resp.Image = userInfo.Image
+	if item == nil {
+		return resp
+	}
+	resp.Username = item.Username
+	resp.FirstName = item.FirstName
+	resp.LastName = item.LastName
+	resp.Birthday = item.Birthday
+	resp.BirthLocation = item.BirthLocation
+	resp.Address = item.Address
+	resp.Language = item.Language
+	resp.Image = item.Image
 	return resp
 }
 
-func FromUserMfa(userMfa *model.UserMfa) *UserProfileMfaResponse {
+func FromUserMfa(item *model.UserMfa) *UserProfileMfaResponse {
 	resp := &UserProfileMfaResponse{}
-	resp.Email = userMfa.Email
-	resp.PhoneNumber = userMfa.PhoneNumber
-	resp.Authenticator = userMfa.Authenticator
+	if item == nil {
+		return resp
+	}
+	resp.Email = item.Email
+	resp.PhoneNumber = item.PhoneNumber
+	resp.Authenticator = item.Authenticator
 	return resp
 }

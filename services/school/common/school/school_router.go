@@ -42,7 +42,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -60,15 +60,15 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Add school director
+	// Add director
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-school-director",
-			Summary:     "Add school director" + " (" + constants.FeatureAdminLabel + ")",
+			Summary:     "Add director" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Add new user as director in order to manage school.",
 			Method:      http.MethodPost,
-			Path:        fmt.Sprintf("%s/director", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}/director", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -79,14 +79,15 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.DirectorRequest
+				data.AddDirectorRequestPath
+				Body data.AddDirectorRequestBody
 			},
 		) (*struct{ Body model.SchoolDirector }, error) {
 			result, errCode, err := controller.AddDirector(&ctx, input)
@@ -105,7 +106,7 @@ func RegisterEndpoints(
 			Summary:     "Update school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing school with matching id and return the new school object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -116,14 +117,14 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolId
+				data.SchoolID
 				Body data.SchoolRequest
 			},
 		) (*struct{ Body data.SchoolResponse }, error) {
@@ -143,7 +144,7 @@ func RegisterEndpoints(
 			Summary:     "Delete school" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing school with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -154,14 +155,14 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolId
+				data.SchoolID
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
@@ -180,7 +181,7 @@ func RegisterEndpoints(
 			Summary:     "Delete director" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete director with matching school id and user id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/director/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}/director/{userID}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -191,14 +192,14 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.DirectorRequest
+				data.DeleteDirectorRequest
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.DeleteDirector(&ctx, input)
@@ -217,7 +218,7 @@ func RegisterEndpoints(
 			Summary:     "Get school by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one school with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -228,14 +229,14 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolId
+				data.SchoolID
 			},
 		) (*struct{ Body data.SchoolResponse }, error) {
 			result, errCode, err := controller.Get(&ctx, input)
@@ -265,7 +266,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},

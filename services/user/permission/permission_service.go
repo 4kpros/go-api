@@ -6,6 +6,7 @@ import (
 	"api/common/constants"
 	"api/common/types"
 	"api/services/user/permission/data"
+	"api/services/user/permission/model"
 )
 
 type Service struct {
@@ -16,16 +17,20 @@ func NewService(repository *Repository) *Service {
 	return &Service{Repository: repository}
 }
 
-// UpdateByRoleIDFeatureName Update permission
-func (service *Service) UpdateByRoleIDFeatureName(
+// UpdatePermission Update permission
+func (service *Service) UpdatePermission(
 	inputJwtToken *types.JwtToken,
 	roleID int64,
-	featureName string,
-	body data.UpdateRoleFeaturePermissionBodyRequest,
-) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, err = service.Repository.UpdateByRoleIDFeatureName(
-		roleID, featureName, body.IsEnabled, body.Table,
+	tableName string,
+	data *model.Permission,
+) (result *model.Permission, errCode int, err error) {
+	result, err = service.Repository.UpdatePermission(
+		roleID, tableName, data,
 	)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("update permissions from database")
+	}
 	return
 }
 
@@ -36,7 +41,7 @@ func (service *Service) GetAllByRoleID(
 	roleID int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
-) (result []data.PermissionFeatureTableResponse, errCode int, err error) {
+) (result []data.PermissionResponse, errCode int, err error) {
 	result, err = service.Repository.GetAllByRoleID(
 		roleID, filter, pagination,
 	)

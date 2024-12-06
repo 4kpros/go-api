@@ -1,9 +1,7 @@
 package security
 
 import (
-	"api/common/constants"
 	"api/common/types"
-	"api/config"
 	"fmt"
 	"time"
 
@@ -12,7 +10,7 @@ import (
 
 // NewExpiresDateDefault Returns the default expiration time for JWT. It's 10 min.
 func NewExpiresDateDefault() *time.Time {
-	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresDefault))
+	tempDate := time.Now().Add(time.Minute * 10) // 10 minutes
 	return &tempDate
 }
 
@@ -21,10 +19,10 @@ func NewExpiresDateDefault() *time.Time {
 // 30 days if stayConnected is true, otherwise it's 1 hour.
 func NewExpiresDateLogin(stayConnected bool) (date *time.Time) {
 	if stayConnected {
-		tempDate := time.Now().Add(time.Hour * time.Duration(24*config.Env.JwtExpiresLoginStayConnected))
+		tempDate := time.Now().Add(time.Hour * 24 * 30) // 30 days
 		return &tempDate
 	}
-	tempDate := time.Now().Add(time.Minute * time.Duration(config.Env.JwtExpiresLogin))
+	tempDate := time.Now().Add(time.Minute * 60) // 1 hours
 	return &tempDate
 }
 
@@ -40,10 +38,12 @@ func EncodeJWTToken(jwtToken *types.JwtToken, issuer string, expires *time.Time,
 	jwtToken.ExpiresAt = jwt.NewNumericDate(*expires)
 	jwtToken.IssuedAt = jwt.NewNumericDate(time.Now())
 	jwtTokenClaimed := jwt.NewWithClaims(jwt.SigningMethodES512, *jwtToken)
+
 	signedKey, errParse := jwt.ParseECPrivateKeyFromPEM([]byte(*privateKey))
 	if errParse != nil {
 		return nil, "", errParse
 	}
+
 	token, errSigning := jwtTokenClaimed.SignedString(signedKey)
 	if errSigning != nil {
 		return nil, "", errSigning
@@ -74,7 +74,7 @@ func DecodeJWTToken(token string, publicKey *string) (*types.JwtToken, error) {
 	} else if claims, ok := jwtToken.Claims.(*types.JwtToken); ok && jwtToken.Valid {
 		return claims, nil
 	}
-	return nil, constants.Http401InvalidTokenErrorMessage()
+	return nil, fmt.Errorf("%s", "Unknown error!")
 }
 
 // ValidateJWTToken Validates the token by checking if it is cached.

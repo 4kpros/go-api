@@ -9,6 +9,7 @@ import (
 
 type UserInfo struct {
 	types.BaseGormModel
+	UserID        int64      `gorm:"unique;not null"`
 	Username      string     `gorm:"default:null"`
 	FirstName     string     `gorm:"default:null"`
 	LastName      string     `gorm:"default:null"`
@@ -19,16 +20,21 @@ type UserInfo struct {
 	Image         string     `gorm:"default:null"`
 }
 
-func (userInfo *UserInfo) ToResponse() *data.UserInfoResponse {
-	userInfoResp := &data.UserInfoResponse{
-		Username:      userInfo.Username,
-		FirstName:     userInfo.FirstName,
-		LastName:      userInfo.LastName,
-		Birthday:      userInfo.Birthday,
-		BirthLocation: userInfo.BirthLocation,
-		Address:       userInfo.Address,
-		Language:      userInfo.Language,
-		Image:         userInfo.Image,
+func (item *UserInfo) ToResponse() *data.UserInfoResponse {
+	resp := &data.UserInfoResponse{}
+	if item == nil {
+		return resp
 	}
-	return userInfoResp
+	resp = &data.UserInfoResponse{
+		UserID:        item.UserID,
+		Username:      item.Username,
+		FirstName:     item.FirstName,
+		LastName:      item.LastName,
+		Birthday:      item.Birthday,
+		BirthLocation: item.BirthLocation,
+		Address:       item.Address,
+		Language:      item.Language,
+		Image:         item.Image,
+	}
+	return resp
 }

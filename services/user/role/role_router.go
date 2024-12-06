@@ -41,7 +41,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -67,7 +67,7 @@ func RegisterEndpoints(
 			Summary:     "Update role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing role with matching id and return the new role object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -78,7 +78,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -101,11 +101,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-role",
+			OperationID: "delete-role-id",
 			Summary:     "Delete role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing role with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -116,7 +116,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -134,6 +134,43 @@ func RegisterEndpoints(
 		},
 	)
 
+	// Delete multiple role
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-role-multiple",
+			Summary:     "Delete multiple role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Delete multiple role by providing a lis of IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				Body types.DeleteMultipleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
 	// Get role by id
 	huma.Register(
 		*humaApi,
@@ -142,7 +179,7 @@ func RegisterEndpoints(
 			Summary:     "Get role by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one role with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -153,7 +190,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -163,7 +200,7 @@ func RegisterEndpoints(
 				data.RoleID
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
-			result, errCode, err := controller.Get(&ctx, input)
+			result, errCode, err := controller.GetByID(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -190,7 +227,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},

@@ -41,7 +41,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -78,7 +78,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
 		},
@@ -96,6 +96,44 @@ func RegisterEndpoints(
 		},
 	)
 
+	// Assign user role
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "assign-user-role",
+			Summary:     "Assign user role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Assign new role to the user.",
+			Method:      http.MethodPost,
+			Path:        fmt.Sprintf("%s/{id}/role", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionCreate, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.UserID
+				Body data.UserRoleRequest
+			},
+		) (*struct{ Body data.UserRoleResponse }, error) {
+			result, errCode, err := controller.AssignUserRole(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body data.UserRoleResponse }{Body: *result.ToResponse()}, nil
+		},
+	)
+
 	// Update user with id
 	huma.Register(
 		*humaApi,
@@ -104,7 +142,7 @@ func RegisterEndpoints(
 			Summary:     "Update user" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Update existing user with matching id and return the new user object.",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -115,7 +153,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -142,7 +180,7 @@ func RegisterEndpoints(
 			Summary:     "Delete user" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing user with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -153,7 +191,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -171,6 +209,44 @@ func RegisterEndpoints(
 		},
 	)
 
+	// Delete user role
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-user-role",
+			Summary:     "Delete user role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Delete existing user role and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/{id}/role", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.UserID
+				Body data.UserRoleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteUserRole(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
 	// Get user by id
 	huma.Register(
 		*humaApi,
@@ -179,7 +255,7 @@ func RegisterEndpoints(
 			Summary:     "Get user by id" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Return one user with matching id",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/{url}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -190,7 +266,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -227,7 +303,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},

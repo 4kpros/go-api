@@ -26,11 +26,11 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Update permission with matching role id and feature name",
+			OperationID: "update-permission",
+			Summary:     "Update permission " + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Update permission with matching role id, table name with actions(CRUD)",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleID}/{featureName}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}/", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -41,27 +41,27 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.UpdateRoleFeaturePermissionPathRequest
-				Body data.UpdateRoleFeaturePermissionBodyRequest
+				data.PermissionPathRequest
+				Body data.UpdatePermissionRequest
 			},
 		) (*struct {
-			Body data.PermissionFeatureTableResponse
+			Body data.PermissionResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleIDFeatureName(
-				&ctx, input.RoleID, input.FeatureName, input.Body,
+			result, errCode, err := controller.UpdatePermission(
+				&ctx, input,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.PermissionFeatureTableResponse
+				Body data.PermissionResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -85,14 +85,14 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.GetRolePermissionListRequest
+				data.PermissionPathRequest
 				types.Filter
 				types.PaginationRequest
 			},

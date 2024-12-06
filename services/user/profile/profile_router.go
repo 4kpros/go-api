@@ -39,7 +39,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -75,7 +75,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -99,7 +99,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "delete-profile",
 			Summary:     "Delete user account",
-			Description: "Delete current user account with provided bearer token",
+			Description: "Delete current user account",
 			Method:      http.MethodDelete,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -111,7 +111,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -133,7 +133,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "get-profile",
 			Summary:     "Get profile info",
-			Description: "Retrieve profile information for the current user with provided bearer token",
+			Description: "Retrieve profile information for the current user",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -145,7 +145,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -158,6 +158,40 @@ func RegisterEndpoints(
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
+		},
+	)
+
+	// Get profile from logged
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "get-profile-logged",
+			Summary:     "Get profile logged",
+			Description: "Retrieve profile information after successful logged for the current user",
+			Method:      http.MethodGet,
+			Path:        fmt.Sprintf("%s/logged", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						// Feature scope
+						// Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct{},
+		) (*struct{ Body data.UserLoginResponse }, error) {
+			result, errCode, err := controller.GetProfileLogged(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body data.UserLoginResponse }{Body: *result}, nil
 		},
 	)
 }
