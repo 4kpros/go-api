@@ -92,11 +92,11 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, roleID int64) (aff
 }
 
 // Delete Deletes selection
-func (service *Service) DeleteSelection(inputJwtToken *types.JwtToken, list []int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.DeleteSelection(list)
+func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteMultiple(list)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("delete role selection from database")
+		err = constants.Http500ErrorMessage("delete multiple role from database")
 		return
 	}
 	if affectedRows <= 0 {

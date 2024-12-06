@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"regexp"
-	"strings"
 )
 
 // ExtractSQLState extracts the first occurrence of text enclosed in parentheses from the input string.
@@ -35,12 +34,21 @@ func ExtractSQLState(input string) (string, error) {
 }
 
 func ListIntToString(list []int64) string {
-	if len(list) <= 0 {
+	if list == nil {
 		return ""
 	}
-	result := ""
-	for id := range list {
-		result += fmt.Sprintf("%d,", id)
+	listLen := len(list)
+	if listLen < 1 {
+		return ""
 	}
-	return strings.TrimSuffix(result, ",")
+
+	result := ""
+	for index, id := range list {
+		if index < listLen-1 {
+			result += fmt.Sprintf(" %d,", id)
+		} else {
+			result += fmt.Sprintf(" %d ", id)
+		}
+	}
+	return result
 }

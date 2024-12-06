@@ -56,12 +56,9 @@ func (repository *Repository) Delete(roleID int64) (result int64, err error) {
 	return
 }
 
-func (repository *Repository) DeleteSelection(list []int64) (result int64, err error) {
-	raw := fmt.Sprintf(
-		"DELETE FROM roles WHERE id IN (%s);;",
-		utils.ListIntToString(list),
-	)
-	tmpResult := repository.Db.Raw(raw)
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.Role{})
 
 	result = tmpResult.RowsAffected
 	err = tmpResult.Error

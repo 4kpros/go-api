@@ -66,13 +66,13 @@ func (controller *Controller) Delete(
 	return
 }
 
-func (controller *Controller) DeleteSelection(
+func (controller *Controller) DeleteMultiple(
 	ctx *context.Context,
 	input *struct {
-		types.DeleteSelectionRequest
+		Body types.DeleteMultipleRequest
 	},
 ) (result int64, errCode int, err error) {
-	affectedRows, errCode, err := controller.Service.DeleteSelection(helpers.GetJwtContext(ctx), input.List)
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
 	if err != nil {
 		return
 	}

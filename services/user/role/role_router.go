@@ -134,15 +134,15 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Delete role selection
+	// Delete multiple role
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-role-selection",
-			Summary:     "Delete role selection" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Delete selected role list IDs and return affected rows in database.",
+			OperationID: "delete-role-multiple",
+			Summary:     "Delete multiple role" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Delete multiple role by providing a lis of IDs and return affected rows in database.",
 			Method:      http.MethodDelete,
-			Path:        fmt.Sprintf("%s/selection", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -160,10 +160,10 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				types.DeleteSelectionRequest
+				Body types.DeleteMultipleRequest
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
-			result, errCode, err := controller.DeleteSelection(&ctx, input)
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
