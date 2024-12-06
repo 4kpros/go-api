@@ -27,6 +27,7 @@ func (controller *Controller) Create(
 		helpers.GetJwtContext(ctx),
 		&model.Role{
 			Name:        input.Body.Name,
+			Feature:     input.Body.Feature,
 			Description: input.Body.Description,
 		},
 	)
@@ -44,6 +45,7 @@ func (controller *Controller) Update(
 		helpers.GetJwtContext(ctx), input.ID,
 		&model.Role{
 			Name:        input.Body.Name,
+			Feature:     input.Body.Feature,
 			Description: input.Body.Description,
 		},
 	)
@@ -64,13 +66,27 @@ func (controller *Controller) Delete(
 	return
 }
 
-func (controller *Controller) Get(
+func (controller *Controller) DeleteSelection(
+	ctx *context.Context,
+	input *struct {
+		types.DeleteSelectionRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteSelection(helpers.GetJwtContext(ctx), input.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
+func (controller *Controller) GetByID(
 	ctx *context.Context,
 	input *struct {
 		data.RoleID
 	},
 ) (result *model.Role, errCode int, err error) {
-	role, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
+	role, errCode, err := controller.Service.GetByID(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
 	}

@@ -18,7 +18,6 @@ func (item *Domain) ToResponse() *data.DomainResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.DepartmentID = item.DepartmentID
 	resp.Name = item.Name

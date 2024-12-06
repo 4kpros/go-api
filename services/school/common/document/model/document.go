@@ -31,7 +31,6 @@ func (item *Document) ToResponse() *data.DocumentResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 

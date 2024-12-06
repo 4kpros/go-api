@@ -101,7 +101,7 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-role",
+			OperationID: "delete-role-id",
 			Summary:     "Delete role" + " (" + constants.FeatureAdminLabel + ")",
 			Description: "Delete existing role with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
@@ -127,6 +127,43 @@ func RegisterEndpoints(
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete role selection
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-role-selection",
+			Summary:     "Delete role selection" + " (" + constants.FeatureAdminLabel + ")",
+			Description: "Delete selected role list IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/selection", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				types.DeleteSelectionRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteSelection(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -163,7 +200,7 @@ func RegisterEndpoints(
 				data.RoleID
 			},
 		) (*struct{ Body data.RoleResponse }, error) {
-			result, errCode, err := controller.Get(&ctx, input)
+			result, errCode, err := controller.GetByID(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

@@ -65,7 +65,6 @@ func (item *User) ToResponse() *data.UserResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 

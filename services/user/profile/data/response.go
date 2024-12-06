@@ -58,7 +58,6 @@ func FromUser(item *model.User) *UserProfileResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.Email = item.Email
 	resp.PhoneNumber = item.PhoneNumber

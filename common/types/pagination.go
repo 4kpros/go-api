@@ -1,5 +1,7 @@
 package types
 
+import "api/common/constants"
+
 type PaginationRequest struct {
 	Page  int `json:"page" query:"page" required:"false" doc:"Current page" example:"1"`
 	Limit int `json:"limit" query:"limit" min:"1" required:"false" doc:"Max items per page" example:"20"`
@@ -18,7 +20,7 @@ type Pagination struct {
 // UpdateFields Updates pagination parameters based on total item count.
 func (p *Pagination) UpdateFields(count int64) {
 	if p.Limit < 1 {
-		p.Limit = 20
+		p.Limit = constants.PaginationLimitDefault
 	}
 	p.Count = count                              // Update count
 	DivUp(&count, &p.Limit, &p.TotalPages)       // Update total pages

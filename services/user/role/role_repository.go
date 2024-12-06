@@ -7,6 +7,7 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/user/role/model"
 )
 
@@ -18,38 +19,73 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) Create(role *model.Role) (*model.Role, error) {
-	result := *role
-	return &result, repository.Db.Create(&result).Error
+func (repository *Repository) Create(role *model.Role) (result *model.Role, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = utils.InterfaceToError(r)
+		}
+	}()
+
+	result = &model.Role{}
+	*result = *role
+	tmpErr := repository.Db.Create(&result).Error
+
+	err = tmpErr
+	return
 }
 
-func (repository *Repository) Update(roleID int64, role *model.Role) (*model.Role, error) {
-	result := &model.Role{}
-	return result, repository.Db.Model(result).Where("id = ?", roleID).Updates(
+func (repository *Repository) Update(roleID int64, role *model.Role) (result *model.Role, err error) {
+	result = &model.Role{}
+	tmpErr := repository.Db.Model(result).Where("id = ?", roleID).Updates(
 		map[string]interface{}{
 			"name":        role.Name,
+			"feature":     role.Feature,
 			"description": role.Description,
 		},
 	).Error
+
+	err = tmpErr
+	return
 }
 
-func (repository *Repository) Delete(roleID int64) (int64, error) {
-	result := repository.Db.Where("id = ?", roleID).Delete(&model.Role{})
-	return result.RowsAffected, result.Error
+func (repository *Repository) Delete(roleID int64) (result int64, err error) {
+	tmpResult := repository.Db.Where("id = ?", roleID).Delete(&model.Role{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
-func (repository *Repository) GetById(roleID int64) (*model.Role, error) {
-	result := &model.Role{}
-	return result, repository.Db.Where("id = ?", roleID).Limit(1).Find(result).Error
+func (repository *Repository) DeleteSelection(list []int64) (result int64, err error) {
+	raw := fmt.Sprintf(
+		"DELETE FROM roles WHERE id IN (%s);;",
+		utils.ListIntToString(list),
+	)
+	tmpResult := repository.Db.Raw(raw)
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
-func (repository *Repository) GetByName(name string) (*model.Role, error) {
-	result := &model.Role{}
-	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
+func (repository *Repository) GetByID(roleID int64) (result *model.Role, err error) {
+	result = &model.Role{}
+	tmpErr := repository.Db.Where("id = ?", roleID).Limit(1).Find(result).Error
+
+	err = tmpErr
+	return
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Role, error) {
-	var result []model.Role
+func (repository *Repository) GetByName(name string) (result *model.Role, err error) {
+	result = &model.Role{}
+	tmpErr := repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
+
+	err = tmpErr
+	return
+}
+
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Role, err error) {
+	result = make([]model.Role, 0)
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
@@ -59,7 +95,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 		)
 	}
-	return result, repository.Db.Scopes(
+	tmpErr := repository.Db.Scopes(
 		helpers.PaginationScope(
 			repository.Db,
 			"SELECT * FROM roles",
@@ -68,4 +104,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			filter,
 		),
 	).Find(&result).Error
+
+	err = tmpErr
+	return
 }

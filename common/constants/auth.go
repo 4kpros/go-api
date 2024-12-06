@@ -7,11 +7,6 @@ const SecurityAuthName = "Bearer token"
 const AuthLoginMethodDefault = "default"
 const AuthLoginMethodProvider = "provider"
 
-var AUTH_LOGIN_METHODS = []string{
-	AuthLoginMethodDefault,
-	AuthLoginMethodProvider,
-}
-
 // Authentication - providers
 const AuthProviderGoogle = "google"
 const AuthProviderFacebook = "facebook"

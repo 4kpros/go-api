@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"api/common/constants"
 	"api/common/types"
 
 	"gorm.io/gorm"
@@ -51,13 +52,13 @@ func GetPaginationFiltersFromQuery(filter *types.Filter, pagination *types.Pagin
 		page = 1
 	}
 	if limit <= 0 {
-		limit = 5
+		limit = constants.PaginationLimitDefault
 	}
 	if len(strings.TrimSpace(filter.OrderBy)) <= 0 {
-		filter.OrderBy = "updated_at"
+		filter.OrderBy = constants.FilterOrderByDefault
 	}
-	if filter.Sort != "desc" {
-		filter.Sort = "asc"
+	if filter.Sort != "asc" {
+		filter.Sort = constants.FilterSortDefault
 	}
 
 	return NewPaginationData(page, limit), filter

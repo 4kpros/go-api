@@ -42,7 +42,7 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		// Check for required permissions
 		if len(featureScope) >= 1 {
 			// Retrieve role
-			role, errFeature := roleRepo.GetById(jwtToken.RoleID)
+			role, errFeature := roleRepo.GetByID(jwtToken.RoleID)
 			if errFeature != nil {
 				tempErr := constants.Http500ErrorMessage("get role from database")
 				_ = huma.WriteErr(api, ctx, http.StatusInternalServerError, tempErr.Error(), tempErr)

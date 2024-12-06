@@ -24,7 +24,6 @@ func (history *History) ToResponse() *data.HistoryResponse {
 	resp.ID = history.ID
 	resp.CreatedAt = history.CreatedAt
 	resp.UpdatedAt = history.UpdatedAt
-	resp.DeletedAt = history.DeletedAt
 	return resp
 }
 

@@ -8,7 +8,7 @@ import (
 type Role struct {
 	types.BaseGormModel
 	Name        string `gorm:"unique;not null"`
-	Feature     string `gorm:"default:null"`
+	Feature     string `gorm:"not null"`
 	Description string `gorm:"default:null"`
 }
 
@@ -26,7 +26,6 @@ func (item *Role) ToResponse() *data.RoleResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 

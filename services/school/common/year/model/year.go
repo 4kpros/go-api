@@ -20,7 +20,6 @@ func (item *Year) ToResponse() *data.YearResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 	return resp
 }
 

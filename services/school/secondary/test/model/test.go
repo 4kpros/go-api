@@ -19,7 +19,6 @@ func (item *Test) ToResponse() *data.TestResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.SchoolID = item.SchoolID
 	resp.SubjectID = item.SubjectID

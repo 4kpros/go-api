@@ -24,7 +24,6 @@ func (item *TeachingUnit) ToResponse() *data.TeachingUnitResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.SchoolID = item.SchoolID
 	resp.DomainID = item.DomainID

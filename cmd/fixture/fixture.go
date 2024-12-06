@@ -60,6 +60,10 @@ func Load() (err error) {
 		})
 	}
 
+	if userAdmin == nil || roleAdmin == nil {
+		return
+	}
+
 	// Add role to the user
 	_, _ = userRepo.AssignUserRole(&userModel.UserRole{
 		UserID: userAdmin.ID,

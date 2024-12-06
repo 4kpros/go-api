@@ -22,7 +22,6 @@ func (item *Subject) ToResponse() *data.SubjectResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.SchoolID = item.SchoolID
 	resp.ClassID = item.ClassID

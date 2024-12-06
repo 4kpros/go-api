@@ -17,7 +17,6 @@ func (item *Class) ToResponse() *data.ClassResponse {
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-	resp.DeletedAt = item.DeletedAt
 
 	resp.Name = item.Name
 	resp.Description = item.Description
