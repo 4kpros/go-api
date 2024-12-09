@@ -73,8 +73,7 @@ func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
-		// Language:  googleUser.Language,
-		Image: googleUser.Picture,
+		Image:     googleUser.Picture,
 	}
 }
 func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
@@ -84,8 +83,7 @@ func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileRespon
 		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,
-		// Language:  facebookUser.Languages,
-		Image: facebookUser.PictureSmall.Data.Url,
+		Image:     facebookUser.PictureSmall.Data.Url,
 	}
 }
 

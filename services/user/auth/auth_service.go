@@ -144,7 +144,11 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 // LoginWithProvider Login with provider like Google and Facebook
 func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, device *data.LoginDevice) (accessToken string, accessExpires *time.Time, errCode int, err error) {
 	// Validate provider token and update user
-	var newUser = &model.User{}
+	var newUser = &model.User{
+		Provider: input.Provider,
+		UserInfo: &model.UserInfo{},
+		UserMfa:  &model.UserMfa{},
+	}
 	var expires int64 = 0
 	if input.Provider == constants.AuthProviderGoogle {
 		googleUser, errGoogleUser := auth.VerifyGoogleIDToken(input.Token)
@@ -179,14 +183,18 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		err = fmt.Errorf("%s", "Invalid provider or token! Please enter valid information.")
 		return
 	}
-	newUser.Provider = input.Provider
 
 	// Save user if it's not in database
 	userFound, err := service.Repository.GetByProvider(input.Provider, newUser.ProviderUserID)
-	if err != nil || userFound == nil {
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("check user session")
+		return
+	}
+	if userFound == nil || userFound.ID <= 0 {
 		// Add info
 		var userInfo *model.UserInfo
-		userInfo, err = service.Repository.CreateUserInfo(&model.UserInfo{})
+		userInfo, err = service.Repository.CreateUserInfo(newUser.UserInfo)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.Http500ErrorMessage("create user info on database")
@@ -194,7 +202,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		}
 		// Add mfa
 		var userMfa *model.UserMfa
-		userMfa, err = service.Repository.CreateUserMfa(&model.UserMfa{})
+		userMfa, err = service.Repository.CreateUserMfa(newUser.UserMfa)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.Http500ErrorMessage("create user mfa on database")
