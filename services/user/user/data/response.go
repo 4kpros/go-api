@@ -24,7 +24,6 @@ type UserResponse struct {
 }
 
 type UserInfoResponse struct {
-	UserID    int64  `json:"userID" required:"false" doc:"User id"`
 	Username  string `json:"username" required:"false" doc:"User name"`
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`
@@ -37,10 +36,9 @@ type UserInfoResponse struct {
 }
 
 type UserMfaResponse struct {
-	UserID        int64 `json:"userID" required:"false" doc:"User id"`
-	Email         bool  `json:"email" required:"false" doc:"Is 2FA enabled with email ?"`
-	PhoneNumber   bool  `json:"phoneNumber" required:"false" doc:"Is 2FA enabled with phone number ?"`
-	Authenticator bool  `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
+	Email         bool `json:"email" required:"false" doc:"Is 2FA enabled with email ?"`
+	PhoneNumber   bool `json:"phoneNumber" required:"false" doc:"Is 2FA enabled with phone number ?"`
+	Authenticator bool `json:"authenticator" required:"false" doc:"Is 2FA enabled with authenticator ?"`
 }
 
 type UserResponseList struct {

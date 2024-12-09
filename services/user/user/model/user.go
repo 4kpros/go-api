@@ -24,13 +24,13 @@ type User struct {
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
 	RoleID int64       `gorm:"default:null"`
-	Role   *model.Role `gorm:"default:null;foreignKey:ID;references:RoleID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
 	UserInfoID int64     `gorm:"default:null"`
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:ID;references:UserInfoID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
 	UserMfaID int64    `gorm:"default:null"`
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:ID;references:UserMfaID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *User) BeforeCreate(db *gorm.DB) (err error) {
