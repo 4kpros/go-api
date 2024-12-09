@@ -15,7 +15,7 @@ type UserInfo struct {
 	Birthday      *time.Time `gorm:"default:null"`
 	BirthLocation string     `gorm:"default:null"`
 	Address       string     `gorm:"default:null"`
-	Language      string     `gorm:"default:null"`
+	Language      string     `gorm:"default:en"`
 	Image         string     `gorm:"default:null"`
 }
 

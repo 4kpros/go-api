@@ -20,7 +20,7 @@ type User struct {
 	LoginMethod    string     `gorm:"default:null"`
 	Provider       string     `gorm:"default:null"`
 	ProviderUserID string     `gorm:"default:null"`
-	IsActivated    bool       `gorm:"default:null"`
+	IsActivated    bool       `gorm:"default:false"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
 	RoleID int64       `gorm:"default:null"`

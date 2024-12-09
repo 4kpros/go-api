@@ -139,6 +139,8 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 		map[string]interface{}{
 			"is_activated": user.IsActivated,
 			"activated_at": user.ActivatedAt,
+			"user_info_id": user.UserInfoID,
+			"user_mfa_id":  user.UserMfaID,
 		},
 	).Error
 }
