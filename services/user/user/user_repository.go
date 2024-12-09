@@ -5,8 +5,10 @@ import (
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/user/user/model"
+	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository struct {
@@ -22,50 +24,71 @@ func (repository *Repository) Create(user *model.User) (*model.User, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) UpdateUser(id int64, user *model.User) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) AssignRole(userID int64, roleID int64) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
-			"email":        user.Email,
-			"phone_number": user.PhoneNumber,
-			"role_id":      user.RoleID,
+			"role_id": roleID,
 		},
 	).Error
 }
 
-func (repository *Repository) Delete(id int64) (int64, error) {
-	result := repository.Db.Where("id = ?", id).Delete(&model.User{})
+func (repository *Repository) Update(userID int64, user *model.User) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
+		map[string]interface{}{
+			"email":        user.Email,
+			"phone_number": user.PhoneNumber,
+		},
+	).Error
+}
+
+func (repository *Repository) Delete(userID int64) (int64, error) {
+	result := repository.Db.Where("id = ?", userID).Delete(&model.User{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetByID(id int64) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+func (repository *Repository) DeleteRole(userID int64, roleID int64) (int64, error) {
+	result := repository.Db.Model(&model.User{}).Where("id = ?", userID).Where("role_id = ?", roleID).Updates(
+		map[string]interface{}{
+			"role_id": nil,
+		},
+	)
+	return result.RowsAffected, result.Error
+}
+
+func (repository *Repository) GetByID(userID int64) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Preload(clause.Associations).
+		Where("id = ?", userID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByEmail(email string) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodDefault,
-	).Where(
+	result := &model.User{}
+	return result, repository.Db.Preload(clause.Associations).
+		Where(
+			"login_method = ?", constants.AuthLoginMethodDefault,
+		).Where(
 		"email = ?", email,
 	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByPhoneNumber(phoneNumber uint64) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodDefault,
-	).Where(
+	result := &model.User{}
+	return result, repository.Db.Preload(clause.Associations).
+		Where(
+			"login_method = ?", constants.AuthLoginMethodDefault,
+		).Where(
 		"phone_number = ?", phoneNumber,
 	).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByProvider(provider string, providerUserID string) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Where(
-		"sign_in_method = ?", constants.AuthLoginMethodProvider,
-	).Where(
+	result := &model.User{}
+	return result, repository.Db.Preload(clause.Associations).
+		Where(
+			"login_method = ?", constants.AuthLoginMethodProvider,
+		).Where(
 		"provider = ?", provider,
 	).Where(
 		"provider_user_id = ?", providerUserID,
@@ -74,7 +97,25 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
 	var result []model.User
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE name ILIKE '%s' OR feature ILIKE '%s' OR description ILIKE '%s'",
+			filter.Search,
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Preload(clause.Associations).
+		Scopes(
+			helpers.PaginationScope(
+				repository.Db,
+				"SELECT * FROM users",
+				where,
+				pagination,
+				filter,
+			),
+		).Find(&result).Error
 }
 
 // ----------------- Authentication service -----------------
@@ -87,54 +128,55 @@ func (repository *Repository) CreateUserMfa(userMfa *model.UserMfa) (*model.User
 	result := *userMfa
 	return &result, repository.Db.Create(&result).Error
 }
-func (repository *Repository) UpdateUserPassword(id int64, password string) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Update("password", password).Error
+func (repository *Repository) UpdateUserPassword(userID int64, password string) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Update("password", password).Error
 }
 
-func (repository *Repository) UpdateUserActivation(id int64, user *model.User) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) UpdateUserActivation(userID int64, user *model.User) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
-			"user_info_id": user.UserInfoID,
-			"user_mfa_id":  user.UserMfaID,
 			"is_activated": user.IsActivated,
 			"activated_at": user.ActivatedAt,
+			"user_info_id": user.UserInfoID,
+			"user_mfa_id":  user.UserMfaID,
 		},
 	).Error
 }
 
 // ----------------- Profile service -----------------
-func (repository *Repository) UpdateEmail(id int64, email string) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+
+func (repository *Repository) UpdateEmail(userID int64, email string) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"email": email,
 		},
 	).Error
 }
-func (repository *Repository) UpdatePhoneNumber(id int64, phoneNumber uint64) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) UpdatePhoneNumber(userID int64, phoneNumber uint64) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"phone_number": phoneNumber,
 		},
 	).Error
 }
-func (repository *Repository) UpdatePassword(id int64, password string) (*model.User, error) {
-	var result *model.User
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) UpdatePassword(userID int64, password string) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
 			"password": password,
 		},
 	).Error
 }
 
-func (repository *Repository) UpdateProfileInfo(id int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
-	var result *model.UserInfo
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) UpdateProfileInfo(userInfoID int64, userInfo *model.UserInfo) (*model.UserInfo, error) {
+	result := &model.UserInfo{}
+	return result, repository.Db.Model(result).Where("id = ?", userInfoID).Updates(
 		map[string]interface{}{
-			"user_name":  userInfo.Username,
+			"username":   userInfo.Username,
 			"first_name": userInfo.FirstName,
 			"last_name":  userInfo.LastName,
 			"address":    userInfo.Address,
@@ -144,9 +186,9 @@ func (repository *Repository) UpdateProfileInfo(id int64, userInfo *model.UserIn
 	).Error
 }
 
-func (repository *Repository) UpdateProfileMfa(id int64, column string, value bool) (*model.UserMfa, error) {
-	var result *model.UserMfa
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) UpdateProfileMfa(userMfaID int64, column string, value bool) (*model.UserMfa, error) {
+	result := &model.UserMfa{}
+	return result, repository.Db.Model(result).Where("id = ?", userMfaID).Updates(
 		map[string]interface{}{
 			"" + column: value,
 		},

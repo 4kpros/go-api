@@ -1,7 +1,7 @@
 package permission
 
 import (
-	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -19,89 +19,74 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) UpdateByRoleIDFeatureName(
-	roleID int64,
-	featureName string,
-	isEnabled bool,
-	table data.UpdatePermissionTableRequest,
-) (*data.PermissionFeatureTableResponse, error) {
-	var err error
-	var result = &data.PermissionFeatureTableResponse{}
-	// Update permission feature
-	if tmpErr := repository.Db.Model(&model.PermissionFeature{}).
-		Where("role_id = ?", roleID).
-		Where("feature_name = ?", featureName).
-		Update("is_enabled", isEnabled).Error; tmpErr != nil {
-		if errors.Is(tmpErr, gorm.ErrRecordNotFound) {
-			newPermissionFeature := &model.PermissionFeature{
-				RoleID:      roleID,
-				FeatureName: featureName,
-				IsEnabled:   isEnabled,
-			}
-			err = repository.Db.Create(&newPermissionFeature).Error
-			if err != nil {
-				result.PermissionFeatureResponse = newPermissionFeature.ToResponse()
-			}
-		} else {
-			err = tmpErr
-		}
-	}
-	// Update permission table
-	if tmpErr := repository.Db.Model(&model.PermissionTable{}).
-		Where("role_id = ?", roleID).
-		Where("table_name = ?", table.TableName).
-		Updates(
-			map[string]interface{}{
-				"create": table.Create,
-				"read":   table.Read,
-				"update": table.Update,
-				"delete": table.Delete,
-			},
-		).Error; tmpErr != nil {
-		if errors.Is(tmpErr, gorm.ErrRecordNotFound) {
-			newPermissionTable := &model.PermissionTable{
-				RoleID: roleID,
-				Create: table.Create,
-				Read:   table.Read,
-				Update: table.Update,
-				Delete: table.Delete,
-			}
-			err = repository.Db.Create(&newPermissionTable).Error
-			if err != nil {
-				result.PermissionTableResponse = newPermissionTable.ToResponse()
-			}
-		} else {
-			err = tmpErr
-		}
-	}
-	return result, err
+func (repository *Repository) CreatePermission(permission *model.Permission) (*model.Permission, error) {
+	result := *permission
+	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) GetPermissionFeatureByRoleIDAndFeatureName(
-	roleID int64,
-	featureName string,
-) (*model.PermissionFeature, error) {
-	var result *model.PermissionFeature
-	return result, repository.Db.Where("role_id = ?", roleID).Where("feature_name = ?", featureName).First(result).Error
-}
-
-func (repository *Repository) GetPermissionTableByRoleIDAndTableName(
+func (repository *Repository) UpdatePermission(
 	roleID int64,
 	tableName string,
-) (*model.PermissionTable, error) {
-	var result *model.PermissionTable
-	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ?", tableName).First(result).Error
+	data *model.Permission,
+) (*model.Permission, error) {
+	result := &model.Permission{
+		RoleID:    roleID,
+		TableName: tableName,
+		Create:    data.Create,
+		Read:      data.Read,
+		Update:    data.Update,
+		Delete:    data.Delete,
+	}
+	return result, repository.Db.
+		Where("role_id = ?", roleID).Where("table_name = ?", tableName).
+		Attrs(
+			model.Permission{
+				Create: data.Create,
+				Read:   data.Read,
+				Update: data.Update,
+				Delete: data.Delete,
+			},
+		).FirstOrCreate(result).Error
+}
+
+func (repository *Repository) GetPermission(
+	roleID int64,
+	tableName string,
+) (*model.Permission, error) {
+	result := &model.Permission{}
+	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ?", tableName).Limit(1).Find(result).Error
+}
+
+func (repository *Repository) GetPermissionWithAllTables(
+	roleID int64,
+	tableName1 string,
+	tableName2 string,
+) (*model.Permission, error) {
+	result := &model.Permission{}
+	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ? or table_name = ?", tableName1, tableName2).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAllByRoleID(
 	roleID int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
-) ([]data.PermissionFeatureTableResponse, error) {
-	var result []data.PermissionFeatureTableResponse
-	return result, repository.Db.Model(&model.PermissionFeature{}).
-		Select("permission_features.*, permission_tables.*").Where("role_id = ?", roleID).
-		Joins("INNER JOIN permission_tables ON permission_features.role_id = permission_tables.role_id").
-		Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).
-		Find(result).Error
+) ([]data.PermissionResponse, error) {
+	var result []data.PermissionResponse
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE table_name ILIKE %s OR WHERE role-id ILIKE %s",
+			filter.Search,
+			filter.Search,
+		)
+	}
+	return result, repository.Db.Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"permissions",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
 }

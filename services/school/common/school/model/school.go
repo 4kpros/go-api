@@ -10,33 +10,34 @@ type School struct {
 	Name string `gorm:"unique;not null"`
 	Type string `gorm:"not null"`
 
-	SchoolInfo   *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	SchoolInfoID int64       `gorm:"default:null"`
+	SchoolInfo   *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	SchoolConfig   *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	SchoolConfigID int64         `gorm:"default:null"`
+	SchoolConfig   *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolId;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (school *School) ToResponse() *data.SchoolResponse {
-	resp := &data.SchoolResponse{}
-	resp.ID = school.ID
-	resp.CreatedAt = school.CreatedAt
-	resp.UpdatedAt = school.UpdatedAt
-	resp.DeletedAt = school.DeletedAt
-	resp.Name = school.Name
-	resp.Type = school.Type
-	resp.SchoolInfo = school.SchoolInfo.ToResponse()
-	resp.SchoolConfig = school.SchoolConfig.ToResponse()
-	resp.SchoolDirectors = ToSchoolDirectorResponseList(school.SchoolDirectors)
+func (item *School) ToResponse() *data.SchoolResponse {
+	resp := &data.SchoolResponse{
+		Name:            item.Name,
+		Type:            item.Type,
+		SchoolInfo:      item.SchoolInfo.ToResponse(),
+		SchoolConfig:    item.SchoolConfig.ToResponse(),
+		SchoolDirectors: ToSchoolDirectorResponseList(item.SchoolDirectors),
+	}
+
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 	return resp
 }
 
-func ToSchoolResponseList(schoolList []School) []data.SchoolResponse {
-	resp := make([]data.SchoolResponse, len(schoolList))
-	for index, school := range schoolList {
-		resp[index] = *school.ToResponse()
+func ToSchoolResponseList(itemList []School) []data.SchoolResponse {
+	resp := make([]data.SchoolResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

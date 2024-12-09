@@ -60,9 +60,10 @@ func (controller *Controller) LoginWithEmail(
 		},
 		&input.LoginDevice,
 	)
-	if err != nil {
+	if err != nil && (len(activateAccountToken) < 1 || errCode != http.StatusForbidden) {
 		return
 	}
+	err = nil
 	result = &data.LoginResponse{
 		AccessToken:          accessToken,
 		Expires:              accessExpires,
@@ -112,9 +113,10 @@ func (controller *Controller) LoginWithPhoneNumber(
 		},
 		&input.LoginDevice,
 	)
-	if err != nil {
+	if err != nil && (len(activateAccountToken) < 1 || errCode != http.StatusForbidden) {
 		return
 	}
+	err = nil
 	result = &data.LoginResponse{
 		AccessToken:          accessToken,
 		Expires:              accessExpires,

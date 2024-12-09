@@ -26,42 +26,41 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Update permission with matching role id and feature name",
+			OperationID: "update-permission",
+			Summary:     "Update permission",
+			Description: "Update permission with matching role id, table name with actions(CRUD)",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleID}/{featureName}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}/", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.UpdateRoleFeaturePermissionPathRequest
-				Body data.UpdateRoleFeaturePermissionBodyRequest
+				data.PermissionPathRequest
+				Body data.UpdatePermissionRequest
 			},
 		) (*struct {
-			Body data.PermissionFeatureTableResponse
+			Body data.PermissionResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleIDFeatureName(
-				&ctx, input.RoleID, input.FeatureName, input.Body,
+			result, errCode, err := controller.UpdatePermission(
+				&ctx, input,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.PermissionFeatureTableResponse
+				Body data.PermissionResponse
 			}{Body: *result}, nil
 		},
 	)
@@ -71,7 +70,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-permission-list",
-			Summary:     "Get all role permissions" + " (" + constants.FeatureAdminLabel + ")",
+			Summary:     "Get all role permissions",
 			Description: "Get all permissions with matching role id and support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
@@ -79,20 +78,19 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,   // Feature scope
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.GetRolePermissionListRequest
+				data.PermissionPathRequest
 				types.Filter
 				types.PaginationRequest
 			},
