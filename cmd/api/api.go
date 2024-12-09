@@ -113,7 +113,7 @@ func Start() {
 
 	// OpenAPI documentation based on huma
 	humaConfig := huma.DefaultConfig(constants.OpenApiTitle, constants.OpenApiVersion)
-	// Custom CreateHooks to remove $schema links
+	// Custom hook to remove schema links
 	humaConfig.CreateHooks = []func(huma.Config) huma.Config{
 		func(c huma.Config) huma.Config {
 			return c

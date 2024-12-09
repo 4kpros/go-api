@@ -597,7 +597,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 			Device:   "*",
 			App:      "*",
 		},
-		constants.JwtIssuerAuthForgotPasswordCode,
+		constants.JwtIssuerAuthForgotPasswordNewPassword,
 		security.NewExpiresDateDefault(),
 		config.Keys.JwtPrivateKey,
 		config.SetRedisString,
