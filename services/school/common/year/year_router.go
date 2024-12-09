@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-year",
-			Summary:     "Create year" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Create year",
 			Description: "Create new year by providing name and description and return created object. The name year should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
@@ -35,7 +35,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -64,7 +63,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-year",
-			Summary:     "Update year" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Update year",
 			Description: "Update existing year with matching id and return the new year object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -72,7 +71,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -102,7 +100,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-year",
-			Summary:     "Delete year" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Delete year",
 			Description: "Delete existing year with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -110,7 +108,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -139,7 +136,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-year-id",
-			Summary:     "Get year by id" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get year by id",
 			Description: "Return one year with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -147,9 +144,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},
@@ -176,7 +172,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-year-list",
-			Summary:     "Get all years" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get all years",
 			Description: "Get all years with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
@@ -184,9 +180,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},

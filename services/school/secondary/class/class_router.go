@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-class",
-			Summary:     "Create class" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Create class",
 			Description: "Create new class by providing name and description and return created object. The name class should be unique.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
@@ -35,7 +35,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -64,7 +63,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-class",
-			Summary:     "Update class" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Update class",
 			Description: "Update existing class with matching id and return the new class object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -72,7 +71,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -102,7 +100,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-class",
-			Summary:     "Delete class" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Delete class",
 			Description: "Delete existing class with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -110,7 +108,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -139,7 +136,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-class-id",
-			Summary:     "Get class by id" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get class by id",
 			Description: "Return one class with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -147,9 +144,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},
@@ -176,7 +172,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-class-list",
-			Summary:     "Get all classs" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get all classs",
 			Description: "Get all classs with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
@@ -184,9 +180,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},

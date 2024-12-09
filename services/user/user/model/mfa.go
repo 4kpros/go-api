@@ -7,10 +7,9 @@ import (
 
 type UserMfa struct {
 	types.BaseGormModel
-	UserID        int64 `gorm:"unique;not null"`
-	Email         bool  `gorm:"default:false"`
-	PhoneNumber   bool  `gorm:"default:false"`
-	Authenticator bool  `gorm:"default:false"`
+	Email         bool `gorm:"default:false"`
+	PhoneNumber   bool `gorm:"default:false"`
+	Authenticator bool `gorm:"default:false"`
 }
 
 func (item *UserMfa) ToResponse() *data.UserMfaResponse {
@@ -18,11 +17,8 @@ func (item *UserMfa) ToResponse() *data.UserMfaResponse {
 	if item == nil {
 		return resp
 	}
-	resp = &data.UserMfaResponse{
-		UserID:        item.UserID,
-		Email:         item.Email,
-		PhoneNumber:   item.PhoneNumber,
-		Authenticator: item.Authenticator,
-	}
+	resp.Email = item.Email
+	resp.PhoneNumber = item.PhoneNumber
+	resp.Authenticator = item.Authenticator
 	return resp
 }

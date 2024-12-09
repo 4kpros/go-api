@@ -7,6 +7,7 @@ import (
 
 	"api/common/types"
 	"api/common/utils/security"
+	"api/services/user/role/model"
 	"api/services/user/user/data"
 )
 
@@ -22,11 +23,14 @@ type User struct {
 	IsActivated    bool       `gorm:"default:null"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
-	UserRole *UserRole `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	RoleID int64       `gorm:"default:null"`
+	Role   *model.Role `gorm:"default:null;foreignKey:ID;references:RoleID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserInfo *UserInfo `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserInfoID int64     `gorm:"default:null"`
+	UserInfo   *UserInfo `gorm:"default:null;foreignKey:ID;references:UserInfoID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserMfa *UserMfa `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	UserMfaID int64    `gorm:"default:null"`
+	UserMfa   *UserMfa `gorm:"default:null;foreignKey:ID;references:UserMfaID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *User) BeforeCreate(db *gorm.DB) (err error) {
@@ -44,23 +48,17 @@ func (item *User) ToResponse() *data.UserResponse {
 	if item == nil {
 		return resp
 	}
-	resp = &data.UserResponse{
-		Email:       item.Email,
-		PhoneNumber: item.PhoneNumber,
+	resp.Email = item.Email
+	resp.PhoneNumber = item.PhoneNumber
+	resp.LoginMethod = item.LoginMethod
+	resp.Provider = item.Provider
+	resp.ProviderUserID = item.ProviderUserID
+	resp.IsActivated = item.IsActivated
+	resp.ActivatedAt = item.ActivatedAt
 
-		LoginMethod:    item.LoginMethod,
-		Provider:       item.Provider,
-		ProviderUserID: item.ProviderUserID,
-		IsActivated:    item.IsActivated,
-		ActivatedAt:    item.ActivatedAt,
-
-		UserRole: &data.UserRoleResponse{
-			UserID: item.UserRole.UserID,
-			RoleID: item.UserRole.RoleID,
-		},
-		UserInfo: item.UserInfo.ToResponse(),
-		UserMfa:  item.UserMfa.ToResponse(),
-	}
+	resp.Role = item.Role.ToResponse()
+	resp.UserInfo = item.UserInfo.ToResponse()
+	resp.UserMfa = item.UserMfa.ToResponse()
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt

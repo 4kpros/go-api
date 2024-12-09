@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-teaching-unit",
-			Summary:     "Create teaching unit" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Create teaching unit",
 			Description: "Create new teaching unit and return the created object.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
@@ -35,7 +35,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -64,7 +63,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "post-teaching-unit-professor",
-			Summary:     "Add new professor" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Add new professor",
 			Description: "Add new professor and return the created object.",
 			Method:      http.MethodPost,
 			Path:        fmt.Sprintf("%s/{id}/professor", endpointConfig.Group),
@@ -72,7 +71,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -106,7 +104,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-teaching-unit",
-			Summary:     "Update teaching unit" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Update teaching unit",
 			Description: "Update existing teaching unit with matching id and return the updated object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -114,7 +112,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -144,7 +141,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-teaching-unit",
-			Summary:     "Delete teaching unit" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Delete teaching unit",
 			Description: "Delete existing teaching unit and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -152,7 +149,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -181,7 +177,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "delete-teaching-unit-professor",
-			Summary:     "Delete teaching unit professor" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Delete teaching unit professor",
 			Description: "Delete existing professor and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}/professor", endpointConfig.Group),
@@ -189,7 +185,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector,  // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -219,7 +214,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-teaching-unit-id",
-			Summary:     "Get teaching unit by id" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get teaching unit by id",
 			Description: "Return one teaching unit with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
@@ -227,9 +222,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},
@@ -256,7 +250,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-teaching-unit-list",
-			Summary:     "Get all teaching units" + " (" + constants.FeatureDirectorLabel + ")",
+			Summary:     "Get all teaching units",
 			Description: "Get all teaching units with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
@@ -264,9 +258,8 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureDirector, // Feature scope
-						tableName,                 // Table name
-						constants.PermissionRead,  // Operation
+						tableName,                // Table name
+						constants.PermissionRead, // Operation
 					},
 				},
 			},

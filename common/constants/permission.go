@@ -15,10 +15,3 @@ const (
 
 	FeatureDefault = "feature-default"
 )
-
-const (
-	FeatureAdminLabel    = "Admin"
-	FeatureDirectorLabel = "Director"
-	FeatureTeacherLabel  = "Teacher"
-	FeatureStudentLabel  = "Student"
-)

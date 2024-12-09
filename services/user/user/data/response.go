@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"api/common/types"
+	"api/services/user/role/data"
 )
 
 type UserResponse struct {
@@ -17,14 +18,9 @@ type UserResponse struct {
 	IsActivated    bool       `json:"isActivated" required:"false" doc:"Is user account activated ?"`
 	ActivatedAt    *time.Time `json:"activatedAt" required:"false" doc:"Activation date time"`
 
-	UserRole *UserRoleResponse `json:"role" required:"false" doc:"Role" `
-	UserInfo *UserInfoResponse `json:"info" required:"false" doc:"Additional user info(e.g. address, first name, last name, ...)" `
-	UserMfa  *UserMfaResponse  `json:"mfa" required:"false" doc:"Multiple factor authenticator enabled by the user"`
-}
-
-type UserRoleResponse struct {
-	UserID int64 `json:"userID" doc:"User id"`
-	RoleID int64 `json:"roleID" doc:"Role id"`
+	Role     *data.RoleResponse `json:"role" required:"false" doc:"Role" `
+	UserInfo *UserInfoResponse  `json:"info" required:"false" doc:"Additional user info(e.g. address, first name, last name, ...)" `
+	UserMfa  *UserMfaResponse   `json:"mfa" required:"false" doc:"Multiple factor authenticator enabled by the user"`
 }
 
 type UserInfoResponse struct {

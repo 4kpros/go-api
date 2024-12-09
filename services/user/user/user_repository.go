@@ -4,7 +4,6 @@ import (
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
-	"api/services/user/profile/data"
 	"api/services/user/user/model"
 	"fmt"
 
@@ -24,12 +23,16 @@ func (repository *Repository) Create(user *model.User) (*model.User, error) {
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) AssignUserRole(userRole *model.UserRole) (*model.UserRole, error) {
-	result := *userRole
-	return &result, repository.Db.Create(&result).Error
+func (repository *Repository) AssignRole(userID int64, roleID int64) (*model.User, error) {
+	result := &model.User{}
+	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
+		map[string]interface{}{
+			"role_id": roleID,
+		},
+	).Error
 }
 
-func (repository *Repository) UpdateUser(userID int64, user *model.User) (*model.User, error) {
+func (repository *Repository) Update(userID int64, user *model.User) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(
 		map[string]interface{}{
@@ -44,8 +47,12 @@ func (repository *Repository) Delete(userID int64) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) DeleteUserRole(userID int64, roleID int64) (int64, error) {
-	result := repository.Db.Where("user_id = ?", userID).Where("role_id = ?", roleID).Delete(&model.UserRole{})
+func (repository *Repository) DeleteRole(userID int64, roleID int64) (int64, error) {
+	result := repository.Db.Model(&model.User{}).Where("id = ?", userID).Where("role_id = ?", roleID).Updates(
+		map[string]interface{}{
+			"role_id": nil,
+		},
+	)
 	return result.RowsAffected, result.Error
 }
 
@@ -80,13 +87,6 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 		"provider = ?", provider,
 	).Where(
 		"provider_user_id = ?", providerUserID,
-	).Limit(1).Find(result).Error
-}
-
-func (repository *Repository) GetUserRoleByUserID(userID int64) (*model.UserRole, error) {
-	result := &model.UserRole{}
-	return result, repository.Db.Where(
-		"user_id = ?", userID,
 	).Limit(1).Find(result).Error
 }
 
@@ -139,18 +139,6 @@ func (repository *Repository) UpdateUserActivation(userID int64, user *model.Use
 
 // ----------------- Profile service -----------------
 
-func (repository *Repository) GetByIDLogged(userID int64) (*data.UserLoginResponse, error) {
-	result := &data.UserLoginResponse{}
-	return result, repository.Db.Raw(
-		"SELECT users.login_method, users.provider, user_infos.image, user_infos.username, "+
-			"user_infos.first_name, user_infos.last_name, user_roles.role_id AS role_id, roles.name AS role, roles.feature "+
-			"FROM users "+
-			"JOIN user_infos ON users.id = user_infos.user_id "+
-			"JOIN user_roles ON users.id = user_roles.user_id "+
-			"JOIN roles ON role_id = roles.id "+
-			"WHERE users.id = ?;", userID,
-	).Limit(1).Find(result).Error
-}
 func (repository *Repository) UpdateEmail(userID int64, email string) (*model.User, error) {
 	result := &model.User{}
 	return result, repository.Db.Model(result).Where("id = ?", userID).Updates(

@@ -20,12 +20,10 @@ func (item *Permission) ToResponse() *data.PermissionResponse {
 	if item == nil {
 		return resp
 	}
-	resp = &data.PermissionResponse{
-		TableName: item.TableName,
-		Create:    item.Create,
-		Read:      item.Read,
-		Update:    item.Update,
-		Delete:    item.Delete,
-	}
+	resp.TableName = item.TableName
+	resp.Create = item.Create
+	resp.Read = item.Read
+	resp.Update = item.Update
+	resp.Delete = item.Delete
 	return resp
 }

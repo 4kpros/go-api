@@ -17,11 +17,9 @@ func (item *Role) ToResponse() *data.RoleResponse {
 	if item == nil {
 		return resp
 	}
-	resp = &data.RoleResponse{
-		Name:        item.Name,
-		Feature:     item.Feature,
-		Description: item.Description,
-	}
+	resp.Name = item.Name
+	resp.Feature = item.Feature
+	resp.Description = item.Description
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt

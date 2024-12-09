@@ -23,16 +23,13 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		}
 
 		// Retrieve feature permissions
-		var featureScope, tableName, tableOperation string
+		var tableName, tableOperation string
 		for _, opScheme := range ctx.Operation().Security {
 			if securityScheme, ok := opScheme[constants.SecurityAuthName]; ok {
 				if len(securityScheme) > 0 {
-					featureScope = securityScheme[0]
+					tableName = securityScheme[0]
 					if len(securityScheme) > 1 {
-						tableName = securityScheme[1]
-						if len(securityScheme) > 2 {
-							tableOperation = securityScheme[2]
-						}
+						tableOperation = securityScheme[1]
 					}
 				}
 				break
@@ -40,47 +37,33 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		}
 
 		// Check for required permissions
-		if len(featureScope) >= 1 {
-			// Retrieve role
-			role, errFeature := roleRepo.GetByID(jwtToken.RoleID)
-			if errFeature != nil {
-				tempErr := constants.Http500ErrorMessage("get role from database")
+		if len(tableName) >= 1 {
+			// Retrieve permissions
+			userPermission, errPerm := permissionRepo.GetPermissionWithAllTables(jwtToken.RoleID, tableName, "*")
+			if errPerm != nil {
+				tempErr := constants.Http500ErrorMessage("get permission from database")
 				_ = huma.WriteErr(api, ctx, http.StatusInternalServerError, tempErr.Error(), tempErr)
 				return
 			}
 			tempErr := constants.Http403InvalidPermissionErrorMessage()
-			if !(role != nil && role.Feature == featureScope) {
+			if !(userPermission != nil && (userPermission.TableName == tableName || userPermission.TableName == "*")) {
 				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 				return
 			}
 
-			if len(tableName) >= 1 {
-				// Retrieve permissions for role
-				userPermission, errPerm := permissionRepo.GetPermissionOR(jwtToken.RoleID, tableName, "*")
-				if errPerm != nil {
-					tempErr := constants.Http500ErrorMessage("get permission from database")
-					_ = huma.WriteErr(api, ctx, http.StatusInternalServerError, tempErr.Error(), tempErr)
-					return
-				}
-				if !(userPermission != nil && (userPermission.TableName == tableName || userPermission.TableName == "*")) {
+			if len(tableOperation) >= 1 {
+				if tableOperation == constants.PermissionCreate && !userPermission.Create {
 					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
 					return
-				}
-
-				if len(tableOperation) >= 1 {
-					if tableOperation == constants.PermissionCreate && !userPermission.Create {
-						_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
-						return
-					} else if tableOperation == constants.PermissionRead && !userPermission.Read {
-						_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
-						return
-					} else if tableOperation == constants.PermissionUpdate && !userPermission.Update {
-						_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
-						return
-					} else if tableOperation == constants.PermissionDelete && !userPermission.Delete {
-						_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
-						return
-					}
+				} else if tableOperation == constants.PermissionRead && !userPermission.Read {
+					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
+					return
+				} else if tableOperation == constants.PermissionUpdate && !userPermission.Update {
+					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
+					return
+				} else if tableOperation == constants.PermissionDelete && !userPermission.Delete {
+					_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
+					return
 				}
 			}
 		}

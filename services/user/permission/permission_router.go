@@ -27,7 +27,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "update-permission",
-			Summary:     "Update permission " + " (" + constants.FeatureAdminLabel + ")",
+			Summary:     "Update permission",
 			Description: "Update permission with matching role id, table name with actions(CRUD)",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/role/{roleID}/", endpointConfig.Group),
@@ -35,7 +35,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -71,7 +70,7 @@ func RegisterEndpoints(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-permission-list",
-			Summary:     "Get all role permissions" + " (" + constants.FeatureAdminLabel + ")",
+			Summary:     "Get all role permissions",
 			Description: "Get all permissions with matching role id and support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
@@ -79,7 +78,6 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,   // Feature scope
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},

@@ -54,26 +54,14 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 		return
 	}
 
-	// Get user role
-	var userRoleID int64 = 0
-	if userFound.ID > 0 {
-		userRoleFound, err := service.Repository.GetUserRoleByUserID(userFound.ID)
-		if err == nil && userRoleFound != nil {
-			userRoleID = userRoleFound.RoleID
-		}
-	}
-
 	// Check if account is activated
 	if userFound.IsActivated {
 		// Generate new token
 		var accessJwtToken *types.JwtToken
-		if userFound.UserRole != nil {
-			userRoleID = userFound.UserRole.RoleID
-		}
 		accessJwtToken, accessToken, err = security.EncodeJWTToken(
 			&types.JwtToken{
 				UserID:   userFound.ID,
-				RoleID:   userRoleID,
+				RoleID:   userFound.RoleID,
 				Platform: device.Platform,
 				Device:   device.DeviceName,
 				App:      device.App,
@@ -108,7 +96,7 @@ func (service *Service) Login(input *data.LoginRequest, device *data.LoginDevice
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userRoleID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -193,26 +181,27 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	}
 	newUser.Provider = input.Provider
 
-	// Global variable for this function
-	var userRoleID int64 = 0
-
 	// Save user if it's not in database
 	userFound, err := service.Repository.GetByProvider(input.Provider, newUser.ProviderUserID)
 	if err != nil || userFound == nil {
-		userFound, err = service.Repository.Create(
-			&model.User{
-				Provider:       input.Provider,
-				ProviderUserID: newUser.ProviderUserID,
-				LoginMethod:    constants.AuthLoginMethodProvider,
-			},
-		)
+		// Add info
+		var userInfo *model.UserInfo
+		userInfo, err = service.Repository.CreateUserInfo(&model.UserInfo{})
 		if err != nil {
 			errCode = http.StatusInternalServerError
-			err = constants.Http500ErrorMessage("create user on database")
+			err = constants.Http500ErrorMessage("create user info on database")
+			return
+		}
+		// Add mfa
+		var userMfa *model.UserMfa
+		userMfa, err = service.Repository.CreateUserMfa(&model.UserMfa{})
+		if err != nil {
+			errCode = http.StatusInternalServerError
+			err = constants.Http500ErrorMessage("create user mfa on database")
 			return
 		}
 
-		// Assign the default role to user
+		// Get the default role
 		var defaultRole *modelRole.Role
 		defaultRole, err = service.RoleRepository.GetByName(config.Env.RoleDefault)
 		if err != nil {
@@ -220,35 +209,22 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 			err = constants.Http500ErrorMessage("get role on database")
 			return
 		}
-		if defaultRole != nil && defaultRole.ID > 0 {
-			userRoleID = defaultRole.ID
-			_, err = service.Repository.AssignUserRole(&model.UserRole{
-				UserID: userFound.ID,
-				RoleID: defaultRole.ID,
-			})
-			if err != nil {
-				errCode = http.StatusInternalServerError
-				err = constants.Http500ErrorMessage("assign user role on database")
-				return
-			}
-		}
 
-		// Add info
-		var userInfo *model.UserInfo
-		userInfo, err = service.Repository.CreateUserInfo(newUser.UserInfo)
+		// Create user
+		userFound, err = service.Repository.Create(
+			&model.User{
+				Provider:       input.Provider,
+				ProviderUserID: newUser.ProviderUserID,
+				LoginMethod:    constants.AuthLoginMethodProvider,
+				UserInfoID:     userInfo.ID,
+				UserMfaID:      userMfa.ID,
+				RoleID:         defaultRole.ID,
+			},
+		)
 		if err != nil {
 			errCode = http.StatusInternalServerError
-			err = constants.Http500ErrorMessage("create user info on database")
+			err = constants.Http500ErrorMessage("create user on database")
 			return
-		}
-		userFound.UserInfo = userInfo
-	}
-
-	// Get user role if it's smaller or equal to 0
-	if userRoleID <= 0 {
-		userRoleFound, err := service.Repository.GetUserRoleByUserID(userFound.ID)
-		if err == nil && userRoleFound != nil {
-			userRoleID = userRoleFound.RoleID
 		}
 	}
 
@@ -257,7 +233,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	jwtToken, accessToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userRoleID,
+			RoleID:   userFound.RoleID,
 			Platform: device.Platform,
 			Device:   device.DeviceName,
 			App:      device.App,
@@ -299,37 +275,25 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 		return
 	}
 
-	// Create new user
-	userFound.Email = input.Email
-	userFound.PhoneNumber = input.PhoneNumber
-	userFound.Password = input.Password
-	userFound.LoginMethod = constants.AuthLoginMethodDefault
-	createdUser, err := service.Repository.Create(userFound)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("create user on database")
-		return
-	}
-
-	// Assign the default role to user
-	var userRoleID int64 = 0
-	defaultRole, err := service.RoleRepository.GetByName(config.Env.RoleDefault)
+	// Get the default role
+	var defaultRole *modelRole.Role
+	defaultRole, err = service.RoleRepository.GetByName(config.Env.RoleDefault)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get role on database")
 		return
 	}
-	if defaultRole != nil && defaultRole.ID > 0 {
-		userRoleID = defaultRole.ID
-		_, err = service.Repository.AssignUserRole(&model.UserRole{
-			UserID: userFound.ID,
-			RoleID: defaultRole.ID,
-		})
-		if err != nil {
-			errCode = http.StatusInternalServerError
-			err = constants.Http500ErrorMessage("assign user role on database")
-			return
-		}
+	// Create new user
+	userFound.Email = input.Email
+	userFound.PhoneNumber = input.PhoneNumber
+	userFound.Password = input.Password
+	userFound.LoginMethod = constants.AuthLoginMethodDefault
+	userFound.RoleID = defaultRole.ID
+	createdUser, err := service.Repository.Create(userFound)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("create user on database")
+		return
 	}
 
 	// Since the new user account is not activated, we generate code with
@@ -347,7 +311,7 @@ func (service *Service) Register(input *data.RegisterRequest) (activateAccountTo
 	activateAccountJwtToken, activateAccountToken, err = security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   createdUser.ID,
-			RoleID:   userRoleID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -412,7 +376,6 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	}
 
 	// Check if code is valid
-	fmt.Printf("\nRequested code: %d\n", input.Code)
 	if jwtToken.Code <= 0 || jwtToken.Code != input.Code {
 		errCode = http.StatusUnprocessableEntity
 		err = fmt.Errorf("%s", "Invalid code! Please enter valid information.")
@@ -433,13 +396,13 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 	}
 
 	// Create user info and MFA
-	_, err = service.Repository.CreateUserInfo(&model.UserInfo{UserID: userFound.ID})
+	newUserInfo, err := service.Repository.CreateUserInfo(&model.UserInfo{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create user info")
 		return
 	}
-	_, err = service.Repository.CreateUserMfa(&model.UserMfa{UserID: userFound.ID})
+	newUserMfa, err := service.Repository.CreateUserMfa(&model.UserMfa{})
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create user MFA")
@@ -448,6 +411,8 @@ func (service *Service) ActivateAccount(input *data.ActivateAccountRequest) (act
 
 	// Update account
 	tmpActivatedAt := time.Now()
+	userFound.UserInfoID = newUserInfo.ID
+	userFound.UserMfaID = newUserMfa.ID
 	userFound.ActivatedAt = &tmpActivatedAt
 	userFound.IsActivated = true
 	updatedUser, err := service.Repository.UpdateUserActivation(userFound.ID, userFound)
@@ -511,15 +476,6 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 		return
 	}
 
-	// Get user role
-	var userRoleID int64 = 0
-	if userFound.ID > 0 {
-		userRoleFound, err := service.Repository.GetUserRoleByUserID(userFound.ID)
-		if err == nil && userRoleFound != nil {
-			userRoleID = userRoleFound.RoleID
-		}
-	}
-
 	// Generate new random code
 	randomCode, err := utils.GenerateRandomCode(6)
 	if err != nil {
@@ -531,7 +487,7 @@ func (service *Service) ForgotPasswordInit(input *data.ForgotPasswordInitRequest
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userRoleID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -629,15 +585,6 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 		return
 	}
 
-	// Get user role
-	var userRoleID int64 = 0
-	if userFound.ID > 0 {
-		userRoleFound, err := service.Repository.GetUserRoleByUserID(userFound.ID)
-		if err == nil && userRoleFound != nil {
-			userRoleID = userRoleFound.RoleID
-		}
-	}
-
 	// Invalidate the token
 	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
@@ -645,7 +592,7 @@ func (service *Service) ForgotPasswordCode(input *data.ForgotPasswordCodeRequest
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userRoleID,
+			RoleID:   userFound.RoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
