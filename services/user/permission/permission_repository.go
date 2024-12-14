@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"api/common/helpers"
 	"api/common/types"
-	"api/services/user/permission/data"
 	"api/services/user/permission/model"
 )
 
@@ -66,27 +66,29 @@ func (repository *Repository) GetPermissionWithAllTables(
 	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ? or table_name = ?", tableName1, tableName2).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAllByRoleID(
-	roleID int64,
+func (repository *Repository) GetAll(
 	filter *types.Filter,
 	pagination *types.Pagination,
-) ([]data.PermissionResponse, error) {
-	var result []data.PermissionResponse
+) (result []model.Permission, err error) {
+	result = make([]model.Permission, 0)
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE table_name ILIKE %s OR WHERE role-id ILIKE %s",
-			filter.Search,
-			filter.Search,
+			"WHERE role_id ILIKE '%s' OR table_name ILIKE '%s'",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
 		)
 	}
-	return result, repository.Db.Scopes(
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"permissions",
+			"SELECT * FROM permissions",
 			where,
 			pagination,
 			filter,
 		),
 	).Find(&result).Error
+
+	err = tmpErr
+	return
 }

@@ -95,27 +95,29 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 	).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.User, error) {
-	var result []model.User
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.User, err error) {
+	result = make([]model.User, 0)
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE name ILIKE '%s' OR feature ILIKE '%s' OR description ILIKE '%s'",
-			filter.Search,
-			filter.Search,
-			filter.Search,
+			"WHERE email ILIKE '%s' OR phone_number ILIKE '%s' OR role_id ILIKE '%s'",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
 		)
 	}
-	return result, repository.Db.Preload(clause.Associations).
-		Scopes(
-			helpers.PaginationScope(
-				repository.Db,
-				"SELECT * FROM users",
-				where,
-				pagination,
-				filter,
-			),
-		).Find(&result).Error
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"SELECT * FROM users",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	err = tmpErr
+	return
 }
 
 // ----------------- Authentication service -----------------

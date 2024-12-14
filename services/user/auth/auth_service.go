@@ -221,6 +221,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		// Create user
 		userFound, err = service.Repository.Create(
 			&model.User{
+				Email:          newUser.Email,
 				Provider:       input.Provider,
 				ProviderUserID: newUser.ProviderUserID,
 				LoginMethod:    constants.AuthLoginMethodProvider,

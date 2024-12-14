@@ -65,15 +65,15 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Get all permissions for role
+	// Get all permissions
 	huma.Register(
 		*humaApi,
 		huma.Operation{
 			OperationID: "get-role-permission-list",
 			Summary:     "Get all role permissions",
-			Description: "Get all permissions with matching role id and support for search, filter and pagination",
+			Description: "Get all permissions and support for search, filter and pagination",
 			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
@@ -90,14 +90,13 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.PermissionPathRequest
 				types.Filter
 				types.PaginationRequest
 			},
 		) (*struct {
 			Body data.PermissionListResponse
 		}, error) {
-			result, errCode, err := controller.GetAllByRoleID(&ctx, input)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

@@ -5,7 +5,6 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
-	"api/services/user/permission/data"
 	"api/services/user/permission/model"
 )
 
@@ -34,17 +33,14 @@ func (service *Service) UpdatePermission(
 	return
 }
 
-// GetAllByRoleID GetAll Returns all permissions with matching role id and
+// GetAll Returns all permissions with matching role id and
 // support for search, filter and pagination
-func (service *Service) GetAllByRoleID(
+func (service *Service) GetAll(
 	inputJwtToken *types.JwtToken,
-	roleID int64,
 	filter *types.Filter,
 	pagination *types.Pagination,
-) (result []data.PermissionResponse, errCode int, err error) {
-	result, err = service.Repository.GetAllByRoleID(
-		roleID, filter, pagination,
-	)
+) (result []model.Permission, errCode int, err error) {
+	result, err = service.Repository.GetAll(filter, pagination)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get permissions from database")

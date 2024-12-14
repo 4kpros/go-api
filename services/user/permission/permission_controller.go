@@ -39,21 +39,20 @@ func (controller *Controller) UpdatePermission(
 	return
 }
 
-func (controller *Controller) GetAllByRoleID(
+func (controller *Controller) GetAll(
 	ctx *context.Context,
 	input *struct {
-		data.PermissionPathRequest
 		types.Filter
 		types.PaginationRequest
 	},
 ) (result *data.PermissionListResponse, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	permissionList, errCode, err := controller.Service.GetAllByRoleID(helpers.GetJwtContext(ctx), input.RoleID, newFilter, newPagination)
+	permissionList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return
 	}
 	result = &data.PermissionListResponse{
-		Data: permissionList,
+		Data: model.ToResponseList(permissionList),
 	}
 	result.Filter = newFilter
 	result.Pagination = newPagination
