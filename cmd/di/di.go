@@ -3,6 +3,8 @@ package di
 import (
 	"api/cmd/api"
 	"api/config"
+	"api/services/communication"
+	"api/services/contact"
 	"api/services/history"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
@@ -27,8 +29,20 @@ import (
 
 // InjectDependencies Inject all dependencies
 func InjectDependencies() {
-	// History
+	// Others
+	var communicationRepo = communication.NewRepository(config.DB)
+	var contactRepo = contact.NewRepository(config.DB)
 	var historyRepo = history.NewRepository(config.DB)
+	api.AllControllers.CommunicationController = communication.NewController(
+		communication.NewService(
+			communicationRepo,
+		),
+	)
+	api.AllControllers.ContactControllerController = contact.NewController(
+		contact.NewService(
+			contactRepo,
+		),
+	)
 	api.AllControllers.HistoryController = history.NewController(
 		history.NewService(
 			historyRepo,

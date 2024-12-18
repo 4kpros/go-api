@@ -11,6 +11,8 @@ import (
 	"api/common/constants"
 	"api/config"
 	"api/middlewares"
+	"api/services/communication"
+	"api/services/contact"
 	"api/services/history"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
@@ -34,8 +36,10 @@ import (
 )
 
 type Controllers struct {
-	// History service
-	HistoryController *history.Controller
+	// Others service
+	CommunicationController     *communication.Controller
+	ContactControllerController *contact.Controller
+	HistoryController           *history.Controller
 
 	// User service
 	AuthController       *auth.Controller
@@ -67,7 +71,9 @@ var AllControllers = &Controllers{}
 
 // Register all API endpoints
 func registerEndpoints(humaApi *huma.API) {
-	// History service
+	// Others service
+	communication.RegisterEndpoints(humaApi, AllControllers.CommunicationController)
+	contact.RegisterEndpoints(humaApi, AllControllers.ContactControllerController)
 	history.RegisterEndpoints(humaApi, AllControllers.HistoryController)
 
 	// User service

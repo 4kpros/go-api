@@ -1,7 +1,10 @@
 package year
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"api/common/helpers"
 	"api/common/types"
@@ -46,19 +49,26 @@ func (repository *Repository) GetByObject(year *model.Year) (*model.Year, error)
 	return result, repository.Db.Where(year).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.Year, error) {
-	var result []model.Year
-	var condition string = ""
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Year, err error) {
+	result = make([]model.Year, 0)
+	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
-		condition = ""
+		where = fmt.Sprintf(
+			"WHERE start_date ILIKE '%s' OR end_date ILIKE '%s'",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+		)
 	}
-	return result, repository.Db.Scopes(
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"years",
-			condition,
+			"SELECT * FROM years",
+			where,
 			pagination,
 			filter,
 		),
 	).Find(&result).Error
+
+	err = tmpErr
+	return
 }

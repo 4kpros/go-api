@@ -3,6 +3,8 @@ package migrate
 import (
 	"api/common/helpers"
 	"api/config"
+	communicationModel "api/services/communication/model"
+	contactModel "api/services/contact/model"
 	historyModel "api/services/history/model"
 	schoolModel "api/services/school/common/school/model"
 	yearModel "api/services/school/common/year/model"
@@ -26,7 +28,9 @@ import (
 // Start Loads and applies all migrations.
 func Start() error {
 	err := config.DB.AutoMigrate(
-		// History
+		// Others
+		&communicationModel.Communication{},
+		&contactModel.Contact{},
 		&historyModel.History{},
 
 		// User

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"api/common/helpers"
 	"api/common/types"
@@ -66,25 +67,28 @@ func (repository *Repository) GetDirector(schoolID int64, userID int64) (*model.
 	return result, repository.Db.Where("school_id = ?", schoolID).Where("user_id = ?", userID).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
-	var condition string = ""
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.School, err error) {
+	result = make([]model.School, 0)
+	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
-		condition = fmt.Sprintf(
-			"WHERE name ILIKE %s OR WHERE type ILIKE %s",
-			filter.Search,
-			filter.Search,
+		where = fmt.Sprintf(
+			"WHERE name ILIKE '%s' OR type ILIKE '%s'",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
 		)
 	}
-	return result, repository.Db.Scopes(
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"schools",
-			condition,
+			"SELECT * FROM schools",
+			where,
 			pagination,
 			filter,
 		),
 	).Find(&result).Error
+
+	err = tmpErr
+	return
 }
 
 func (repository *Repository) GetAllByUserID(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
