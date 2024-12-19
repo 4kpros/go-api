@@ -1,7 +1,10 @@
 package history
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"api/common/helpers"
 	"api/common/types"
@@ -21,7 +24,27 @@ func (repository *Repository) Create(history *model.History) (*model.History, er
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) ([]model.History, error) {
-	var result []model.History
-	return result, repository.Db.Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.History, err error) {
+	result = make([]model.History, 0)
+	var where string = ""
+	if filter != nil && len(filter.Search) >= 1 {
+		where = fmt.Sprintf(
+			"WHERE email ILIKE '%s' OR phone_number ILIKE '%s' OR role_id ILIKE '%s'",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+		)
+	}
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
+		helpers.PaginationScope(
+			repository.Db,
+			"SELECT * FROM histories",
+			where,
+			pagination,
+			filter,
+		),
+	).Find(&result).Error
+
+	err = tmpErr
+	return
 }

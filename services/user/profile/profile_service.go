@@ -90,10 +90,11 @@ func (service *Service) UpdateProfilePasswordInit(inputJwtToken *types.JwtToken)
 		return
 	}
 	expires := security.NewExpiresDateDefault()
+	var tempRoleID int64 = userFound.RoleID
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
@@ -195,10 +196,11 @@ func (service *Service) UpdateProfilePasswordCheckCode(inputJwtToken *types.JwtT
 	_, _ = config.DeleteRedisString(security.GetJWTCachedKey(jwtToken.UserID, jwtToken.Issuer))
 
 	// Generate new token
+	var tempRoleID int64 = userFound.RoleID
 	newJwtToken, newToken, err := security.EncodeJWTToken(
 		&types.JwtToken{
 			UserID:   userFound.ID,
-			RoleID:   userFound.RoleID,
+			RoleID:   tempRoleID,
 			Platform: "*",
 			Device:   "*",
 			App:      "*",
