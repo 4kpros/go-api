@@ -54,7 +54,8 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE start_date ILIKE '%s' OR end_date ILIKE '%s'",
+			"WHERE CAST(id AS TEXT) = '%s' OR start_date ILIKE '%s' OR end_date ILIKE '%s'",
+			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)

@@ -100,19 +100,24 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE email ILIKE '%s' OR phone_number ILIKE '%s' OR role_id ILIKE '%s'",
+			"WHERE CAST(users.id AS TEXT) = '%s' OR users.email ILIKE '%s' OR CAST(users.phone_number AS TEXT) ILIKE '%s' OR user_infos.first_name ILIKE '%s' OR user_infos.last_name ILIKE '%s' OR user_infos.username ILIKE '%s'",
+			filter.Search,
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)
 	}
+	newFilter := filter
+	newFilter.OrderBy = "users." + newFilter.OrderBy
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT * FROM users",
+			"SELECT * FROM users LEFT JOIN user_infos ON users.user_info_id = user_infos.id",
 			where,
 			pagination,
-			filter,
+			newFilter,
 		),
 	).Find(&result).Error
 

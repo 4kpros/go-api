@@ -8,6 +8,7 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/user/permission/model"
 )
 
@@ -19,37 +20,49 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) CreatePermission(permission *model.Permission) (*model.Permission, error) {
+func (repository *Repository) Create(permission *model.Permission) (*model.Permission, error) {
 	result := *permission
 	return &result, repository.Db.Create(&result).Error
 }
 
-func (repository *Repository) UpdatePermission(
+func (repository *Repository) Update(
 	roleID int64,
 	tableName string,
 	data *model.Permission,
-) (*model.Permission, error) {
-	result := &model.Permission{
-		RoleID:    roleID,
-		TableName: tableName,
-		Create:    data.Create,
-		Read:      data.Read,
-		Update:    data.Update,
-		Delete:    data.Delete,
-	}
-	return result, repository.Db.
-		Where("role_id = ?", roleID).Where("table_name = ?", tableName).
-		Attrs(
-			model.Permission{
-				Create: data.Create,
-				Read:   data.Read,
-				Update: data.Update,
-				Delete: data.Delete,
-			},
-		).FirstOrCreate(result).Error
+) (result *model.Permission, err error) {
+	result = &model.Permission{}
+	tmpErr := repository.Db.Model(result).Where("role_id = ?", roleID).Where("table_name = ?", tableName).Updates(
+		map[string]interface{}{
+			"table_name": data.TableName,
+			"create":     data.Create,
+			"read":       data.Read,
+			"update":     data.Update,
+			"delete":     data.Delete,
+		},
+	).Error
+
+	err = tmpErr
+	return
 }
 
-func (repository *Repository) GetPermission(
+func (repository *Repository) Delete(permissionID int64) (result int64, err error) {
+	tmpResult := repository.Db.Where("id = ?", permissionID).Delete(&model.Permission{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
+}
+
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.Permission{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
+}
+
+func (repository *Repository) GetByRoleIDTableName(
 	roleID int64,
 	tableName string,
 ) (*model.Permission, error) {
@@ -57,7 +70,7 @@ func (repository *Repository) GetPermission(
 	return result, repository.Db.Where("role_id = ?", roleID).Where("table_name = ?", tableName).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetPermissionWithAllTables(
+func (repository *Repository) GetByRoleIDTableNameAll(
 	roleID int64,
 	tableName1 string,
 	tableName2 string,
@@ -74,7 +87,8 @@ func (repository *Repository) GetAll(
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE role_id ILIKE '%s' OR table_name ILIKE '%s'",
+			"WHERE CAST(id AS TEXT) = '%s' OR CAST(role_id AS TEXT) ILIKE '%s' OR table_name ILIKE '%s'",
+			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)

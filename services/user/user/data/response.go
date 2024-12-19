@@ -24,6 +24,7 @@ type UserResponse struct {
 }
 
 type UserInfoResponse struct {
+	Gender    string `json:"gender" required:"false" doc:"Gender"`
 	Username  string `json:"username" required:"false" doc:"User name"`
 	FirstName string `json:"firstName" required:"false" doc:"First name"`
 	LastName  string `json:"lastName" required:"false" doc:"Last name or family name"`

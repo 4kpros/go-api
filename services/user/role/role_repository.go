@@ -87,7 +87,8 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE name ILIKE '%s' OR feature ILIKE '%s' OR description ILIKE '%s'",
+			"WHERE CAST(id AS TEXT) = '%s' OR name ILIKE '%s' OR feature ILIKE '%s' OR description ILIKE '%s'",
+			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",

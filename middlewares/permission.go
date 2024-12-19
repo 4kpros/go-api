@@ -39,7 +39,7 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		// Check for required permissions
 		if len(tableName) >= 1 {
 			// Retrieve permissions
-			userPermission, errPerm := permissionRepo.GetPermissionWithAllTables(jwtToken.RoleID, tableName, "*")
+			userPermission, errPerm := permissionRepo.GetByRoleIDTableNameAll(jwtToken.RoleID, tableName, "*")
 			if errPerm != nil {
 				tempErr := constants.Http500ErrorMessage("get permission from database")
 				_ = huma.WriteErr(api, ctx, http.StatusInternalServerError, tempErr.Error(), tempErr)

@@ -66,16 +66,18 @@ func Load() (err error) {
 	}
 
 	// Add permissions for admin
-	_, _ = permissionRepo.UpdatePermission(
-		roleAdmin.ID,
-		"*",
-		&permissionModel.Permission{
-			Create: true,
-			Read:   true,
-			Update: true,
-			Delete: true,
-		},
-	)
+	foundPermission, err := permissionRepo.GetByRoleIDTableName(roleAdmin.ID, "*")
+	if err != nil && (foundPermission == nil || foundPermission.RoleID != roleAdmin.ID) {
+		_, _ = permissionRepo.Create(&permissionModel.Permission{
+			RoleID:    roleAdmin.ID,
+			TableName: "*",
+			Create:    true,
+			Read:      true,
+			Update:    true,
+			Delete:    true,
+		})
+		return
+	}
 
 	return
 }

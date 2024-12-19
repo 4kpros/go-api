@@ -17,25 +17,55 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdatePermission(
+func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
 		data.PermissionPathRequest
 		Body data.UpdatePermissionRequest
 	},
 ) (result *data.PermissionResponse, errCode int, err error) {
-	tmpResult, errCode, err := controller.Service.UpdatePermission(
+	tmpResult, errCode, err := controller.Service.Update(
 		helpers.GetJwtContext(ctx),
 		input.RoleID,
 		input.Body.TableName,
 		&model.Permission{
-			Create: input.Body.Create,
-			Read:   input.Body.Read,
-			Update: input.Body.Update,
-			Delete: input.Body.Delete,
+			RoleID:    input.RoleID,
+			TableName: input.Body.TableName,
+			Create:    input.Body.Create,
+			Read:      input.Body.Read,
+			Update:    input.Body.Update,
+			Delete:    input.Body.Delete,
 		},
 	)
 	result = tmpResult.ToResponse()
+	return
+}
+
+func (controller *Controller) Delete(
+	ctx *context.Context,
+	input *struct {
+		data.PermissionID
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
 	return
 }
 

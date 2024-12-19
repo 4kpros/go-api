@@ -20,6 +20,7 @@ type CreateUserWithPhoneNumberRequest struct {
 }
 
 type UpdateUserInfoRequest struct {
+	Gender    string `json:"Gender" required:"false" enum:"m,f" doc:"Gender" example:"M"`
 	Username  string `json:"username" required:"false" max:"30" doc:"User name" example:"meta_human"`
 	FirstName string `json:"firstName" required:"false" max:"30" doc:"First name" example:"John"`
 	LastName  string `json:"lastName" required:"false" max:"30" doc:"Last name" example:"Doe"`

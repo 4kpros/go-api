@@ -8,10 +8,10 @@ import (
 type SchoolResponse struct {
 	types.BaseGormModelResponse
 	Name            string                   `json:"name" doc:"School name"`
-	Type            string                   `json:"type" doc:"School description"`
-	SchoolInfo      *SchoolInfoResponse      `json:"schoolInfo" doc:"School description"`
-	SchoolConfig    *SchoolConfigResponse    `json:"schoolConfig" doc:"School configuration"`
-	SchoolDirectors []SchoolDirectorResponse `json:"schoolDirectors" doc:"School directors"`
+	Type            string                   `json:"type" doc:"Type"`
+	SchoolInfo      *SchoolInfoResponse      `json:"info" doc:"Information"`
+	SchoolConfig    *SchoolConfigResponse    `json:"config" doc:"Configuration"`
+	SchoolDirectors []SchoolDirectorResponse `json:"directors" doc:"Directors"`
 }
 
 type SchoolInfoResponse struct {
