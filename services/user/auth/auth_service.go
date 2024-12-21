@@ -191,7 +191,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		err = constants.Http500ErrorMessage("check user session")
 		return
 	}
-	if userFound == nil || userFound.ID <= 0 {
+	if userFound == nil || userFound.ID < 1 {
 		// Add info
 		var userInfo *model.UserInfo
 		userInfo, err = service.Repository.CreateUserInfo(newUser.UserInfo)
@@ -219,15 +219,18 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		}
 
 		// Create user
+		tmpActivatedAt := time.Now()
 		userFound, err = service.Repository.Create(
 			&model.User{
 				Email:          newUser.Email,
 				Provider:       input.Provider,
 				ProviderUserID: newUser.ProviderUserID,
 				LoginMethod:    constants.AuthLoginMethodProvider,
+				RoleID:         defaultRole.ID,
+				IsActivated:    true,
+				ActivatedAt:    &tmpActivatedAt,
 				UserInfoID:     userInfo.ID,
 				UserMfaID:      userMfa.ID,
-				RoleID:         defaultRole.ID,
 			},
 		)
 		if err != nil {
