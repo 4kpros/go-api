@@ -10,22 +10,22 @@ type School struct {
 	Name string `gorm:"unique;not null"`
 	Type string `gorm:"not null"`
 
-	SchoolInfoID int64       `gorm:"default:null"`
-	SchoolInfo   *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-
 	SchoolConfigID int64         `gorm:"default:null"`
-	SchoolConfig   *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	Config         *SchoolConfig `gorm:"default:null;foreignKey:SchoolConfigID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	SchoolDirectors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	SchoolInfoID int64       `gorm:"default:null"`
+	Info         *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+
+	Directors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *School) ToResponse() *data.SchoolResponse {
 	resp := &data.SchoolResponse{
-		Name:            item.Name,
-		Type:            item.Type,
-		SchoolInfo:      item.SchoolInfo.ToResponse(),
-		SchoolConfig:    item.SchoolConfig.ToResponse(),
-		SchoolDirectors: ToSchoolDirectorResponseList(item.SchoolDirectors),
+		Name:      item.Name,
+		Type:      item.Type,
+		Info:      item.Info.ToResponse(),
+		Config:    item.Config.ToResponse(),
+		Directors: ToSchoolDirectorResponseList(item.Directors),
 	}
 
 	resp.ID = item.ID

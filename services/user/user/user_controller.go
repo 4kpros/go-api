@@ -25,9 +25,10 @@ func (controller *Controller) CreateWithEmail(
 ) (result *model.User, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
-		input.Body.RoleID,
 		&model.User{
-			Email: input.Body.Email,
+			Email:       input.Body.Email,
+			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
@@ -41,9 +42,10 @@ func (controller *Controller) CreateWithPhoneNumber(
 ) (result *model.User, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
-		input.Body.RoleID,
 		&model.User{
 			PhoneNumber: input.Body.PhoneNumber,
+			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
@@ -73,10 +75,12 @@ func (controller *Controller) Update(
 ) (result *model.User, errCode int, err error) {
 	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx),
-		input.Body.RoleID,
+		input.UserID.ID,
 		&model.User{
 			Email:       input.Body.Email,
 			PhoneNumber: input.Body.PhoneNumber,
+			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
@@ -107,6 +111,20 @@ func (controller *Controller) DeleteRole(
 		input.ID,
 		input.Body.RoleID,
 	)
+	return
+}
+
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
 	return
 }
 

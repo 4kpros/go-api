@@ -28,6 +28,7 @@ func (repository *Repository) Update(yearID int64, year *model.Year) (*model.Yea
 	result := &model.Year{}
 	return result, repository.Db.Model(result).Where("id = ?", yearID).Updates(
 		map[string]interface{}{
+			"name":       year.Name,
 			"start_date": year.StartDate,
 			"end_date":   year.EndDate,
 		},
@@ -44,9 +45,9 @@ func (repository *Repository) GetById(yearID int64) (*model.Year, error) {
 	return result, repository.Db.Where("id = ?", yearID).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetByObject(year *model.Year) (*model.Year, error) {
+func (repository *Repository) GetByName(name string) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Where(year).Limit(1).Find(result).Error
+	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Year, err error) {
@@ -54,8 +55,9 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	var where string = ""
 	if filter != nil && len(filter.Search) >= 1 {
 		where = fmt.Sprintf(
-			"WHERE CAST(id AS TEXT) = '%s' OR start_date ILIKE '%s' OR end_date ILIKE '%s'",
+			"WHERE CAST(id AS TEXT) = '%s' OR name ILIKE '%s' OR start_date ILIKE '%s' OR end_date ILIKE '%s'",
 			filter.Search,
+			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)

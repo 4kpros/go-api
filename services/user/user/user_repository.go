@@ -4,6 +4,7 @@ import (
 	"api/common/constants"
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/user/user/model"
 	"fmt"
 
@@ -39,6 +40,8 @@ func (repository *Repository) Update(userID int64, user *model.User) (*model.Use
 		map[string]interface{}{
 			"email":        user.Email,
 			"phone_number": user.PhoneNumber,
+			"role_id":      user.RoleID,
+			"is_activated": user.IsActivated,
 		},
 	).Error
 }
@@ -55,6 +58,15 @@ func (repository *Repository) DeleteRole(userID int64, roleID int64) (int64, err
 		},
 	)
 	return result.RowsAffected, result.Error
+}
+
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.User{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
 func (repository *Repository) GetByID(userID int64) (*model.User, error) {
@@ -114,7 +126,9 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT * FROM users LEFT JOIN user_infos ON users.user_info_id = user_infos.id",
+			"SELECT users.id, users.email, users.phone_number, users.login_method, users.provider, users.provider_user_id"+
+				", users.is_activated, users.activated_at, users.role_id, users.user_info_id, users.user_mfa_id "+
+				"FROM users LEFT JOIN user_infos ON users.user_info_id = user_infos.id",
 			where,
 			pagination,
 			newFilter,

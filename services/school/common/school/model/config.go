@@ -16,3 +16,10 @@ func (item *SchoolConfig) ToResponse() *data.SchoolConfigResponse {
 	}
 	return resp
 }
+
+func FromConfigRequest(item *data.SchoolConfigRequest) *SchoolConfig {
+	resp := &SchoolConfig{
+		EmailDomain: item.EmailDomain,
+	}
+	return resp
+}

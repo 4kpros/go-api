@@ -10,13 +10,22 @@ type UserRoleRequest struct {
 }
 
 type CreateUserWithEmailRequest struct {
-	Email  string `json:"email" required:"true" minLength:"3" max:"100" doc:"Email" example:"example@domain.com"`
-	RoleID int64  `json:"roleID" required:"true" doc:"Role id" example:"1"`
+	Email       string `json:"email" required:"true" minLength:"3" max:"100" doc:"Email" example:"example@domain.com"`
+	RoleID      int64  `json:"roleID" required:"true" doc:"Role id" example:"1"`
+	IsActivated bool   `json:"isActivated" required:"true" doc:"Is activated" example:"false"`
 }
 
 type CreateUserWithPhoneNumberRequest struct {
 	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
 	RoleID      int64  `json:"roleID" required:"true" doc:"Role id" example:"1"`
+	IsActivated bool   `json:"isActivated" required:"true" doc:"Is activated" example:"false"`
+}
+
+type UpdateUserRequest struct {
+	Email       string `json:"email" required:"true" minLength:"3" max:"100" doc:"Email" example:"example@domain.com"`
+	PhoneNumber uint64 `json:"phoneNumber" required:"false" doc:"Phone number" example:"237690909090"`
+	RoleID      int64  `json:"roleID" required:"true" doc:"Role id" example:"1"`
+	IsActivated bool   `json:"isActivated" required:"true" doc:"Is activated" example:"false"`
 }
 
 type UpdateUserInfoRequest struct {
@@ -30,10 +39,4 @@ type UpdateUserInfoRequest struct {
 	Address       string     `json:"address" required:"false" max:"30" doc:"Address" example:"No City"`
 	Language      string     `json:"language" required:"false" min:"2" max:"2" doc:"Language code with 2 letter" example:"en"`
 	Image         string     `json:"image" required:"false" doc:"Thumbnail"`
-}
-
-type UpdateUserRequest struct {
-	Email       string `json:"email" required:"true" minLength:"3" max:"100" doc:"Email" example:"example@domain.com"`
-	PhoneNumber uint64 `json:"phoneNumber" required:"true" doc:"Phone number" example:"237690909090"`
-	RoleID      int64  `json:"roleID" required:"true" doc:"Role id" example:"1"`
 }

@@ -8,12 +8,14 @@ import (
 
 type Year struct {
 	types.BaseGormModel
+	Name      string     `gorm:"unique;not null"`
 	StartDate *time.Time `gorm:"not null"`
 	EndDate   *time.Time `gorm:"not null"`
 }
 
 func (item *Year) ToResponse() *data.YearResponse {
 	resp := &data.YearResponse{
+		Name:      item.Name,
 		StartDate: item.StartDate,
 		EndDate:   item.EndDate,
 	}

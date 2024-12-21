@@ -1,10 +1,12 @@
 package year
 
 import (
+	"fmt"
 	"net/http"
 
 	"api/common/constants"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/school/common/year/model"
 )
 
@@ -18,22 +20,19 @@ func NewService(repository *Repository) *Service {
 
 // Create new year
 func (service *Service) Create(inputJwtToken *types.JwtToken, year *model.Year) (result *model.Year, errCode int, err error) {
-	// Check if year already exists
-	foundYear, err := service.Repository.GetByObject(year)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get year by name from database")
-		return
-	}
-	if foundYear != nil {
-		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("year")
-		return
-	}
-
-	// Insert year
+	yearName := fmt.Sprintf("%d-%d", year.StartDate.Year(), year.EndDate.Year())
+	year.Name = yearName
 	result, err = service.Repository.Create(year)
 	if err != nil {
+		pgState, errPgState := utils.ExtractSQLState(err.Error())
+		if errPgState == nil {
+			if pgState == constants.PG_ERROR_UNIQUE_COLUMN {
+				errCode = http.StatusFound
+				err = constants.Http302ErrorMessage("year")
+				return
+			}
+		}
+
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create year from database")
 		return
@@ -43,22 +42,33 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, year *model.Year) 
 
 // Update year
 func (service *Service) Update(inputJwtToken *types.JwtToken, yearID int64, year *model.Year) (result *model.Year, errCode int, err error) {
-	// Check if year already exists
-	foundYear, err := service.Repository.GetByObject(year)
+	// Check if year exists
+	foundYear, err := service.Repository.GetById(yearID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get year by name from database")
 		return
 	}
-	if foundYear != nil {
-		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("year")
+	if foundYear == nil || len(foundYear.Name) < 1 {
+		errCode = http.StatusNotFound
+		err = constants.Http404ErrorMessage("Year")
 		return
 	}
 
 	// Update year
+	yearName := fmt.Sprintf("%d-%d", year.StartDate.Year(), year.EndDate.Year())
+	year.Name = yearName
 	result, err = service.Repository.Update(yearID, year)
 	if err != nil {
+		pgState, errPgState := utils.ExtractSQLState(err.Error())
+		if errPgState == nil {
+			if pgState == constants.PG_ERROR_UNIQUE_COLUMN {
+				errCode = http.StatusFound
+				err = constants.Http302ErrorMessage("year")
+				return
+			}
+		}
+
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update year from database")
 		return

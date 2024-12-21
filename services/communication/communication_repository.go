@@ -8,6 +8,7 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/communication/model"
 )
 
@@ -22,6 +23,23 @@ func NewRepository(db *gorm.DB) *Repository {
 func (repository *Repository) Create(communication *model.Communication) (*model.Communication, error) {
 	result := *communication
 	return &result, repository.Db.Create(&result).Error
+}
+
+func (repository *Repository) Delete(roleID int64) (result int64, err error) {
+	tmpResult := repository.Db.Where("id = ?", roleID).Delete(&model.Communication{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
+}
+
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.Communication{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
 func (repository *Repository) GetById(communicationID int64) (*model.Communication, error) {
