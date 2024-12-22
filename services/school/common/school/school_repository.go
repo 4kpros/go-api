@@ -8,6 +8,7 @@ import (
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/school/common/school/model"
 )
 
@@ -99,6 +100,15 @@ func (repository *Repository) UpdateConfig(id int64, item *model.SchoolConfig) (
 func (repository *Repository) Delete(id int64) (int64, error) {
 	result := repository.Db.Where("id = ?", id).Delete(&model.School{})
 	return result.RowsAffected, result.Error
+}
+
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.School{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
 func (repository *Repository) GetByID(id int64) (*model.School, error) {

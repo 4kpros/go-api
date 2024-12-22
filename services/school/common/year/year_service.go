@@ -92,6 +92,22 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, yearID int64) (aff
 	return
 }
 
+// Delete Deletes selection
+func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteMultiple(list)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("delete multiple year from database")
+		return
+	}
+	if affectedRows <= 0 {
+		errCode = http.StatusNotFound
+		err = constants.Http404ErrorMessage("Role selection")
+		return
+	}
+	return
+}
+
 // Get Returns year with matching id
 func (service *Service) Get(inputJwtToken *types.JwtToken, yearID int64) (year *model.Year, errCode int, err error) {
 	year, err = service.Repository.GetById(yearID)

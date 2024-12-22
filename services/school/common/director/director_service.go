@@ -137,6 +137,22 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affecte
 	return
 }
 
+// Delete Deletes selection
+func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteMultiple(list)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("delete multiple director from database")
+		return
+	}
+	if affectedRows <= 0 {
+		errCode = http.StatusNotFound
+		err = constants.Http404ErrorMessage("Role selection")
+		return
+	}
+	return
+}
+
 // Get Returns director with matching id
 func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (result *model.Director, errCode int, err error) {
 	result, err = service.Repository.GetById(id)
