@@ -109,10 +109,13 @@ func (repository *Repository) GetByProvider(provider string, providerUserID stri
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, roleName string) (result []model.User, err error) {
 	result = make([]model.User, 0)
-	var where, whereRoleMatch string = "", ""
+	var where string = ""
+	if len(roleName) > 0 {
+		where = fmt.Sprintf("WHERE roles.name = '%s'", roleName)
+	}
 	if filter != nil && len(filter.Search) >= 1 {
-		where = fmt.Sprintf(
-			"WHERE CAST(users.id AS TEXT) = '%s' OR users.email ILIKE '%s' OR CAST(users.phone_number AS TEXT) ILIKE '%s' OR user_infos.first_name ILIKE '%s' OR user_infos.last_name ILIKE '%s' OR user_infos.username ILIKE '%s'",
+		tempWhere := fmt.Sprintf(
+			"CAST(users.id AS TEXT) = '%s' OR users.email ILIKE '%s' OR CAST(users.phone_number AS TEXT) ILIKE '%s' OR user_infos.first_name ILIKE '%s' OR user_infos.last_name ILIKE '%s' OR user_infos.username ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -120,10 +123,11 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)
-	}
-
-	if len(roleName) > 0 {
-		whereRoleMatch = fmt.Sprintf(" WHERE roles.name = '%s'", roleName)
+		if len(where) > 0 {
+			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+		} else {
+			where = fmt.Sprintf("WHERE %s", tempWhere)
+		}
 	}
 	newFilter := filter
 	newFilter.OrderBy = "users." + newFilter.OrderBy
@@ -133,7 +137,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"SELECT users.created_at, users.updated_at, users.id, users.email, users.phone_number, users.login_method, users.provider, users.provider_user_id"+
 				", users.is_activated, users.activated_at, users.role_id, users.user_info_id, users.user_mfa_id "+
 				"FROM users LEFT JOIN user_infos ON users.user_info_id = user_infos.id "+
-				"LEFT JOIN roles ON users.role_id = roles.id"+whereRoleMatch,
+				"LEFT JOIN roles ON users.role_id = roles.id",
 			where,
 			pagination,
 			newFilter,
