@@ -7,11 +7,11 @@ import (
 
 type SchoolResponse struct {
 	types.BaseGormModelResponse
-	Name      string                   `json:"name" doc:"School name"`
-	Type      string                   `json:"type" doc:"Type"`
-	Info      *SchoolInfoResponse      `json:"info" doc:"Information"`
-	Config    *SchoolConfigResponse    `json:"config" doc:"Configuration"`
-	Directors []SchoolDirectorResponse `json:"directors" doc:"Directors"`
+	Name string `json:"name" doc:"School name"`
+	Type string `json:"type" doc:"Type"`
+
+	Info   *SchoolInfoResponse   `json:"info" doc:"Information"`
+	Config *SchoolConfigResponse `json:"config" doc:"Configuration"`
 }
 
 type SchoolInfoResponse struct {
@@ -44,11 +44,6 @@ type SchoolInfoResponse struct {
 
 type SchoolConfigResponse struct {
 	EmailDomain string `json:"emailDomain" doc:"Email domain"`
-}
-
-type SchoolDirectorResponse struct {
-	SchoolID int64 `json:"schoolID" doc:"SchoolI id"`
-	UserID   int64 `json:"userID" doc:"User id"`
 }
 
 type SchoolResponseList struct {

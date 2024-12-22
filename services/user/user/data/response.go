@@ -18,9 +18,9 @@ type UserResponse struct {
 	IsActivated    bool       `json:"isActivated" required:"false" doc:"Is user account activated ?"`
 	ActivatedAt    *time.Time `json:"activatedAt" required:"false" doc:"Activation date time"`
 
-	Role     *data.RoleResponse `json:"role" required:"false" doc:"Role" `
-	UserInfo *UserInfoResponse  `json:"info" required:"false" doc:"Additional user info(e.g. address, first name, last name, ...)" `
-	UserMfa  *UserMfaResponse   `json:"mfa" required:"false" doc:"Multiple factor authenticator enabled by the user"`
+	Role *data.RoleResponse `json:"role" required:"false" doc:"Role" `
+	Info *UserInfoResponse  `json:"info" required:"false" doc:"Additional user info(e.g. address, first name, last name, ...)" `
+	Mfa  *UserMfaResponse   `json:"mfa" required:"false" doc:"Multiple factor authenticator enabled by the user"`
 }
 
 type UserInfoResponse struct {

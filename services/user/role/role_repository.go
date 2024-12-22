@@ -29,7 +29,7 @@ func (repository *Repository) Create(role *model.Role) (result *model.Role, err 
 
 	result = &model.Role{}
 	*result = *role
-	tmpErr := repository.Db.Create(&result).Error
+	tmpErr := repository.Db.Preload(clause.Associations).Create(&result).Error
 
 	err = tmpErr
 	return
@@ -37,7 +37,7 @@ func (repository *Repository) Create(role *model.Role) (result *model.Role, err 
 
 func (repository *Repository) Update(roleID int64, role *model.Role) (result *model.Role, err error) {
 	result = &model.Role{}
-	tmpErr := repository.Db.Model(result).Where("id = ?", roleID).Updates(
+	tmpErr := repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", roleID).Updates(
 		map[string]interface{}{
 			"name":        role.Name,
 			"feature":     role.Feature,
@@ -68,7 +68,7 @@ func (repository *Repository) DeleteMultiple(list []int64) (result int64, err er
 
 func (repository *Repository) GetByID(roleID int64) (result *model.Role, err error) {
 	result = &model.Role{}
-	tmpErr := repository.Db.Where("id = ?", roleID).Limit(1).Find(result).Error
+	tmpErr := repository.Db.Preload(clause.Associations).Where("id = ?", roleID).Limit(1).Find(result).Error
 
 	err = tmpErr
 	return
@@ -76,7 +76,7 @@ func (repository *Repository) GetByID(roleID int64) (result *model.Role, err err
 
 func (repository *Repository) GetByName(name string) (result *model.Role, err error) {
 	result = &model.Role{}
-	tmpErr := repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
+	tmpErr := repository.Db.Preload(clause.Associations).Where("name = ?", name).Limit(1).Find(result).Error
 
 	err = tmpErr
 	return

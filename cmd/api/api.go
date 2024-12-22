@@ -14,6 +14,7 @@ import (
 	"api/services/communication"
 	"api/services/contact"
 	"api/services/history"
+	"api/services/school/common/director"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
 	"api/services/school/secondary/class"
@@ -49,8 +50,9 @@ type Controllers struct {
 	ProfileController    *profile.Controller
 
 	// School service
-	YearController   *year.Controller
-	SchoolController *school.Controller
+	YearController     *year.Controller
+	SchoolController   *school.Controller
+	DirectorController *director.Controller
 	// Secondary
 	SectionController *section.Controller
 	ClassController   *class.Controller
@@ -86,6 +88,7 @@ func registerEndpoints(humaApi *huma.API) {
 	// School service
 	year.RegisterEndpoints(humaApi, AllControllers.YearController)
 	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
+	director.RegisterEndpoints(humaApi, AllControllers.DirectorController)
 	// Secondary
 	section.RegisterEndpoints(humaApi, AllControllers.SectionController)
 	class.RegisterEndpoints(humaApi, AllControllers.ClassController)

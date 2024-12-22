@@ -1,4 +1,4 @@
-package school
+package director
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
-	"api/services/school/common/school/data"
+	"api/services/school/common/director/data"
 )
 
 func RegisterEndpoints(
@@ -17,18 +17,18 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/schools",
-		Tag:   []string{"Schools"},
+		Group: "/directors",
+		Tag:   []string{"Directors"},
 	}
-	const tableName = "schools"
+	const tableName = "directors"
 
-	// Create school
+	// Create director
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "post-school",
-			Summary:     "Create school",
-			Description: "Create new school by providing name and description and return created object. The name school should be unique.",
+			OperationID: "post-director",
+			Summary:     "Create director",
+			Description: "Create new director.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -47,24 +47,24 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.SchoolRequest
+				Body data.DirectorRequest
 			},
-		) (*struct{ Body data.SchoolResponse }, error) {
+		) (*struct{ Body data.DirectorResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.SchoolResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.DirectorResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Update school with id
+	// Update director with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-school",
-			Summary:     "Update school",
-			Description: "Update existing school with matching id and return the new school object.",
+			OperationID: "update-director",
+			Summary:     "Update director",
+			Description: "Update existing director with matching id and return the new object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -83,25 +83,25 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolID
-				Body data.SchoolRequest
+				data.DirectorID
+				Body data.DirectorRequest
 			},
-		) (*struct{ Body data.SchoolResponse }, error) {
+		) (*struct{ Body data.DirectorResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.SchoolResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.DirectorResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Delete school with id
+	// Delete director with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "delete-school",
-			Summary:     "Delete school",
-			Description: "Delete existing school with matching id and return affected rows in database.",
+			OperationID: "delete-director",
+			Summary:     "Delete director",
+			Description: "Delete existing director with matching id and return affected rows in database.",
 			Method:      http.MethodDelete,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -120,7 +120,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolID
+				data.DirectorID
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
@@ -131,13 +131,13 @@ func RegisterEndpoints(
 		},
 	)
 
-	// Get school by id
+	// Get director by id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-school-id",
-			Summary:     "Get school by id",
-			Description: "Return one school with matching id",
+			OperationID: "get-director-id",
+			Summary:     "Get director by id",
+			Description: "Return one director with matching id",
 			Method:      http.MethodGet,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -156,24 +156,24 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				data.SchoolID
+				data.DirectorID
 			},
-		) (*struct{ Body data.SchoolResponse }, error) {
+		) (*struct{ Body data.DirectorResponse }, error) {
 			result, errCode, err := controller.Get(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.SchoolResponse }{Body: *result.ToResponse()}, nil
+			return &struct{ Body data.DirectorResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
-	// Get all schools
+	// Get all directors
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-school-list",
-			Summary:     "Get all schools",
-			Description: "Get all schools with support for search, filter and pagination",
+			OperationID: "get-director-list",
+			Summary:     "Get all directors",
+			Description: "Get all directors with support for search, filter and pagination",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -196,14 +196,14 @@ func RegisterEndpoints(
 				types.PaginationRequest
 			},
 		) (*struct {
-			Body data.SchoolResponseList
+			Body data.DirectorResponseList
 		}, error) {
 			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.SchoolResponseList
+				Body data.DirectorResponseList
 			}{Body: *result}, nil
 		},
 	)

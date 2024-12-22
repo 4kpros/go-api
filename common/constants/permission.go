@@ -8,10 +8,11 @@ const (
 )
 
 const (
-	FeatureAdmin    = "feature-admin"
-	FeatureDirector = "feature-director"
-	FeatureTeacher  = "feature-teacher"
-	FeatureStudent  = "feature-student"
+	FeatureAdmin    = "dashboard-admin"
+	FeatureDirector = "dashboard-director"
+	FeatureTeacher  = "dashboard-teacher"
+	FeatureStudent  = "dashboard-student"
+	FeatureParent   = "dashboard-student"
 
-	FeatureDefault = "feature-default"
+	FeatureDefault = "dashboard-default"
 )

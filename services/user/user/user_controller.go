@@ -146,6 +146,7 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.UserResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
@@ -153,6 +154,7 @@ func (controller *Controller) GetAll(
 		helpers.GetJwtContext(ctx),
 		newFilter,
 		newPagination,
+		input.GetAllRequest.Role,
 	)
 	if err != nil {
 		return

@@ -54,31 +54,6 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, school *model.Scho
 	return
 }
 
-// Add school director
-func (service *Service) AddDirector(inputJwtToken *types.JwtToken, schoolID int64, userID int64) (result *model.SchoolDirector, errCode int, err error) {
-	// Check if director already exists
-	foundSchoolDirector, err := service.Repository.GetDirector(schoolID, userID)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get school director from database")
-		return
-	}
-	if foundSchoolDirector != nil {
-		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("school director")
-		return
-	}
-
-	// Add new director
-	result, err = service.Repository.AddDirector(schoolID, userID)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("create school from database")
-		return
-	}
-	return
-}
-
 // Update school
 func (service *Service) Update(inputJwtToken *types.JwtToken, schoolID int64, school *model.School) (result *model.School, errCode int, err error) {
 	// Check if school exists
@@ -197,22 +172,6 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, schoolID int64) (a
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("School")
-		return
-	}
-	return
-}
-
-// Delete school director
-func (service *Service) DeleteDirector(inputJwtToken *types.JwtToken, schoolID int64, userID int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.DeleteDirector(schoolID, userID)
-	if err != nil {
-		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("delete school director from database")
-		return
-	}
-	if affectedRows <= 0 {
-		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("School director")
 		return
 	}
 	return

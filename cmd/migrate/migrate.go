@@ -6,6 +6,7 @@ import (
 	communicationModel "api/services/communication/model"
 	contactModel "api/services/contact/model"
 	historyModel "api/services/history/model"
+	directorModel "api/services/school/common/director/model"
 	schoolModel "api/services/school/common/school/model"
 	yearModel "api/services/school/common/year/model"
 	classModel "api/services/school/secondary/class/model"
@@ -45,7 +46,9 @@ func Start() error {
 		&schoolModel.School{},
 		&schoolModel.SchoolInfo{},
 		&schoolModel.SchoolConfig{},
-		&schoolModel.SchoolDirector{},
+
+		// Director
+		&directorModel.Director{},
 
 		// Secondary
 		&sectionModel.Section{},

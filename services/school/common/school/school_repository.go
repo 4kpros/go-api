@@ -21,30 +21,22 @@ func NewRepository(db *gorm.DB) *Repository {
 
 func (repository *Repository) Create(item *model.School) (*model.School, error) {
 	result := *item
-	return &result, repository.Db.Create(&result).Error
+	return &result, repository.Db.Preload(clause.Associations).Create(&result).Error
 }
 
 func (repository *Repository) CreateInfo(item *model.SchoolInfo) (*model.SchoolInfo, error) {
 	result := *item
-	return &result, repository.Db.Create(&result).Error
+	return &result, repository.Db.Preload(clause.Associations).Create(&result).Error
 }
 
 func (repository *Repository) CreateConfig(item *model.SchoolConfig) (*model.SchoolConfig, error) {
 	result := *item
-	return &result, repository.Db.Create(&result).Error
-}
-
-func (repository *Repository) AddDirector(id int64, userID int64) (*model.SchoolDirector, error) {
-	result := &model.SchoolDirector{
-		SchoolID: id,
-		UserID:   userID,
-	}
-	return result, repository.Db.Create(result).Error
+	return &result, repository.Db.Preload(clause.Associations).Create(&result).Error
 }
 
 func (repository *Repository) Update(id int64, item *model.School) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
 			"name": item.Name,
 			"type": item.Type,
@@ -54,7 +46,7 @@ func (repository *Repository) Update(id int64, item *model.School) (*model.Schoo
 
 func (repository *Repository) UpdateConfigInfoIDs(id int64, configID int64, infoID int64) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
 			"config_id": configID,
 			"info_id":   infoID,
@@ -64,7 +56,7 @@ func (repository *Repository) UpdateConfigInfoIDs(id int64, configID int64, info
 
 func (repository *Repository) UpdateInfo(id int64, item *model.SchoolInfo) (*model.SchoolInfo, error) {
 	result := &model.SchoolInfo{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
 			"full_name":   item.FullName,
 			"description": item.Description,
@@ -97,7 +89,7 @@ func (repository *Repository) UpdateInfo(id int64, item *model.SchoolInfo) (*mod
 
 func (repository *Repository) UpdateConfig(id int64, item *model.SchoolConfig) (*model.SchoolConfig, error) {
 	result := &model.SchoolConfig{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
 			"email_domain": item.EmailDomain,
 		},
@@ -109,34 +101,24 @@ func (repository *Repository) Delete(id int64) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) DeleteDirector(id int64, userID int64) (int64, error) {
-	result := repository.Db.Where("item_id = ?", id).Where("user_id = ?", userID).Delete(&model.SchoolDirector{})
-	return result.RowsAffected, result.Error
-}
-
 func (repository *Repository) GetByID(id int64) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("id = ?", id).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByName(name string) (*model.School, error) {
 	result := &model.School{}
-	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("name = ?", name).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetInfoByID(id int64) (*model.SchoolInfo, error) {
 	result := &model.SchoolInfo{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("id = ?", id).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetConfigByID(id int64) (*model.SchoolConfig, error) {
 	result := &model.SchoolConfig{}
-	return result, repository.Db.Where("id = ?", id).Limit(1).Find(result).Error
-}
-
-func (repository *Repository) GetDirector(schoolID int64, userID int64) (*model.SchoolDirector, error) {
-	result := &model.SchoolDirector{}
-	return result, repository.Db.Where("school_id = ?", schoolID).Where("user_id = ?", userID).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("id = ?", id).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.School, err error) {
@@ -158,7 +140,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT schools.id, schools.name, schools.type, schools.created_at, schools.updated_at"+
+			"SELECT schools.created_at, schools.updated_at, schools.id, schools.name, schools.type, schools.created_at, schools.updated_at"+
 				", schools.school_config_id, schools.school_info_id FROM schools "+
 				"LEFT JOIN school_infos ON schools.school_info_id = school_infos.id",
 			where,
@@ -169,87 +151,4 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 
 	err = tmpErr
 	return
-}
-
-func (repository *Repository) GetAllByDirector(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
-	var condition string = ""
-	if filter != nil && len(filter.Search) >= 1 {
-		condition = fmt.Sprintf(
-			"WHERE name ILIKE %s OR WHERE type ILIKE %s AND user_id = %d",
-			filter.Search,
-			filter.Search,
-			userID,
-		)
-	}
-	return result, repository.Db.Scopes(
-		helpers.PaginationScope(
-			repository.Db,
-			"schools",
-			condition,
-			pagination,
-			filter,
-		),
-	).Find(&result).Error
-}
-
-func (repository *Repository) GetAllByTeacher(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
-	var condition string = ""
-	if filter != nil && len(filter.Search) >= 1 {
-		condition = fmt.Sprintf(
-			"WHERE name ILIKE %s OR WHERE type ILIKE %s AND user_id = %d",
-			filter.Search,
-			filter.Search,
-			userID,
-		)
-	}
-	return result, repository.Db.Scopes(
-		helpers.PaginationScope(
-			repository.Db,
-			"schools",
-			condition,
-			pagination,
-			filter,
-		),
-	).Find(&result).Error
-}
-
-func (repository *Repository) GetAllByStudent(userID int64, filter *types.Filter, pagination *types.Pagination) ([]model.School, error) {
-	var result []model.School
-	var condition string = ""
-	if filter != nil && len(filter.Search) >= 1 {
-		condition = fmt.Sprintf(
-			"WHERE name ILIKE %s OR WHERE type ILIKE %s AND user_id = %d",
-			filter.Search,
-			filter.Search,
-			userID,
-		)
-	}
-	return result, repository.Db.Scopes(
-		helpers.PaginationScope(
-			repository.Db,
-			"schools",
-			condition,
-			pagination,
-			filter,
-		),
-	).Find(&result).Error
-}
-
-func (repository *Repository) GetAllDirectors(filter *types.Filter, pagination *types.Pagination) ([]model.SchoolDirector, error) {
-	var result []model.SchoolDirector
-	var condition string = ""
-	if filter != nil && len(filter.Search) >= 1 {
-		condition = ""
-	}
-	return result, repository.Db.Scopes(
-		helpers.PaginationScope(
-			repository.Db,
-			"school_directors",
-			condition,
-			pagination,
-			filter,
-		),
-	).Find(&result).Error
 }

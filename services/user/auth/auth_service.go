@@ -146,8 +146,8 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	// Validate provider token and update user
 	var newUser = &model.User{
 		Provider: input.Provider,
-		UserInfo: &model.UserInfo{},
-		UserMfa:  &model.UserMfa{},
+		Info:     &model.UserInfo{},
+		Mfa:      &model.UserMfa{},
 	}
 	var expires int64 = 0
 	if input.Provider == constants.AuthProviderGoogle {
@@ -194,7 +194,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 	if userFound == nil || userFound.ID < 1 {
 		// Add info
 		var userInfo *model.UserInfo
-		userInfo, err = service.Repository.CreateUserInfo(newUser.UserInfo)
+		userInfo, err = service.Repository.CreateUserInfo(newUser.Info)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.Http500ErrorMessage("create user info on database")
@@ -202,7 +202,7 @@ func (service *Service) LoginWithProvider(input *data.LoginWithProviderRequest, 
 		}
 		// Add mfa
 		var userMfa *model.UserMfa
-		userMfa, err = service.Repository.CreateUserMfa(newUser.UserMfa)
+		userMfa, err = service.Repository.CreateUserMfa(newUser.Mfa)
 		if err != nil {
 			errCode = http.StatusInternalServerError
 			err = constants.Http500ErrorMessage("create user mfa on database")

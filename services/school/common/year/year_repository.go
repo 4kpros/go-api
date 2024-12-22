@@ -21,12 +21,12 @@ func NewRepository(db *gorm.DB) *Repository {
 
 func (repository *Repository) Create(year *model.Year) (*model.Year, error) {
 	result := *year
-	return &result, repository.Db.Create(&result).Error
+	return &result, repository.Db.Preload(clause.Associations).Create(&result).Error
 }
 
 func (repository *Repository) Update(yearID int64, year *model.Year) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Model(result).Where("id = ?", yearID).Updates(
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", yearID).Updates(
 		map[string]interface{}{
 			"name":       year.Name,
 			"start_date": year.StartDate,
@@ -42,12 +42,12 @@ func (repository *Repository) Delete(yearID int64) (int64, error) {
 
 func (repository *Repository) GetById(yearID int64) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Where("id = ?", yearID).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("id = ?", yearID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetByName(name string) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Where("name = ?", name).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("name = ?", name).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Year, err error) {

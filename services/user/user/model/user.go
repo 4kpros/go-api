@@ -27,10 +27,10 @@ type User struct {
 	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
 	UserInfoID int64     `gorm:"default:null"`
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	Info       *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
 	UserMfaID int64    `gorm:"default:null"`
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+	Mfa       *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *User) BeforeCreate(db *gorm.DB) (err error) {
@@ -57,8 +57,8 @@ func (item *User) ToResponse() *data.UserResponse {
 	resp.ActivatedAt = item.ActivatedAt
 
 	resp.Role = item.Role.ToResponse()
-	resp.UserInfo = item.UserInfo.ToResponse()
-	resp.UserMfa = item.UserMfa.ToResponse()
+	resp.Info = item.Info.ToResponse()
+	resp.Mfa = item.Mfa.ToResponse()
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
@@ -69,7 +69,7 @@ func (item *User) ToResponse() *data.UserResponse {
 func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 	item.ProviderUserID = googleUser.ID
 	item.Email = googleUser.Email
-	item.UserInfo = &UserInfo{
+	item.Info = &UserInfo{
 		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
@@ -79,7 +79,7 @@ func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
 func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
 	item.ProviderUserID = facebookUser.ID
 	item.Email = facebookUser.Email
-	item.UserInfo = &UserInfo{
+	item.Info = &UserInfo{
 		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,

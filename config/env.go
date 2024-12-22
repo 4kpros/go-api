@@ -78,8 +78,13 @@ type Environment struct {
 	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`
 
 	// Initial database
-	RoleDefault       string `mapstructure:"ROLE_DEFAULT"`
-	RoleAdmin         string `mapstructure:"ROLE_ADMIN"`
+	RoleDefault  string `mapstructure:"ROLE_DEFAULT"`
+	RoleAdmin    string `mapstructure:"ROLE_ADMIN"`
+	RoleDirector string `mapstructure:"ROLE_DIRECTOR"`
+	RoleTeacher  string `mapstructure:"ROLE_TEACHER"`
+	RoleStudent  string `mapstructure:"ROLE_STUDENT"`
+	RoleParent   string `mapstructure:"ROLE_PARENT"`
+
 	UserAdminEmail    string `mapstructure:"USER_ADMIN_EMAIL"`
 	UserAdminPassword string `mapstructure:"USER_ADMIN_PASSWORD"`
 }

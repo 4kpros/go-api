@@ -6,6 +6,7 @@ import (
 	"api/services/communication"
 	"api/services/contact"
 	"api/services/history"
+	"api/services/school/common/director"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
 	"api/services/school/secondary/class"
@@ -83,6 +84,7 @@ func InjectDependencies() {
 	// School
 	var yearRepo = year.NewRepository(config.DB)
 	var schoolRepo = school.NewRepository(config.DB)
+	var directorRepo = director.NewRepository(config.DB)
 	api.AllControllers.YearController = year.NewController(
 		year.NewService(
 			yearRepo,
@@ -91,6 +93,11 @@ func InjectDependencies() {
 	api.AllControllers.SchoolController = school.NewController(
 		school.NewService(
 			schoolRepo,
+		),
+	)
+	api.AllControllers.DirectorController = director.NewController(
+		director.NewService(
+			directorRepo, userRepo,
 		),
 	)
 	api.AllControllers.SchoolController = school.NewController(

@@ -207,8 +207,8 @@ func (service *Service) Get(inputJwtToken *types.JwtToken, userID int64) (user *
 }
 
 // GetAll Returns all users with support for search, filter and pagination
-func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (userList []model.User, errCode int, err error) {
-	userList, err = service.Repository.GetAll(filter, pagination)
+func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination, roleName string) (userList []model.User, errCode int, err error) {
+	userList, err = service.Repository.GetAll(filter, pagination, roleName)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get users from database")

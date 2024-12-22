@@ -11,9 +11,11 @@ type SchoolConfig struct {
 }
 
 func (item *SchoolConfig) ToResponse() *data.SchoolConfigResponse {
-	resp := &data.SchoolConfigResponse{
-		EmailDomain: item.EmailDomain,
+	resp := &data.SchoolConfigResponse{}
+	if item == nil {
+		return resp
 	}
+	resp.EmailDomain = item.EmailDomain
 	return resp
 }
 

@@ -37,33 +37,35 @@ type SchoolInfo struct {
 }
 
 func (item *SchoolInfo) ToResponse() *data.SchoolInfoResponse {
-	resp := &data.SchoolInfoResponse{
-		FullName:    item.FullName,
-		Description: item.Description,
-		Slogan:      item.Slogan,
-
-		PhoneNumber1: item.PhoneNumber1,
-		PhoneNumber2: item.PhoneNumber2,
-		PhoneNumber3: item.PhoneNumber3,
-
-		Email1: item.Email1,
-		Email2: item.Email2,
-		Email3: item.Email3,
-
-		Founder:   item.Founder,
-		FoundedAt: item.FoundedAt,
-
-		Address:           item.Address,
-		LocationLongitude: item.LocationLongitude,
-		LocationLatitude:  item.LocationLatitude,
-
-		Logo: item.Logo,
-
-		Image1: item.Image1,
-		Image2: item.Image2,
-		Image3: item.Image3,
-		Image4: item.Image4,
+	resp := &data.SchoolInfoResponse{}
+	if item == nil {
+		return resp
 	}
+	resp.FullName = item.FullName
+	resp.Description = item.Description
+	resp.Slogan = item.Slogan
+
+	resp.PhoneNumber1 = item.PhoneNumber1
+	resp.PhoneNumber2 = item.PhoneNumber2
+	resp.PhoneNumber3 = item.PhoneNumber3
+
+	resp.Email1 = item.Email1
+	resp.Email2 = item.Email2
+	resp.Email3 = item.Email3
+
+	resp.Founder = item.Founder
+	resp.FoundedAt = item.FoundedAt
+
+	resp.Address = item.Address
+	resp.LocationLongitude = item.LocationLongitude
+	resp.LocationLatitude = item.LocationLatitude
+
+	resp.Logo = item.Logo
+
+	resp.Image1 = item.Image1
+	resp.Image2 = item.Image2
+	resp.Image3 = item.Image3
+	resp.Image4 = item.Image4
 	return resp
 }
 

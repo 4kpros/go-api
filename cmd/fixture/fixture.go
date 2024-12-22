@@ -36,6 +36,42 @@ func Load() (err error) {
 			Description: "Default role",
 		})
 	}
+	// Add role director
+	roleDirector, _ := roleRepo.GetByName(config.Env.RoleDirector)
+	if !(roleDirector != nil && roleDirector.Name == config.Env.RoleDirector) {
+		_, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleDirector,
+			Feature:     constants.FeatureDirector,
+			Description: "Director role",
+		})
+	}
+	// Add role teacher
+	roleTeacher, _ := roleRepo.GetByName(config.Env.RoleTeacher)
+	if !(roleTeacher != nil && roleTeacher.Name == config.Env.RoleTeacher) {
+		_, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleTeacher,
+			Feature:     constants.FeatureTeacher,
+			Description: "Teacher role",
+		})
+	}
+	// Add role student
+	roleStudent, _ := roleRepo.GetByName(config.Env.RoleStudent)
+	if !(roleStudent != nil && roleStudent.Name == config.Env.RoleStudent) {
+		_, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleStudent,
+			Feature:     constants.FeatureStudent,
+			Description: "Student role",
+		})
+	}
+	// Add role parent
+	roleParent, _ := roleRepo.GetByName(config.Env.RoleParent)
+	if !(roleParent != nil && roleParent.Name == config.Env.RoleParent) {
+		_, _ = roleRepo.Create(&roleModel.Role{
+			Name:        config.Env.RoleParent,
+			Feature:     constants.FeatureParent,
+			Description: "Parent role",
+		})
+	}
 
 	// Add user admin
 	userAdmin, _ := userRepo.GetByEmail(config.Env.UserAdminEmail)

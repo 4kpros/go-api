@@ -15,18 +15,17 @@ type School struct {
 
 	SchoolInfoID int64       `gorm:"default:null"`
 	Info         *SchoolInfo `gorm:"default:null;foreignKey:SchoolInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
-
-	Directors []SchoolDirector `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *School) ToResponse() *data.SchoolResponse {
-	resp := &data.SchoolResponse{
-		Name:      item.Name,
-		Type:      item.Type,
-		Info:      item.Info.ToResponse(),
-		Config:    item.Config.ToResponse(),
-		Directors: ToSchoolDirectorResponseList(item.Directors),
+	resp := &data.SchoolResponse{}
+	if item == nil {
+		return resp
 	}
+	resp.Name = item.Name
+	resp.Type = item.Type
+	resp.Info = item.Info.ToResponse()
+	resp.Config = item.Config.ToResponse()
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt

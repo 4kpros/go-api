@@ -40,3 +40,7 @@ type UpdateUserInfoRequest struct {
 	Language      string     `json:"language" required:"false" min:"2" max:"2" doc:"Language code with 2 letter" example:"en"`
 	Image         string     `json:"image" required:"false" doc:"Thumbnail"`
 }
+
+type GetAllRequest struct {
+	Role string `json:"role" query:"role" required:"false" doc:"Filter with matching role name" example:"admin"`
+}

@@ -46,15 +46,3 @@ type SchoolInfoRequest struct {
 type SchoolConfigRequest struct {
 	EmailDomain string `json:"emailDomain" required:"false" doc:"Email domain" example:""`
 }
-
-type AddDirectorRequestPath struct {
-	SchoolID int64 `json:"schoolID" path:"id" required:"true" doc:"School id" example:"1"`
-}
-type AddDirectorRequestBody struct {
-	UserID int64 `json:"userID" required:"true" doc:"User id" example:"1"`
-}
-
-type DeleteDirectorRequest struct {
-	SchoolID int64 `json:"schoolID" path:"schoolID" required:"true" doc:"School id" example:"1"`
-	UserID   int64 `json:"userID" path:"userID" required:"true" doc:"User id" example:"1"`
-}
