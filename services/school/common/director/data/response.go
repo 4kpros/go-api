@@ -8,8 +8,8 @@ import (
 
 type DirectorResponse struct {
 	types.BaseGormModelResponse
-	User   dataUser.UserResponse     `json:"user" doc:"User"`
-	School dataSchool.SchoolResponse `json:"school" doc:"School"`
+	User   *dataUser.UserResponse     `json:"user" doc:"User"`
+	School *dataSchool.SchoolResponse `json:"school" doc:"School"`
 }
 
 type DirectorResponseList struct {

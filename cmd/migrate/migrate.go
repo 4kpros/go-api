@@ -59,8 +59,8 @@ func Start() error {
 		&testModel.Test{},
 
 		// University
-		&facultyModel.Faculty{},
-		&departmentModel.Department{},
+		&facultyModel.UniversityFaculty{},
+		&departmentModel.UniversityDepartment{},
 		&domainModel.Domain{},
 		&levelModel.Level{},
 		&tuModel.TeachingUnit{},

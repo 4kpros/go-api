@@ -101,10 +101,11 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.SchoolResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	schoolList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
+	schoolList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination, input.GetAllRequest.Type)
 	if err != nil {
 		return
 	}

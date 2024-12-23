@@ -10,10 +10,10 @@ import (
 type Director struct {
 	types.BaseGormModel
 
-	UserID int64           `gorm:"not null"`
+	UserID int64           `gorm:"default:null"`
 	User   *userModel.User `gorm:"default:null;foreignKey:UserID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	SchoolID int64               `gorm:"not null"`
+	SchoolID int64               `gorm:"default:null"`
 	School   *schoolModel.School `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
@@ -22,11 +22,11 @@ func (item *Director) ToResponse() *data.DirectorResponse {
 	if item == nil {
 		return resp
 	}
-	resp.User = *item.User.ToResponse()
+	resp.User = item.User.ToResponse()
 	resp.User.Role = nil
 	resp.User.Info = nil
 	resp.User.Mfa = nil
-	resp.School = *item.School.ToResponse()
+	resp.School = item.School.ToResponse()
 	resp.School.Config = nil
 	resp.School.Info = nil
 

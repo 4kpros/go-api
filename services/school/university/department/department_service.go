@@ -13,29 +13,28 @@ type Service struct {
 }
 
 func NewService(repository *Repository) *Service {
-	return &Service{Repository: repository}
+	return &Service{
+		Repository: repository,
+	}
 }
 
 // Create new department
-func (service *Service) Create(inputJwtToken *types.JwtToken, department *model.Department) (result *model.Department, errCode int, err error) {
-	// Check if department already exists
-	foundDepartment, err := service.Repository.GetByObject(&model.Department{
-		FacultyID: department.FacultyID,
-		Name:      department.Name,
-	})
+func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.UniversityDepartment) (result *model.UniversityDepartment, errCode int, err error) {
+	// Check if the new one exists
+	foundNewDepartment, err := service.Repository.GetBySchoolIDFacultyIDName(item.SchoolID, item.FacultyID, item.Name)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get department by name from database")
+		err = constants.Http500ErrorMessage("get department by user school ids from database")
 		return
 	}
-	if foundDepartment != nil {
+	if foundNewDepartment != nil && foundNewDepartment.SchoolID == item.SchoolID && foundNewDepartment.FacultyID == item.FacultyID && foundNewDepartment.Name == item.Name {
 		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("department")
+		err = constants.Http302ErrorMessage("Department")
 		return
 	}
 
-	// Insert department
-	result, err = service.Repository.Create(department)
+	// Insert
+	result, err = service.Repository.Create(item)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create department from database")
@@ -45,36 +44,38 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, department *model.
 }
 
 // Update department
-func (service *Service) Update(inputJwtToken *types.JwtToken, departmentID int64, department *model.Department) (result *model.Department, errCode int, err error) {
-	// Check if department already exists
-	foundDepartmentByID, err := service.Repository.GetById(departmentID, inputJwtToken.UserID)
+func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *model.UniversityDepartment) (result *model.UniversityDepartment, errCode int, err error) {
+	// Check if department exists
+	foundDepartment, err := service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get department by name from database")
 		return
 	}
-	if foundDepartmentByID == nil {
+	if foundDepartment == nil || foundDepartment.ID != id {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("Department")
 		return
 	}
-	foundDepartment, err := service.Repository.GetByObject(&model.Department{
-		FacultyID: foundDepartmentByID.FacultyID,
-		Name:      department.Name,
-	})
+
+	// Check if the new one exists
+	foundNewDepartment, err := service.Repository.GetBySchoolIDFacultyIDName(item.SchoolID, item.FacultyID, item.Name)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get department by name from database")
+		err = constants.Http500ErrorMessage("get department by user school ids from database")
 		return
 	}
-	if foundDepartment != nil {
-		errCode = http.StatusFound
-		err = constants.Http302ErrorMessage("department")
+	if foundNewDepartment != nil && foundNewDepartment.SchoolID == item.SchoolID && foundNewDepartment.FacultyID == item.FacultyID && foundNewDepartment.Name == item.Name {
+		if !(foundDepartment.SchoolID == foundNewDepartment.SchoolID && foundDepartment.FacultyID == foundNewDepartment.FacultyID && foundDepartment.Name == foundNewDepartment.Name) {
+			errCode = http.StatusFound
+			err = constants.Http302ErrorMessage("Faculty")
+			return
+		}
 		return
 	}
 
 	// Update department
-	result, err = service.Repository.Update(departmentID, inputJwtToken.UserID, department)
+	result, err = service.Repository.Update(id, item)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update department from database")
@@ -84,8 +85,8 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, departmentID int64
 }
 
 // Delete department with matching id and return affected rows
-func (service *Service) Delete(inputJwtToken *types.JwtToken, departmentID int64) (affectedRows int64, errCode int, err error) {
-	affectedRows, err = service.Repository.Delete(departmentID, inputJwtToken.UserID)
+func (service *Service) Delete(inputJwtToken *types.JwtToken, id int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.Delete(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("delete department from database")
@@ -99,15 +100,31 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, departmentID int64
 	return
 }
 
+// Delete Deletes selection
+func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int64) (affectedRows int64, errCode int, err error) {
+	affectedRows, err = service.Repository.DeleteMultiple(list)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("delete multiple department from database")
+		return
+	}
+	if affectedRows <= 0 {
+		errCode = http.StatusNotFound
+		err = constants.Http404ErrorMessage("Role selection")
+		return
+	}
+	return
+}
+
 // Get Returns department with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, departmentID int64) (department *model.Department, errCode int, err error) {
-	department, err = service.Repository.GetById(departmentID, inputJwtToken.UserID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, id int64) (result *model.UniversityDepartment, errCode int, err error) {
+	result, err = service.Repository.GetById(id)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get department by id from database")
 		return
 	}
-	if department == nil {
+	if result == nil {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("Department")
 		return
@@ -115,12 +132,12 @@ func (service *Service) Get(inputJwtToken *types.JwtToken, departmentID int64) (
 	return
 }
 
-// GetAll Returns all faculties with support for search, filter and pagination
-func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (departmentList []model.Department, errCode int, err error) {
-	departmentList, err = service.Repository.GetAll(filter, pagination, inputJwtToken.UserID)
+// GetAll Returns all departments with support for search, filter and pagination
+func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination, schoolID int64) (result []model.UniversityDepartment, errCode int, err error) {
+	result, err = service.Repository.GetAll(filter, pagination, schoolID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
-		err = constants.Http500ErrorMessage("get faculties from database")
+		err = constants.Http500ErrorMessage("get departments from database")
 	}
 	return
 }

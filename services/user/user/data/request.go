@@ -42,5 +42,5 @@ type UpdateUserInfoRequest struct {
 }
 
 type GetAllRequest struct {
-	Role string `json:"role" query:"role" required:"false" doc:"Filter with matching role name" example:"admin"`
+	Role string `json:"role" query:"role" required:"false" doc:"Role name" example:"admin"`
 }

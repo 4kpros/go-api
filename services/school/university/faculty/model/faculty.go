@@ -2,29 +2,35 @@ package model
 
 import (
 	"api/common/types"
+	"api/services/school/common/school/model"
 	"api/services/school/university/faculty/data"
 )
 
-type Faculty struct {
+type UniversityFaculty struct {
 	types.BaseGormModel
-	SchoolID    int64  `gorm:"not null"`
+	SchoolID int64         `gorm:"default:null"`
+	School   *model.School `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
+
 	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
+	Description string `gorm:"default:null"`
 }
 
-func (item *Faculty) ToResponse() *data.FacultyResponse {
+func (item *UniversityFaculty) ToResponse() *data.FacultyResponse {
 	resp := &data.FacultyResponse{}
+	if item == nil {
+		return resp
+	}
+	resp.School = item.School.ToResponse()
+	resp.Name = item.Name
+	resp.Description = item.Description
+
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt
-
-	resp.SchoolID = item.SchoolID
-	resp.Name = item.Name
-	resp.Description = item.Description
 	return resp
 }
 
-func ToResponseList(itemList []Faculty) []data.FacultyResponse {
+func ToResponseList(itemList []UniversityFaculty) []data.FacultyResponse {
 	resp := make([]data.FacultyResponse, len(itemList))
 	for index, item := range itemList {
 		resp[index] = *item.ToResponse()

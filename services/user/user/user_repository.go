@@ -7,6 +7,7 @@ import (
 	"api/common/utils"
 	"api/services/user/user/model"
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -123,7 +124,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)
-		if len(where) > 0 {
+		if strings.HasPrefix(where, "WHERE") {
 			where = fmt.Sprintf("%s AND %s", where, tempWhere)
 		} else {
 			where = fmt.Sprintf("WHERE %s", tempWhere)
@@ -134,9 +135,10 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT users.created_at, users.updated_at, users.id, users.email, users.phone_number, users.login_method, users.provider, users.provider_user_id"+
-				", users.is_activated, users.activated_at, users.role_id, users.user_info_id, users.user_mfa_id "+
-				"FROM users LEFT JOIN user_infos ON users.user_info_id = user_infos.id "+
+			"SELECT users.id, users.email, users.phone_number, users.login_method, users.provider, users.provider_user_id"+
+				", users.is_activated, users.activated_at, users.role_id, users.user_info_id, users.user_mfa_id"+
+				", users.created_at, users.updated_at FROM users "+
+				"LEFT JOIN user_infos ON users.user_info_id = user_infos.id "+
 				"LEFT JOIN roles ON users.role_id = roles.id",
 			where,
 			pagination,

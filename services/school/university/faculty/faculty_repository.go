@@ -2,11 +2,14 @@ package faculty
 
 import (
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"api/common/helpers"
 	"api/common/types"
+	"api/common/utils"
 	"api/services/school/university/faculty/model"
 )
 
@@ -18,73 +21,79 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{Db: db}
 }
 
-func (repository *Repository) Create(faculty *model.Faculty) (*model.Faculty, error) {
-	result := *faculty
-	return &result, repository.Db.Create(&result).Error
+func (repository *Repository) Create(item *model.UniversityFaculty) (*model.UniversityFaculty, error) {
+	result := *item
+	return &result, repository.Db.Preload(clause.Associations).Create(&result).Error
 }
 
-func (repository *Repository) Update(id int64, userID int64, faculty *model.Faculty) (*model.Faculty, error) {
-	tempFaculty, err := repository.GetById(id, userID)
-	if err != nil || tempFaculty == nil || tempFaculty.ID != id {
-		return nil, err
-	}
-
-	result := &model.Faculty{}
-	return result, repository.Db.Model(result).Where("id = ?", id).Updates(
+func (repository *Repository) Update(id int64, item *model.UniversityFaculty) (*model.UniversityFaculty, error) {
+	result := &model.UniversityFaculty{}
+	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
-			"name":        faculty.Name,
-			"description": faculty.Description,
+			"school_id":   item.SchoolID,
+			"name":        item.Name,
+			"description": item.Description,
 		},
 	).Error
 }
 
-func (repository *Repository) Delete(id int64, userID int64) (int64, error) {
-	tempFaculty, err := repository.GetById(id, userID)
-	if err != nil || tempFaculty == nil || tempFaculty.ID != id {
-		return -1, err
-	}
-
-	result := repository.Db.Where("id = ?", id).Delete(&model.Faculty{})
+func (repository *Repository) Delete(id int64) (int64, error) {
+	result := repository.Db.Where("id = ?", id).Delete(&model.UniversityFaculty{})
 	return result.RowsAffected, result.Error
 }
 
-func (repository *Repository) GetById(id int64, userID int64) (*model.Faculty, error) {
-	result := &model.Faculty{}
-	return result, repository.Db.Model(&model.Faculty{}).
-		Select("faculties.*").
-		Joins("left join school_directors on faculties.school_id = school_directors.id").
-		Where("faculties.id = ?", id).Where("school_directors.user_id = ?", userID).Limit(1).Find(result).Error
+func (repository *Repository) DeleteMultiple(list []int64) (result int64, err error) {
+	where := fmt.Sprintf("id IN (%s)", utils.ListIntToString(list))
+	tmpResult := repository.Db.Where(where).Delete(&model.UniversityFaculty{})
+
+	result = tmpResult.RowsAffected
+	err = tmpResult.Error
+	return
 }
 
-func (repository *Repository) GetByObject(faculty *model.Faculty) (*model.Faculty, error) {
-	result := &model.Faculty{}
-	return result, repository.Db.Where(faculty).Limit(1).Find(result).Error
+func (repository *Repository) GetById(id int64) (*model.UniversityFaculty, error) {
+	result := &model.UniversityFaculty{}
+	return result, repository.Db.Preload(clause.Associations).Where("id = ?", id).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, userID int64) ([]model.Faculty, error) {
-	var result []model.Faculty
+func (repository *Repository) GetBySchoolIDName(schoolID int64, name string) (*model.UniversityFaculty, error) {
+	result := &model.UniversityFaculty{}
+	return result, repository.Db.Preload(clause.Associations).Where("school_id = ?", schoolID).Where("name = ?", name).Limit(1).Find(result).Error
+}
+
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, schoolID int64) (result []model.UniversityFaculty, err error) {
+	result = make([]model.UniversityFaculty, 0)
 	var where string = ""
-	if filter != nil && len(filter.Search) >= 1 {
-		where = fmt.Sprintf(
-			"WHERE name ILIKE %s OR WHERE description ILIKE %s",
-			filter.Search,
-			filter.Search,
-		)
+	if schoolID > 0 {
+		where = fmt.Sprintf("WHERE fcs.school_id = '%d'", schoolID)
 	}
-	return result, repository.Db.Scopes(
+	if filter != nil && len(filter.Search) >= 1 {
+		tempWhere := fmt.Sprintf(
+			"CAST(fcs.id AS TEXT) = '%s' OR fcs.name ILIKE '%s' OR fcs.description ILIKE '%s' OR schools.name ILIKE '%s' OR schools.type ILIKE '%s'",
+			filter.Search,
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+			"%"+filter.Search+"%",
+		)
+		if strings.HasPrefix(where, "WHERE") {
+			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+		} else {
+			where = fmt.Sprintf("WHERE %s", tempWhere)
+		}
+	}
+	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"faculties",
+			"SELECT fcs.id, fcs.name, fcs.description, fcs.school_id"+
+				", fcs.created_at, fcs.updated_at FROM university_faculties fcs "+
+				"LEFT JOIN schools ON fcs.school_id = schools.id",
 			where,
 			pagination,
 			filter,
 		),
 	).Find(&result).Error
 
-	// return result, repository.Db.Model(&model.Faculty{}).
-	//
-	//	Select("faculties.*").
-	//	Joins("left join school_directors on faculties.school_id = school_directors.id").
-	//	Where("school_directors.user_id = ?", userID).
-	//	Scopes(helpers.PaginationScope(result, pagination, filter, repository.Db)).Find(result).Error
+	err = tmpErr
+	return
 }

@@ -20,12 +20,13 @@ func NewController(service *Service) *Controller {
 func (controller *Controller) Create(
 	ctx *context.Context,
 	input *struct {
-		Body data.CreateDepartmentRequest
+		Body data.DepartmentRequest
 	},
-) (result *model.Department, errCode int, err error) {
+) (result *model.UniversityDepartment, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
-		&model.Department{
+		&model.UniversityDepartment{
+			SchoolID:    input.Body.SchoolID,
 			FacultyID:   input.Body.FacultyID,
 			Name:        input.Body.Name,
 			Description: input.Body.Description,
@@ -38,13 +39,14 @@ func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
 		data.DepartmentID
-		Body data.UpdateDepartmentRequest
+		Body data.DepartmentRequest
 	},
-) (result *model.Department, errCode int, err error) {
+) (result *model.UniversityDepartment, errCode int, err error) {
 	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx), input.ID,
-		&model.Department{
-			FacultyID:   input.ID,
+		&model.UniversityDepartment{
+			SchoolID:    input.Body.SchoolID,
+			FacultyID:   input.Body.FacultyID,
 			Name:        input.Body.Name,
 			Description: input.Body.Description,
 		},
@@ -66,12 +68,26 @@ func (controller *Controller) Delete(
 	return
 }
 
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
 		data.DepartmentID
 	},
-) (result *model.Department, errCode int, err error) {
+) (result *model.UniversityDepartment, errCode int, err error) {
 	department, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
@@ -85,10 +101,11 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.DepartmentResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	departmentList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
+	departmentList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination, input.GetAllRequest.SchoolID)
 	if err != nil {
 		return
 	}

@@ -210,8 +210,8 @@ func (service *Service) Get(inputJwtToken *types.JwtToken, schoolID int64) (scho
 }
 
 // GetAll Returns all schools with support for search, filter and pagination
-func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination) (schoolList []model.School, errCode int, err error) {
-	schoolList, err = service.Repository.GetAll(filter, pagination)
+func (service *Service) GetAll(inputJwtToken *types.JwtToken, filter *types.Filter, pagination *types.Pagination, typeName string) (schoolList []model.School, errCode int, err error) {
+	schoolList, err = service.Repository.GetAll(filter, pagination, typeName)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get schools from database")

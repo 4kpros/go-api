@@ -2,14 +2,16 @@ package data
 
 import (
 	"api/common/types"
+	schoolData "api/services/school/common/school/data"
+	facultyData "api/services/school/university/faculty/data"
 )
 
 type DepartmentResponse struct {
 	types.BaseGormModelResponse
-	SchoolID    int64  `json:"schoolID" required:"false" doc:"School id"`
-	FacultyID   int64  `json:"facultyID" required:"false" doc:"Faculty id"`
-	Name        string `json:"name" required:"false" doc:"Department name"`
-	Description string `json:"description" required:"false" doc:"Department description"`
+	School      *schoolData.SchoolResponse   `json:"school" doc:"School"`
+	Faculty     *facultyData.FacultyResponse `json:"faculty" doc:"Faculty"`
+	Name        string                       `json:"name" required:"false" doc:"Department name"`
+	Description string                       `json:"description" required:"false" doc:"Department description"`
 }
 
 type DepartmentResponseList struct {

@@ -17,7 +17,7 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/faculties",
+		Group: "/schools/universities/faculties",
 		Tag:   []string{"Faculties"},
 	}
 	const tableName = "faculties"
@@ -28,7 +28,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "post-faculty",
 			Summary:     "Create faculty",
-			Description: "Create new faculty by providing name and description and return created object. The name faculty should be unique.",
+			Description: "Create new faculty.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -47,7 +47,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.CreateFacultyRequest
+				Body data.FacultyRequest
 			},
 		) (*struct{ Body data.FacultyResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
@@ -64,7 +64,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "update-faculty",
 			Summary:     "Update faculty",
-			Description: "Update existing faculty with matching id and return the new faculty object.",
+			Description: "Update existing faculty with matching id and return the new object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -84,7 +84,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.FacultyID
-				Body data.UpdateFacultyRequest
+				Body data.FacultyRequest
 			},
 		) (*struct{ Body data.FacultyResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
@@ -124,6 +124,42 @@ func RegisterEndpoints(
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete multiple faculty
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-faculty-multiple",
+			Summary:     "Delete multiple faculty",
+			Description: "Delete multiple faculty by providing a lis of IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				Body types.DeleteMultipleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -194,6 +230,7 @@ func RegisterEndpoints(
 			input *struct {
 				types.Filter
 				types.PaginationRequest
+				data.GetAllRequest
 			},
 		) (*struct {
 			Body data.FacultyResponseList

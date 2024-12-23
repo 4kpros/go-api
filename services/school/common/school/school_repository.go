@@ -2,6 +2,7 @@ package school
 
 import (
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -131,12 +132,15 @@ func (repository *Repository) GetConfigByID(id int64) (*model.SchoolConfig, erro
 	return result, repository.Db.Preload(clause.Associations).Where("id = ?", id).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.School, err error) {
+func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination, typeName string) (result []model.School, err error) {
 	result = make([]model.School, 0)
 	var where string = ""
+	if len(typeName) > 0 {
+		where = fmt.Sprintf("WHERE schools.type = '%s'", typeName)
+	}
 	if filter != nil && len(filter.Search) >= 1 {
-		where = fmt.Sprintf(
-			"WHERE CAST(schools.id AS TEXT) = '%s' OR schools.name ILIKE '%s' OR CAST(schools.type AS TEXT) ILIKE '%s' OR school_infos.full_name ILIKE '%s' OR school_infos.slogan ILIKE '%s' OR school_infos.founder ILIKE '%s'",
+		tempWhere := fmt.Sprintf(
+			"CAST(schools.id AS TEXT) = '%s' OR schools.name ILIKE '%s' OR CAST(schools.type AS TEXT) ILIKE '%s' OR school_infos.full_name ILIKE '%s' OR school_infos.slogan ILIKE '%s' OR school_infos.founder ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -144,14 +148,19 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
 		)
+		if strings.HasPrefix(where, "WHERE") {
+			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+		} else {
+			where = fmt.Sprintf("WHERE %s", tempWhere)
+		}
 	}
 	newFilter := filter
 	newFilter.OrderBy = "schools." + newFilter.OrderBy
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT schools.created_at, schools.updated_at, schools.id, schools.name, schools.type, schools.created_at, schools.updated_at"+
-				", schools.school_config_id, schools.school_info_id FROM schools "+
+			"SELECT schools.id, schools.name, schools.type, schools.school_config_id, schools.school_info_id"+
+				", schools.created_at, schools.updated_at FROM schools "+
 				"LEFT JOIN school_infos ON schools.school_info_id = school_infos.id",
 			where,
 			pagination,
