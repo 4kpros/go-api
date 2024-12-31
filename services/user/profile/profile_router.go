@@ -10,6 +10,7 @@ import (
 	"api/common/constants"
 	"api/common/types"
 	"api/services/user/profile/data"
+	userData "api/services/user/user/data"
 )
 
 func RegisterEndpoints(
@@ -39,7 +40,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -48,12 +49,12 @@ func RegisterEndpoints(
 			input *struct {
 				Body data.UpdateProfileInfoRequest
 			},
-		) (*struct{ Body data.UserProfileInfoResponse }, error) {
+		) (*struct{ Body userData.UserInfoResponse }, error) {
 			result, errCode, err := controller.UpdateProfileInfo(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileInfoResponse }{Body: *data.FromUserInfo(result)}, nil
+			return &struct{ Body userData.UserInfoResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -75,7 +76,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -84,12 +85,12 @@ func RegisterEndpoints(
 			input *struct {
 				Body data.UpdateProfileMfaRequest
 			},
-		) (*struct{ Body data.UserProfileMfaResponse }, error) {
+		) (*struct{ Body userData.UserMfaResponse }, error) {
 			result, errCode, err := controller.UpdateProfileMfa(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileMfaResponse }{Body: *data.FromUserMfa(result)}, nil
+			return &struct{ Body userData.UserMfaResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 
@@ -99,7 +100,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "delete-profile",
 			Summary:     "Delete user account",
-			Description: "Delete current user account with provided bearer token",
+			Description: "Delete current user account",
 			Method:      http.MethodDelete,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -111,7 +112,7 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -133,7 +134,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "get-profile",
 			Summary:     "Get profile info",
-			Description: "Retrieve profile information for the current user with provided bearer token",
+			Description: "Retrieve profile information for the current user",
 			Method:      http.MethodGet,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -145,19 +146,19 @@ func RegisterEndpoints(
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct{},
-		) (*struct{ Body data.UserProfileResponse }, error) {
+		) (*struct{ Body userData.UserResponse }, error) {
 			result, errCode, err := controller.GetProfile(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
-			return &struct{ Body data.UserProfileResponse }{Body: *data.FromUser(result)}, nil
+			return &struct{ Body userData.UserResponse }{Body: *result.ToResponse()}, nil
 		},
 	)
 }

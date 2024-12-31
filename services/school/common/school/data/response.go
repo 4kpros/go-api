@@ -7,11 +7,11 @@ import (
 
 type SchoolResponse struct {
 	types.BaseGormModelResponse
-	Name            string                   `json:"name" doc:"School name"`
-	Type            string                   `json:"type" doc:"School description"`
-	SchoolInfo      *SchoolInfoResponse      `json:"schoolInfo" doc:"School description"`
-	SchoolConfig    *SchoolConfigResponse    `json:"schoolConfig" doc:"School configuration"`
-	SchoolDirectors []SchoolDirectorResponse `json:"schoolDirectors" doc:"School directors"`
+	Name string `json:"name" doc:"School name"`
+	Type string `json:"type" doc:"Type"`
+
+	Info   *SchoolInfoResponse   `json:"info" doc:"Information"`
+	Config *SchoolConfigResponse `json:"config" doc:"Configuration"`
 }
 
 type SchoolInfoResponse struct {
@@ -27,8 +27,8 @@ type SchoolInfoResponse struct {
 	Email2 string `json:"email2" doc:"Email 2"`
 	Email3 string `json:"email3" doc:"Email 3"`
 
-	Founder   string    `json:"founder" doc:"Founder name"`
-	FoundedAt time.Time `json:"foundedAt" doc:"Founded date time"`
+	Founder   string     `json:"founder" doc:"Founder name"`
+	FoundedAt *time.Time `json:"foundedAt" doc:"Founded date time"`
 
 	Address           string  `json:"address" doc:"Address"`
 	LocationLongitude float64 `json:"locationLongitude" doc:"Location longitude"`
@@ -44,11 +44,6 @@ type SchoolInfoResponse struct {
 
 type SchoolConfigResponse struct {
 	EmailDomain string `json:"emailDomain" doc:"Email domain"`
-}
-
-type SchoolDirectorResponse struct {
-	SchoolId int64 `json:"schoolId" doc:"SchoolI id"`
-	UserId   int64 `json:"userId" doc:"User id"`
 }
 
 type SchoolResponseList struct {

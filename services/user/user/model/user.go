@@ -20,82 +20,77 @@ type User struct {
 	LoginMethod    string     `gorm:"default:null"`
 	Provider       string     `gorm:"default:null"`
 	ProviderUserID string     `gorm:"default:null"`
-	IsActivated    bool       `gorm:"default:null"`
+	IsActivated    bool       `gorm:"default:false"`
 	ActivatedAt    *time.Time `gorm:"default:null"`
 
-	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	RoleID int64       `gorm:"default:null"`
+	Role   *model.Role `gorm:"default:null;foreignKey:RoleID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserInfo   *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	UserInfoID int64     `gorm:"default:null"`
+	Info       *UserInfo `gorm:"default:null;foreignKey:UserInfoID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 
-	UserMfa   *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 	UserMfaID int64    `gorm:"default:null"`
+	Mfa       *UserMfa `gorm:"default:null;foreignKey:UserMfaID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
-func (user *User) BeforeCreate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeCreate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) BeforeUpdate(db *gorm.DB) (err error) {
-	user.Password, err = security.EncodeArgon2id(user.Password)
+func (item *User) BeforeUpdate(db *gorm.DB) (err error) {
+	item.Password, err = security.EncodeArgon2id(item.Password)
 	return
 }
 
-func (user *User) ToResponse() *data.UserResponse {
-	resp := &data.UserResponse{
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-
-		LoginMethod:    user.LoginMethod,
-		Provider:       user.Provider,
-		ProviderUserID: user.ProviderUserID,
-		IsActivated:    user.IsActivated,
-		ActivatedAt:    user.ActivatedAt,
-
-		Role: &data.UserRoleResponse{
-			ID:          user.Role.ID,
-			Name:        user.Role.Name,
-			Description: user.Role.Description,
-		},
-		UserInfo: user.UserInfo.ToResponse(),
-		UserMfa:  user.UserMfa.ToResponse(),
+func (item *User) ToResponse() *data.UserResponse {
+	resp := &data.UserResponse{}
+	if item == nil {
+		return resp
 	}
-	resp.ID = user.ID
-	resp.CreatedAt = user.CreatedAt
-	resp.UpdatedAt = user.UpdatedAt
-	resp.DeletedAt = user.DeletedAt
+	resp.Email = item.Email
+	resp.PhoneNumber = item.PhoneNumber
+	resp.LoginMethod = item.LoginMethod
+	resp.Provider = item.Provider
+	resp.ProviderUserID = item.ProviderUserID
+	resp.IsActivated = item.IsActivated
+	resp.ActivatedAt = item.ActivatedAt
+
+	resp.Role = item.Role.ToResponse()
+	resp.Info = item.Info.ToResponse()
+	resp.Mfa = item.Mfa.ToResponse()
+
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 	return resp
 }
 
-func (user *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
-	user.ProviderUserID = googleUser.ID
-	user.Email = googleUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromGoogleUser(googleUser *types.GoogleUserProfileResponse) {
+	item.ProviderUserID = googleUser.ID
+	item.Email = googleUser.Email
+	item.Info = &UserInfo{
 		Username:  googleUser.FullName,
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
-		// Language:  googleUser.Language,
-		Image: googleUser.Picture,
+		Image:     googleUser.Picture,
 	}
 }
-func (user *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
-	user.ProviderUserID = facebookUser.ID
-	user.Email = facebookUser.Email
-	user.UserInfo = &UserInfo{
+func (item *User) FromFacebookUser(facebookUser *types.FacebookUserProfileResponse) {
+	item.ProviderUserID = facebookUser.ID
+	item.Email = facebookUser.Email
+	item.Info = &UserInfo{
 		Username:  facebookUser.FullName,
 		FirstName: facebookUser.FirstName,
 		LastName:  facebookUser.LastName,
-		// Language:  facebookUser.Languages,
-		Image: facebookUser.PictureSmall.Data.Url,
+		Image:     facebookUser.PictureSmall.Data.Url,
 	}
 }
 
-func ToResponseList(userList []User) []data.UserResponse {
-	resp := make([]data.UserResponse, len(userList))
-	for index, user := range userList {
-		resp[index] = *user.ToResponse()
+func ToResponseList(itemList []User) []data.UserResponse {
+	resp := make([]data.UserResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

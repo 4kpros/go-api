@@ -8,24 +8,29 @@ import (
 type Role struct {
 	types.BaseGormModel
 	Name        string `gorm:"unique;not null"`
+	Feature     string `gorm:"not null"`
 	Description string `gorm:"default:null"`
 }
 
-func (role *Role) ToResponse() *data.RoleResponse {
+func (item *Role) ToResponse() *data.RoleResponse {
 	resp := &data.RoleResponse{}
-	resp.ID = role.ID
-	resp.CreatedAt = role.CreatedAt
-	resp.UpdatedAt = role.UpdatedAt
-	resp.DeletedAt = role.DeletedAt
-	resp.Name = role.Name
-	resp.Description = role.Description
+	if item == nil {
+		return resp
+	}
+	resp.Name = item.Name
+	resp.Feature = item.Feature
+	resp.Description = item.Description
+
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 	return resp
 }
 
-func ToResponseList(roleList []Role) []data.RoleResponse {
-	resp := make([]data.RoleResponse, len(roleList))
-	for index, role := range roleList {
-		resp[index] = *role.ToResponse()
+func ToResponseList(itemList []Role) []data.RoleResponse {
+	resp := make([]data.RoleResponse, len(itemList))
+	for index, item := range itemList {
+		resp[index] = *item.ToResponse()
 	}
 	return resp
 }

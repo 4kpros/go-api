@@ -1,7 +1,6 @@
 package constants
 
 const (
-	PermissionNone   = "-"
 	PermissionCreate = "c"
 	PermissionRead   = "r"
 	PermissionUpdate = "u"
@@ -9,15 +8,11 @@ const (
 )
 
 const (
-	FeatureAdmin    = "feature-admin"
-	FeatureDirector = "feature-director"
-	FeatureTeacher  = "feature-teacher"
-	FeatureStudent  = "feature-student"
-)
+	FeatureAdmin    = "dashboard-admin"
+	FeatureDirector = "dashboard-director"
+	FeatureTeacher  = "dashboard-teacher"
+	FeatureStudent  = "dashboard-student"
+	FeatureParent   = "dashboard-student"
 
-const (
-	FeatureAdminLabel    = "Admin"
-	FeatureDirectorLabel = "Director"
-	FeatureTeacherLabel  = "Teacher"
-	FeatureStudentLabel  = "Student"
+	FeatureDefault = "dashboard-default"
 )

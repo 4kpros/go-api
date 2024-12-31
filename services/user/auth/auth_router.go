@@ -31,7 +31,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -60,7 +60,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -89,7 +89,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/login/provider", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -118,7 +118,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/email", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -146,7 +146,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/register/phone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -174,7 +174,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/activate", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -202,7 +202,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/initemail", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -234,7 +234,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/initphone", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -266,7 +266,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/checkcode", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -298,7 +298,7 @@ func RegisterEndpoints(
 			Method:        http.MethodPost,
 			Path:          fmt.Sprintf("%s/forgot/newpassword", endpointConfig.Group),
 			Tags:          endpointConfig.Tag,
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusForbidden, http.StatusNotFound},
 		},
@@ -333,7 +333,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{constants.SecurityAuthName: {}}, // Used to require authentication
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},

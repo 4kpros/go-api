@@ -5,6 +5,7 @@ import (
 
 	"api/cmd/api"
 	"api/cmd/di"
+	"api/cmd/fixture"
 	"api/cmd/migrate"
 	"api/common/helpers"
 	"api/common/utils/security"
@@ -24,7 +25,17 @@ func main() {
 		panic(errInit)
 	}
 
-	migrate.Start()
+	// Migrate
+	err := migrate.Start()
+	if err != nil {
+		panic(err)
+	}
+	// Load fixtures
+	err = fixture.Load()
+	if err != nil {
+		panic(err)
+	}
+
 	di.InjectDependencies()
 	api.Start()
 }

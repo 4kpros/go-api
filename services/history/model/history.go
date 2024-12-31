@@ -14,15 +14,16 @@ type History struct {
 }
 
 func (history *History) ToResponse() *data.HistoryResponse {
-	resp := &data.HistoryResponse{}
+	resp := &data.HistoryResponse{
+		Action: history.Action,
+		UserID: history.UserID,
+		Table:  history.Table,
+		RowID:  history.RowID,
+	}
+
 	resp.ID = history.ID
 	resp.CreatedAt = history.CreatedAt
 	resp.UpdatedAt = history.UpdatedAt
-	resp.DeletedAt = history.DeletedAt
-	resp.Action = history.Action
-	resp.UserID = history.UserID
-	resp.Table = history.Table
-	resp.RowID = history.RowID
 	return resp
 }
 

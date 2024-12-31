@@ -40,10 +40,6 @@ type Environment struct {
 	ArgonSaltLength  int `mapstructure:"ARGON_PARAM_SALT_LENGTH"`
 	ArgonKeyLength   int `mapstructure:"ARGON_PARAM_KEY_LENGTH"`
 
-	// JWT expires
-	JwtExpiresDefault            int `mapstructure:"JWT_EXPIRES_DEFAULT"`
-	JwtExpiresLogin              int `mapstructure:"JWT_EXPIRES_LOGIN"`
-	JwtExpiresLoginStayConnected int `mapstructure:"JWT_EXPIRES_LOGIN_STAY_CONNECTED"`
 	// Jwt issuers auth
 	JwtIssuerAuthPassphrase string `mapstructure:"JWT_ISSUER_AUTH_PASSPHRASE"`
 	// Jwt issuers session
@@ -80,6 +76,17 @@ type Environment struct {
 	FacebookClientSecret  string `mapstructure:"FACEBOOK_CLIENT_SECRET"`
 	FacebookDebugTokenUrl string `mapstructure:"FACEBOOK_DEBUG_TOKEN_URL"`
 	FacebookProfileUrl    string `mapstructure:"FACEBOOK_PROFILE_URL"`
+
+	// Initial database
+	RoleDefault  string `mapstructure:"ROLE_DEFAULT"`
+	RoleAdmin    string `mapstructure:"ROLE_ADMIN"`
+	RoleDirector string `mapstructure:"ROLE_DIRECTOR"`
+	RoleTeacher  string `mapstructure:"ROLE_TEACHER"`
+	RoleStudent  string `mapstructure:"ROLE_STUDENT"`
+	RoleParent   string `mapstructure:"ROLE_PARENT"`
+
+	UserAdminEmail    string `mapstructure:"USER_ADMIN_EMAIL"`
+	UserAdminPassword string `mapstructure:"USER_ADMIN_PASSWORD"`
 }
 
 var Env = &Environment{}

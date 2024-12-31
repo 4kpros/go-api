@@ -26,8 +26,9 @@ func (controller *Controller) CreateWithEmail(
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
 		&model.User{
-			Email:  input.Body.Email,
-			RoleID: input.Body.RoleID,
+			Email:       input.Body.Email,
+			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
@@ -44,24 +45,42 @@ func (controller *Controller) CreateWithPhoneNumber(
 		&model.User{
 			PhoneNumber: input.Body.PhoneNumber,
 			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
 }
 
-func (controller *Controller) UpdateUser(
+func (controller *Controller) AssignRole(
+	ctx *context.Context,
+	input *struct {
+		data.UserID
+		Body data.UserRoleRequest
+	},
+) (result *model.User, errCode int, err error) {
+	result, errCode, err = controller.Service.AssignRole(
+		helpers.GetJwtContext(ctx),
+		input.ID,
+		input.Body.RoleID,
+	)
+	return
+}
+
+func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
 		data.UserID
 		Body data.UpdateUserRequest
 	},
 ) (result *model.User, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateUser(
+	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx),
+		input.UserID.ID,
 		&model.User{
 			Email:       input.Body.Email,
 			PhoneNumber: input.Body.PhoneNumber,
 			RoleID:      input.Body.RoleID,
+			IsActivated: input.Body.IsActivated,
 		},
 	)
 	return
@@ -77,6 +96,35 @@ func (controller *Controller) Delete(
 		helpers.GetJwtContext(ctx),
 		input.ID,
 	)
+	return
+}
+
+func (controller *Controller) DeleteRole(
+	ctx *context.Context,
+	input *struct {
+		data.UserID
+		Body data.UserRoleRequest
+	},
+) (result int64, errCode int, err error) {
+	result, errCode, err = controller.Service.DeleteRole(
+		helpers.GetJwtContext(ctx),
+		input.ID,
+		input.Body.RoleID,
+	)
+	return
+}
+
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
 	return
 }
 
@@ -98,6 +146,7 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.UserResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
@@ -105,6 +154,7 @@ func (controller *Controller) GetAll(
 		helpers.GetJwtContext(ctx),
 		newFilter,
 		newPagination,
+		input.GetAllRequest.Role,
 	)
 	if err != nil {
 		return

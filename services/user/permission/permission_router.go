@@ -26,80 +26,149 @@ func RegisterEndpoints(
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "update-role-feature-permission",
-			Summary:     "Update permission" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Update permission with matching role id and feature name",
+			OperationID: "update-permission",
+			Summary:     "Update permission",
+			Description: "Update permission with matching role id, table name with actions(CRUD)",
 			Method:      http.MethodPut,
-			Path:        fmt.Sprintf("%s/role/{roleID}/{featureName}", endpointConfig.Group),
+			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.UpdateRoleFeaturePermissionPathRequest
-				Body data.UpdateRoleFeaturePermissionBodyRequest
+				data.PermissionPathRequest
+				Body data.UpdatePermissionRequest
 			},
 		) (*struct {
-			Body data.PermissionFeatureTableResponse
+			Body data.PermissionResponse
 		}, error) {
-			result, errCode, err := controller.UpdateByRoleIDFeatureName(
-				&ctx, input.RoleID, input.FeatureName, input.Body,
+			result, errCode, err := controller.Update(
+				&ctx, input,
 			)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
 			return &struct {
-				Body data.PermissionFeatureTableResponse
+				Body data.PermissionResponse
 			}{Body: *result}, nil
 		},
 	)
 
-	// Get all permissions for role
+	// Delete permission with id
 	huma.Register(
 		*humaApi,
 		huma.Operation{
-			OperationID: "get-role-permission-list",
-			Summary:     "Get all role permissions" + " (" + constants.FeatureAdminLabel + ")",
-			Description: "Get all permissions with matching role id and support for search, filter and pagination",
-			Method:      http.MethodGet,
-			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
+			OperationID: "delete-permission-id",
+			Summary:     "Delete permission",
+			Description: "Delete existing permission with matching id and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
-						constants.FeatureAdmin,   // Feature scope
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				data.PermissionID
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete multiple permission
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-permission-multiple",
+			Summary:     "Delete multiple permission",
+			Description: "Delete multiple permission by providing a lis of IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				Body types.DeleteMultipleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Get all permissions
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "get-permission-list",
+			Summary:     "Get all permissions",
+			Description: "Get all permissions and support for search, filter and pagination",
+			Method:      http.MethodGet,
+			Path:        endpointConfig.Group,
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},
 				},
 			},
-			MaxBodyBytes:  1024, // 1 KiB
+			MaxBodyBytes:  constants.DefaultBodySize,
 			DefaultStatus: http.StatusOK,
 			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden},
 		},
 		func(
 			ctx context.Context,
 			input *struct {
-				data.GetRolePermissionListRequest
 				types.Filter
 				types.PaginationRequest
 			},
 		) (*struct {
 			Body data.PermissionListResponse
 		}, error) {
-			result, errCode, err := controller.GetAllByRoleID(&ctx, input)
+			result, errCode, err := controller.GetAll(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}

@@ -11,8 +11,24 @@ import (
 	"api/common/constants"
 	"api/config"
 	"api/middlewares"
+	"api/services/communication"
+	"api/services/contact"
 	"api/services/history"
+	"api/services/school/common/director"
 	"api/services/school/common/school"
+	"api/services/school/common/year"
+	"api/services/school/secondary/class"
+	"api/services/school/secondary/pupil"
+	"api/services/school/secondary/section"
+	"api/services/school/secondary/subject"
+	"api/services/school/secondary/test"
+	"api/services/school/university/department"
+	"api/services/school/university/domain"
+	"api/services/school/university/exam"
+	"api/services/school/university/faculty"
+	"api/services/school/university/level"
+	"api/services/school/university/student"
+	"api/services/school/university/tu"
 	"api/services/user/auth"
 	"api/services/user/permission"
 	"api/services/user/profile"
@@ -21,8 +37,10 @@ import (
 )
 
 type Controllers struct {
-	// History service
-	HistoryController *history.Controller
+	// Others service
+	CommunicationController     *communication.Controller
+	ContactControllerController *contact.Controller
+	HistoryController           *history.Controller
 
 	// User service
 	AuthController       *auth.Controller
@@ -32,14 +50,32 @@ type Controllers struct {
 	ProfileController    *profile.Controller
 
 	// School service
-	SchoolController *school.Controller
+	YearController     *year.Controller
+	SchoolController   *school.Controller
+	DirectorController *director.Controller
+	// Secondary
+	SectionController *section.Controller
+	ClassController   *class.Controller
+	SubjectController *subject.Controller
+	PupilController   *pupil.Controller
+	TestController    *test.Controller
+	// Faculty
+	FacultyController    *faculty.Controller
+	DepartmentController *department.Controller
+	DomainController     *domain.Controller
+	LevelController      *level.Controller
+	TUController         *tu.Controller
+	ExamController       *exam.Controller
+	StudentController    *student.Controller
 }
 
 var AllControllers = &Controllers{}
 
 // Register all API endpoints
 func registerEndpoints(humaApi *huma.API) {
-	// History service
+	// Others service
+	communication.RegisterEndpoints(humaApi, AllControllers.CommunicationController)
+	contact.RegisterEndpoints(humaApi, AllControllers.ContactControllerController)
 	history.RegisterEndpoints(humaApi, AllControllers.HistoryController)
 
 	// User service
@@ -50,7 +86,23 @@ func registerEndpoints(humaApi *huma.API) {
 	profile.RegisterEndpoints(humaApi, AllControllers.ProfileController)
 
 	// School service
+	year.RegisterEndpoints(humaApi, AllControllers.YearController)
 	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
+	director.RegisterEndpoints(humaApi, AllControllers.DirectorController)
+	// Secondary
+	section.RegisterEndpoints(humaApi, AllControllers.SectionController)
+	class.RegisterEndpoints(humaApi, AllControllers.ClassController)
+	subject.RegisterEndpoints(humaApi, AllControllers.SubjectController)
+	pupil.RegisterEndpoints(humaApi, AllControllers.PupilController)
+	test.RegisterEndpoints(humaApi, AllControllers.TestController)
+	// University
+	faculty.RegisterEndpoints(humaApi, AllControllers.FacultyController)
+	department.RegisterEndpoints(humaApi, AllControllers.DepartmentController)
+	domain.RegisterEndpoints(humaApi, AllControllers.DomainController)
+	level.RegisterEndpoints(humaApi, AllControllers.LevelController)
+	student.RegisterEndpoints(humaApi, AllControllers.StudentController)
+	tu.RegisterEndpoints(humaApi, AllControllers.TUController)
+	exam.RegisterEndpoints(humaApi, AllControllers.ExamController)
 }
 
 // Start Set up and start the API: set up API documentation,
@@ -70,7 +122,7 @@ func Start() {
 
 	// OpenAPI documentation based on huma
 	humaConfig := huma.DefaultConfig(constants.OpenApiTitle, constants.OpenApiVersion)
-	// Custom CreateHooks to remove $schema links
+	// Custom hook to remove schema links
 	humaConfig.CreateHooks = []func(huma.Config) huma.Config{
 		func(c huma.Config) huma.Config {
 			return c
@@ -95,7 +147,11 @@ func Start() {
 		middlewares.HeadersMiddleware(humaApi),
 		middlewares.CorsMiddleware(humaApi),
 		middlewares.AuthMiddleware(humaApi),
-		middlewares.PermissionMiddleware(humaApi, AllControllers.PermissionController.Service.Repository),
+		middlewares.PermissionMiddleware(
+			humaApi,
+			AllControllers.RoleController.Service.Repository,
+			AllControllers.PermissionController.Service.Repository,
+		),
 	)
 
 	// Register endpoints

@@ -6,6 +6,7 @@ import (
 	"api/common/helpers"
 	"api/common/types"
 	"api/services/user/permission/data"
+	"api/services/user/permission/model"
 )
 
 type Controller struct {
@@ -16,36 +17,72 @@ func NewController(service *Service) *Controller {
 	return &Controller{Service: service}
 }
 
-func (controller *Controller) UpdateByRoleIDFeatureName(
+func (controller *Controller) Update(
 	ctx *context.Context,
-	roleID int64,
-	featureName string,
-	body data.UpdateRoleFeaturePermissionBodyRequest,
-) (result *data.PermissionFeatureTableResponse, errCode int, err error) {
-	result, errCode, err = controller.Service.UpdateByRoleIDFeatureName(
+	input *struct {
+		data.PermissionPathRequest
+		Body data.UpdatePermissionRequest
+	},
+) (result *data.PermissionResponse, errCode int, err error) {
+	tmpResult, errCode, err := controller.Service.Update(
 		helpers.GetJwtContext(ctx),
-		roleID,
-		featureName,
-		body,
+		input.RoleID,
+		input.Body.TableName,
+		&model.Permission{
+			RoleID:    input.RoleID,
+			TableName: input.Body.TableName,
+			Create:    input.Body.Create,
+			Read:      input.Body.Read,
+			Update:    input.Body.Update,
+			Delete:    input.Body.Delete,
+		},
 	)
+	result = tmpResult.ToResponse()
 	return
 }
 
-func (controller *Controller) GetAllByRoleID(
+func (controller *Controller) Delete(
 	ctx *context.Context,
 	input *struct {
-		data.GetRolePermissionListRequest
+		data.PermissionID
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.Delete(helpers.GetJwtContext(ctx), input.ID)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
+func (controller *Controller) GetAll(
+	ctx *context.Context,
+	input *struct {
 		types.Filter
 		types.PaginationRequest
 	},
 ) (result *data.PermissionListResponse, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	permissionList, errCode, err := controller.Service.GetAllByRoleID(helpers.GetJwtContext(ctx), input.RoleID, newFilter, newPagination)
+	permissionList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
 	if err != nil {
 		return
 	}
 	result = &data.PermissionListResponse{
-		Data: permissionList,
+		Data: model.ToResponseList(permissionList),
 	}
 	result.Filter = newFilter
 	result.Pagination = newPagination

@@ -10,9 +10,18 @@ type SchoolConfig struct {
 	EmailDomain string `gorm:"default:null"`
 }
 
-func (schoolConfig *SchoolConfig) ToResponse() *data.SchoolConfigResponse {
-	schoolConfigResp := &data.SchoolConfigResponse{
-		EmailDomain: schoolConfig.EmailDomain,
+func (item *SchoolConfig) ToResponse() *data.SchoolConfigResponse {
+	resp := &data.SchoolConfigResponse{}
+	if item == nil {
+		return resp
 	}
-	return schoolConfigResp
+	resp.EmailDomain = item.EmailDomain
+	return resp
+}
+
+func FromConfigRequest(item *data.SchoolConfigRequest) *SchoolConfig {
+	resp := &SchoolConfig{
+		EmailDomain: item.EmailDomain,
+	}
+	return resp
 }
