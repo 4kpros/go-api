@@ -17,8 +17,8 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/domains",
-		Tag:   []string{"Domains"},
+		Group: "/schools/universities/domains",
+		Tag:   []string{"University - Domains"},
 	}
 	const tableName = "domains"
 
@@ -28,7 +28,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "post-domain",
 			Summary:     "Create domain",
-			Description: "Create new domain by providing name and description and return created object. The name domain should be unique.",
+			Description: "Create new domain.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -47,7 +47,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.CreateDomainRequest
+				Body data.DomainRequest
 			},
 		) (*struct{ Body data.DomainResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
@@ -64,7 +64,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "update-domain",
 			Summary:     "Update domain",
-			Description: "Update existing domain with matching id and return the new domain object.",
+			Description: "Update existing domain with matching id and return the new object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -84,7 +84,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.DomainID
-				Body data.UpdateDomainRequest
+				Body data.DomainRequest
 			},
 		) (*struct{ Body data.DomainResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
@@ -124,6 +124,42 @@ func RegisterEndpoints(
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete multiple domain
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-domain-multiple",
+			Summary:     "Delete multiple domain",
+			Description: "Delete multiple domain by providing a lis of IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				Body types.DeleteMultipleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -194,6 +230,7 @@ func RegisterEndpoints(
 			input *struct {
 				types.Filter
 				types.PaginationRequest
+				data.GetAllRequest
 			},
 		) (*struct {
 			Body data.DomainResponseList

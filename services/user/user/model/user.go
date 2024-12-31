@@ -44,10 +44,10 @@ func (item *User) BeforeUpdate(db *gorm.DB) (err error) {
 }
 
 func (item *User) ToResponse() *data.UserResponse {
-	resp := &data.UserResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.UserResponse{}
 	resp.Email = item.Email
 	resp.PhoneNumber = item.PhoneNumber
 	resp.LoginMethod = item.LoginMethod

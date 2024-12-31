@@ -19,10 +19,10 @@ type Permission struct {
 }
 
 func (item *Permission) ToResponse() *data.PermissionResponse {
-	resp := &data.PermissionResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.PermissionResponse{}
 	resp.TableName = item.TableName
 	resp.Create = item.Create
 	resp.Read = item.Read

@@ -18,10 +18,10 @@ type Director struct {
 }
 
 func (item *Director) ToResponse() *data.DirectorResponse {
-	resp := &data.DirectorResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.DirectorResponse{}
 	resp.User = item.User.ToResponse()
 	resp.User.Role = nil
 	resp.User.Info = nil

@@ -20,12 +20,12 @@ func NewController(service *Service) *Controller {
 func (controller *Controller) Create(
 	ctx *context.Context,
 	input *struct {
-		Body data.CreateLevelRequest
+		Body data.LevelRequest
 	},
-) (result *model.Level, errCode int, err error) {
+) (result *model.UniversityLevel, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
-		&model.Level{
+		&model.UniversityLevel{
 			SchoolID:    input.Body.SchoolID,
 			Name:        input.Body.Name,
 			Description: input.Body.Description,
@@ -38,12 +38,13 @@ func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
 		data.LevelID
-		Body data.UpdateLevelRequest
+		Body data.LevelRequest
 	},
-) (result *model.Level, errCode int, err error) {
+) (result *model.UniversityLevel, errCode int, err error) {
 	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx), input.ID,
-		&model.Level{
+		&model.UniversityLevel{
+			SchoolID:    input.Body.SchoolID,
 			Name:        input.Body.Name,
 			Description: input.Body.Description,
 		},
@@ -65,12 +66,26 @@ func (controller *Controller) Delete(
 	return
 }
 
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
 		data.LevelID
 	},
-) (result *model.Level, errCode int, err error) {
+) (result *model.UniversityLevel, errCode int, err error) {
 	level, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
@@ -84,10 +99,11 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.LevelResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	levelList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
+	levelList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination, input.GetAllRequest.SchoolID)
 	if err != nil {
 		return
 	}

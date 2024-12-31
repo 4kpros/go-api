@@ -5,21 +5,37 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
+	"api/services/school/common/school"
 	"api/services/school/university/department/model"
 )
 
 type Service struct {
-	Repository *Repository
+	Repository       *Repository
+	SchoolRepository *school.Repository
 }
 
-func NewService(repository *Repository) *Service {
+func NewService(repository *Repository, SchoolRepository *school.Repository) *Service {
 	return &Service{
-		Repository: repository,
+		Repository:       repository,
+		SchoolRepository: SchoolRepository,
 	}
 }
 
 // Create new department
 func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.UniversityDepartment) (result *model.UniversityDepartment, errCode int, err error) {
+	// Check if the school type is university
+	foundSchool, err := service.SchoolRepository.GetByID(item.SchoolID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get school by id from database")
+		return
+	}
+	if foundSchool.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
+		return
+	}
+
 	// Check if the new one exists
 	foundNewDepartment, err := service.Repository.GetBySchoolIDFacultyIDName(item.SchoolID, item.FacultyID, item.Name)
 	if err != nil {
@@ -45,6 +61,19 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.Univer
 
 // Update department
 func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *model.UniversityDepartment) (result *model.UniversityDepartment, errCode int, err error) {
+	// Check if the school type is university
+	foundSchool, err := service.SchoolRepository.GetByID(item.SchoolID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get school by id from database")
+		return
+	}
+	if foundSchool.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
+		return
+	}
+
 	// Check if department exists
 	foundDepartment, err := service.Repository.GetById(id)
 	if err != nil {
@@ -55,6 +84,12 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *mo
 	if foundDepartment == nil || foundDepartment.ID != id {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("Department")
+		return
+	}
+	// Check if the school type is university
+	if foundDepartment.School.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
 		return
 	}
 
@@ -71,7 +106,6 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *mo
 			err = constants.Http302ErrorMessage("Faculty")
 			return
 		}
-		return
 	}
 
 	// Update department
@@ -110,7 +144,7 @@ func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Role selection")
+		err = constants.Http404ErrorMessage("Department selection")
 		return
 	}
 	return

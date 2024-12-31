@@ -184,7 +184,7 @@ func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Role selection")
+		err = constants.Http404ErrorMessage("User selection")
 		return
 	}
 	return

@@ -20,10 +20,10 @@ type UniversityDepartment struct {
 }
 
 func (item *UniversityDepartment) ToResponse() *data.DepartmentResponse {
-	resp := &data.DepartmentResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.DepartmentResponse{}
 	resp.School = item.School.ToResponse()
 	resp.Faculty = item.Faculty.ToResponse()
 	resp.Name = item.Name

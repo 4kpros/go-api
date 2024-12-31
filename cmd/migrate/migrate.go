@@ -9,11 +9,12 @@ import (
 	directorModel "api/services/school/common/director/model"
 	schoolModel "api/services/school/common/school/model"
 	yearModel "api/services/school/common/year/model"
-	classModel "api/services/school/secondary/class/model"
-	pupilModel "api/services/school/secondary/pupil/model"
-	sectionModel "api/services/school/secondary/section/model"
-	subjectModel "api/services/school/secondary/subject/model"
-	testModel "api/services/school/secondary/test/model"
+	classModel "api/services/school/highschool/class/model"
+	pupilModel "api/services/school/highschool/pupil/model"
+	sectionModel "api/services/school/highschool/section/model"
+	specialtyModel "api/services/school/highschool/specialty/model"
+	subjectModel "api/services/school/highschool/subject/model"
+	testModel "api/services/school/highschool/test/model"
 	departmentModel "api/services/school/university/department/model"
 	domainModel "api/services/school/university/domain/model"
 	examModel "api/services/school/university/exam/model"
@@ -50,9 +51,10 @@ func Start() error {
 		// Director
 		&directorModel.Director{},
 
-		// Secondary
-		&sectionModel.Section{},
-		&classModel.Class{},
+		// Highschool
+		&sectionModel.HighschoolSection{},
+		&specialtyModel.HighschoolSpecialty{},
+		&classModel.HighschoolClass{},
 		&subjectModel.Subject{},
 		&subjectModel.SubjectProfessor{},
 		&pupilModel.Pupil{},
@@ -61,8 +63,8 @@ func Start() error {
 		// University
 		&facultyModel.UniversityFaculty{},
 		&departmentModel.UniversityDepartment{},
-		&domainModel.Domain{},
-		&levelModel.Level{},
+		&domainModel.UniversityDomain{},
+		&levelModel.UniversityLevel{},
 		&tuModel.TeachingUnit{},
 		&tuModel.TeachingUnitProfessor{},
 		&studentModel.Student{},

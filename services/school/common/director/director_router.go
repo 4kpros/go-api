@@ -17,8 +17,8 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/directors",
-		Tag:   []string{"Directors"},
+		Group: "/schools/directors",
+		Tag:   []string{"School - Directors"},
 	}
 	const tableName = "directors"
 

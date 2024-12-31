@@ -9,11 +9,12 @@ import (
 	"api/services/school/common/director"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
-	"api/services/school/secondary/class"
-	"api/services/school/secondary/pupil"
-	"api/services/school/secondary/section"
-	"api/services/school/secondary/subject"
-	"api/services/school/secondary/test"
+	"api/services/school/highschool/class"
+	"api/services/school/highschool/pupil"
+	"api/services/school/highschool/section"
+	"api/services/school/highschool/specialty"
+	"api/services/school/highschool/subject"
+	"api/services/school/highschool/test"
 	"api/services/school/university/department"
 	"api/services/school/university/domain"
 	"api/services/school/university/exam"
@@ -106,8 +107,9 @@ func InjectDependencies() {
 		),
 	)
 
-	// Secondary
+	// Highschool
 	var sectionRepo = section.NewRepository(config.DB)
+	var specialtyRepo = specialty.NewRepository(config.DB)
 	var classRepo = class.NewRepository(config.DB)
 	var subjectRepo = subject.NewRepository(config.DB)
 	var pupilRepo = pupil.NewRepository(config.DB)
@@ -115,11 +117,19 @@ func InjectDependencies() {
 	api.AllControllers.SectionController = section.NewController(
 		section.NewService(
 			sectionRepo,
+			schoolRepo,
+		),
+	)
+	api.AllControllers.SpecialtyController = specialty.NewController(
+		specialty.NewService(
+			specialtyRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.ClassController = class.NewController(
 		class.NewService(
 			classRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.SubjectController = subject.NewController(
@@ -149,21 +159,25 @@ func InjectDependencies() {
 	api.AllControllers.FacultyController = faculty.NewController(
 		faculty.NewService(
 			facultyRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.DepartmentController = department.NewController(
 		department.NewService(
 			departmentRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.DomainController = domain.NewController(
 		domain.NewService(
 			domainRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.LevelController = level.NewController(
 		level.NewService(
 			levelRepo,
+			schoolRepo,
 		),
 	)
 	api.AllControllers.TUController = tu.NewController(

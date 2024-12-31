@@ -17,8 +17,8 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/levels",
-		Tag:   []string{"Levels"},
+		Group: "/schools/universities/levels",
+		Tag:   []string{"University - Levels"},
 	}
 	const tableName = "levels"
 
@@ -28,7 +28,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "post-level",
 			Summary:     "Create level",
-			Description: "Create new level by providing name and description and return created object. The name level should be unique.",
+			Description: "Create new level.",
 			Method:      http.MethodPost,
 			Path:        endpointConfig.Group,
 			Tags:        endpointConfig.Tag,
@@ -47,7 +47,7 @@ func RegisterEndpoints(
 		func(
 			ctx context.Context,
 			input *struct {
-				Body data.CreateLevelRequest
+				Body data.LevelRequest
 			},
 		) (*struct{ Body data.LevelResponse }, error) {
 			result, errCode, err := controller.Create(&ctx, input)
@@ -64,7 +64,7 @@ func RegisterEndpoints(
 		huma.Operation{
 			OperationID: "update-level",
 			Summary:     "Update level",
-			Description: "Update existing level with matching id and return the new level object.",
+			Description: "Update existing level with matching id and return the new object.",
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/{id}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
@@ -84,7 +84,7 @@ func RegisterEndpoints(
 			ctx context.Context,
 			input *struct {
 				data.LevelID
-				Body data.UpdateLevelRequest
+				Body data.LevelRequest
 			},
 		) (*struct{ Body data.LevelResponse }, error) {
 			result, errCode, err := controller.Update(&ctx, input)
@@ -124,6 +124,42 @@ func RegisterEndpoints(
 			},
 		) (*struct{ Body types.DeletedResponse }, error) {
 			result, errCode, err := controller.Delete(&ctx, input)
+			if err != nil {
+				return nil, huma.NewError(errCode, err.Error(), err)
+			}
+			return &struct{ Body types.DeletedResponse }{Body: types.DeletedResponse{AffectedRows: result}}, nil
+		},
+	)
+
+	// Delete multiple level
+	huma.Register(
+		*humaApi,
+		huma.Operation{
+			OperationID: "delete-level-multiple",
+			Summary:     "Delete multiple level",
+			Description: "Delete multiple level by providing a lis of IDs and return affected rows in database.",
+			Method:      http.MethodDelete,
+			Path:        fmt.Sprintf("%s/multiple/delete", endpointConfig.Group),
+			Tags:        endpointConfig.Tag,
+			Security: []map[string][]string{
+				{
+					constants.SecurityAuthName: { // Authentication
+						tableName,                  // Table name
+						constants.PermissionDelete, // Operation
+					},
+				},
+			},
+			MaxBodyBytes:  constants.DefaultBodySize,
+			DefaultStatus: http.StatusOK,
+			Errors:        []int{http.StatusInternalServerError, http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound},
+		},
+		func(
+			ctx context.Context,
+			input *struct {
+				Body types.DeleteMultipleRequest
+			},
+		) (*struct{ Body types.DeletedResponse }, error) {
+			result, errCode, err := controller.DeleteMultiple(&ctx, input)
 			if err != nil {
 				return nil, huma.NewError(errCode, err.Error(), err)
 			}
@@ -194,6 +230,7 @@ func RegisterEndpoints(
 			input *struct {
 				types.Filter
 				types.PaginationRequest
+				data.GetAllRequest
 			},
 		) (*struct {
 			Body data.LevelResponseList

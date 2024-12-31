@@ -24,7 +24,7 @@ import (
 // - Pagination applies an offset and limit to the results, determining which subset of data to display.
 func PaginationScope(db *gorm.DB, selection string, where string, pagination *types.Pagination, filter *types.Filter) func(*gorm.DB) *gorm.DB {
 	var count *int64 = new(int64)
-	db.Raw(fmt.Sprintf("SELECT COUNT(*) FROM (%s) AS subquery %s;", selection, where)).Count(count)
+	db.Raw(fmt.Sprintf("SELECT COUNT(*) FROM (%s %s) AS subquery;", selection, where)).Count(count)
 	pagination.UpdateFields(*count)
 
 	paginationFilter := fmt.Sprintf(

@@ -17,11 +17,12 @@ import (
 	"api/services/school/common/director"
 	"api/services/school/common/school"
 	"api/services/school/common/year"
-	"api/services/school/secondary/class"
-	"api/services/school/secondary/pupil"
-	"api/services/school/secondary/section"
-	"api/services/school/secondary/subject"
-	"api/services/school/secondary/test"
+	"api/services/school/highschool/class"
+	"api/services/school/highschool/pupil"
+	"api/services/school/highschool/section"
+	"api/services/school/highschool/specialty"
+	"api/services/school/highschool/subject"
+	"api/services/school/highschool/test"
 	"api/services/school/university/department"
 	"api/services/school/university/domain"
 	"api/services/school/university/exam"
@@ -54,11 +55,12 @@ type Controllers struct {
 	SchoolController   *school.Controller
 	DirectorController *director.Controller
 	// Secondary
-	SectionController *section.Controller
-	ClassController   *class.Controller
-	SubjectController *subject.Controller
-	PupilController   *pupil.Controller
-	TestController    *test.Controller
+	SectionController   *section.Controller
+	SpecialtyController *specialty.Controller
+	ClassController     *class.Controller
+	SubjectController   *subject.Controller
+	PupilController     *pupil.Controller
+	TestController      *test.Controller
 	// Faculty
 	FacultyController    *faculty.Controller
 	DepartmentController *department.Controller
@@ -89,8 +91,9 @@ func registerEndpoints(humaApi *huma.API) {
 	year.RegisterEndpoints(humaApi, AllControllers.YearController)
 	school.RegisterEndpoints(humaApi, AllControllers.SchoolController)
 	director.RegisterEndpoints(humaApi, AllControllers.DirectorController)
-	// Secondary
+	// Highschool
 	section.RegisterEndpoints(humaApi, AllControllers.SectionController)
+	specialty.RegisterEndpoints(humaApi, AllControllers.SpecialtyController)
 	class.RegisterEndpoints(humaApi, AllControllers.ClassController)
 	subject.RegisterEndpoints(humaApi, AllControllers.SubjectController)
 	pupil.RegisterEndpoints(humaApi, AllControllers.PupilController)

@@ -18,12 +18,13 @@ type School struct {
 }
 
 func (item *School) ToResponse() *data.SchoolResponse {
-	resp := &data.SchoolResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.SchoolResponse{}
 	resp.Name = item.Name
 	resp.Type = item.Type
+
 	resp.Info = item.Info.ToResponse()
 	resp.Config = item.Config.ToResponse()
 

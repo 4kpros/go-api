@@ -140,7 +140,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	}
 	if filter != nil && len(filter.Search) >= 1 {
 		tempWhere := fmt.Sprintf(
-			"CAST(schools.id AS TEXT) = '%s' OR schools.name ILIKE '%s' OR CAST(schools.type AS TEXT) ILIKE '%s' OR school_infos.full_name ILIKE '%s' OR school_infos.slogan ILIKE '%s' OR school_infos.founder ILIKE '%s'",
+			"CAST(schools.id AS TEXT) = '%s' OR schools.name ILIKE '%s' OR CAST(schools.type AS TEXT) ILIKE '%s' OR infos.full_name ILIKE '%s' OR infos.slogan ILIKE '%s' OR infos.founder ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -149,7 +149,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 		)
 		if strings.HasPrefix(where, "WHERE") {
-			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+			where = fmt.Sprintf("%s AND (%s)", where, tempWhere)
 		} else {
 			where = fmt.Sprintf("WHERE %s", tempWhere)
 		}
@@ -161,7 +161,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			repository.Db,
 			"SELECT schools.id, schools.name, schools.type, schools.school_config_id, schools.school_info_id"+
 				", schools.created_at, schools.updated_at FROM schools "+
-				"LEFT JOIN school_infos ON schools.school_info_id = school_infos.id",
+				"LEFT JOIN school_infos as infos ON schools.school_info_id = infos.id",
 			where,
 			pagination,
 			newFilter,
