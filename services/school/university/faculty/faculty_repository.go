@@ -65,11 +65,11 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	result = make([]model.UniversityFaculty, 0)
 	var where string = ""
 	if schoolID > 0 {
-		where = fmt.Sprintf("WHERE fcs.school_id = '%d'", schoolID)
+		where = fmt.Sprintf("WHERE faculties.school_id = %d", schoolID)
 	}
 	if filter != nil && len(filter.Search) >= 1 {
 		tempWhere := fmt.Sprintf(
-			"CAST(fcs.id AS TEXT) = '%s' OR fcs.name ILIKE '%s' OR fcs.description ILIKE '%s' OR schools.name ILIKE '%s' OR schools.type ILIKE '%s'",
+			"CAST(faculties.id AS TEXT) = '%s' OR faculties.name ILIKE '%s' OR faculties.description ILIKE '%s' OR schools.name ILIKE '%s' OR schools.type ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -77,7 +77,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 		)
 		if strings.HasPrefix(where, "WHERE") {
-			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+			where = fmt.Sprintf("%s AND (%s)", where, tempWhere)
 		} else {
 			where = fmt.Sprintf("WHERE %s", tempWhere)
 		}
@@ -85,9 +85,9 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT fcs.id, fcs.name, fcs.description, fcs.school_id"+
-				", fcs.created_at, fcs.updated_at FROM university_faculties fcs "+
-				"LEFT JOIN schools ON fcs.school_id = schools.id",
+			"SELECT faculties.id, faculties.name, faculties.description, faculties.school_id"+
+				", faculties.created_at, faculties.updated_at FROM university_faculties faculties "+
+				"LEFT JOIN schools ON faculties.school_id = schools.id",
 			where,
 			pagination,
 			filter,

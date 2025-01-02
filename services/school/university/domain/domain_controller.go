@@ -20,12 +20,12 @@ func NewController(service *Service) *Controller {
 func (controller *Controller) Create(
 	ctx *context.Context,
 	input *struct {
-		Body data.CreateDomainRequest
+		Body data.DomainRequest
 	},
-) (result *model.Domain, errCode int, err error) {
+) (result *model.UniversityDomain, errCode int, err error) {
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
-		&model.Domain{
+		&model.UniversityDomain{
 			SchoolID:     input.Body.SchoolID,
 			DepartmentID: input.Body.DepartmentID,
 			Name:         input.Body.Name,
@@ -39,14 +39,16 @@ func (controller *Controller) Update(
 	ctx *context.Context,
 	input *struct {
 		data.DomainID
-		Body data.UpdateDomainRequest
+		Body data.DomainRequest
 	},
-) (result *model.Domain, errCode int, err error) {
+) (result *model.UniversityDomain, errCode int, err error) {
 	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx), input.ID,
-		&model.Domain{
-			Name:        input.Body.Name,
-			Description: input.Body.Description,
+		&model.UniversityDomain{
+			SchoolID:     input.Body.SchoolID,
+			DepartmentID: input.Body.DepartmentID,
+			Name:         input.Body.Name,
+			Description:  input.Body.Description,
 		},
 	)
 	return
@@ -66,12 +68,26 @@ func (controller *Controller) Delete(
 	return
 }
 
+func (controller *Controller) DeleteMultiple(
+	ctx *context.Context,
+	input *struct {
+		Body types.DeleteMultipleRequest
+	},
+) (result int64, errCode int, err error) {
+	affectedRows, errCode, err := controller.Service.DeleteMultiple(helpers.GetJwtContext(ctx), input.Body.List)
+	if err != nil {
+		return
+	}
+	result = affectedRows
+	return
+}
+
 func (controller *Controller) Get(
 	ctx *context.Context,
 	input *struct {
 		data.DomainID
 	},
-) (result *model.Domain, errCode int, err error) {
+) (result *model.UniversityDomain, errCode int, err error) {
 	domain, errCode, err := controller.Service.Get(helpers.GetJwtContext(ctx), input.ID)
 	if err != nil {
 		return
@@ -85,10 +101,11 @@ func (controller *Controller) GetAll(
 	input *struct {
 		types.Filter
 		types.PaginationRequest
+		data.GetAllRequest
 	},
 ) (result *data.DomainResponseList, errCode int, err error) {
 	newPagination, newFilter := helpers.GetPaginationFiltersFromQuery(&input.Filter, &input.PaginationRequest)
-	domainList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination)
+	domainList, errCode, err := controller.Service.GetAll(helpers.GetJwtContext(ctx), newFilter, newPagination, input.GetAllRequest.SchoolID)
 	if err != nil {
 		return
 	}

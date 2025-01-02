@@ -18,15 +18,17 @@ type Document struct {
 }
 
 func (item *Document) ToResponse() *data.DocumentResponse {
-	resp := &data.DocumentResponse{
-		SchoolID:       item.SchoolID,
-		YearID:         item.YearID,
-		SubjectID:      item.SubjectID,
-		TeachingUnitID: item.TeachingUnitID,
-		Type:           item.Type,
-		URL:            item.URL,
-		Description:    item.Description,
+	if item == nil {
+		return nil
 	}
+	resp := &data.DocumentResponse{}
+	resp.SchoolID = item.SchoolID
+	resp.YearID = item.YearID
+	resp.SubjectID = item.SubjectID
+	resp.TeachingUnitID = item.TeachingUnitID
+	resp.Type = item.Type
+	resp.URL = item.URL
+	resp.Description = item.Description
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt

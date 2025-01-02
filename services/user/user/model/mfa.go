@@ -13,10 +13,10 @@ type UserMfa struct {
 }
 
 func (item *UserMfa) ToResponse() *data.UserMfaResponse {
-	resp := &data.UserMfaResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.UserMfaResponse{}
 	resp.Email = item.Email
 	resp.PhoneNumber = item.PhoneNumber
 	resp.Authenticator = item.Authenticator

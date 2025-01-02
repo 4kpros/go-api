@@ -14,12 +14,15 @@ type Communication struct {
 }
 
 func (item *Communication) ToResponse() *data.CommunicationResponse {
-	resp := &data.CommunicationResponse{
-		Subject:       item.Subject,
-		Message:       item.Message,
-		AudienceType:  item.AudienceType,
-		AudienceValue: item.AudienceValue,
+	if item == nil {
+		return nil
 	}
+	resp := &data.CommunicationResponse{}
+	resp.Subject = item.Subject
+	resp.Message = item.Message
+	resp.AudienceType = item.AudienceType
+	resp.AudienceValue = item.AudienceValue
+
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt

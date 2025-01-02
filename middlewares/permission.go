@@ -23,13 +23,16 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		}
 
 		// Retrieve feature permissions
-		var tableName, tableOperation string
+		var featureScope, tableName, tableOperation string
 		for _, opScheme := range ctx.Operation().Security {
 			if securityScheme, ok := opScheme[constants.SecurityAuthName]; ok {
 				if len(securityScheme) > 0 {
-					tableName = securityScheme[0]
+					featureScope = securityScheme[0]
 					if len(securityScheme) > 1 {
-						tableOperation = securityScheme[1]
+						tableName = securityScheme[1]
+						if len(securityScheme) > 2 {
+							tableOperation = securityScheme[2]
+						}
 					}
 				}
 				break
@@ -37,8 +40,22 @@ func PermissionMiddleware(api huma.API, roleRepo *role.Repository, permissionRep
 		}
 
 		// Check for required permissions
+		if len(featureScope) >= 1 {
+			// Retrieve role
+			foundRole, errFound := roleRepo.GetByID(jwtToken.RoleID)
+			if errFound != nil {
+				tempErr := constants.Http500ErrorMessage("get role from database")
+				_ = huma.WriteErr(api, ctx, http.StatusInternalServerError, tempErr.Error(), tempErr)
+				return
+			}
+			if foundRole == nil || foundRole.Feature != featureScope {
+				tempErr := constants.Http403InvalidPermissionErrorMessage()
+				_ = huma.WriteErr(api, ctx, http.StatusForbidden, tempErr.Error(), tempErr)
+				return
+			}
+		}
 		if len(tableName) >= 1 {
-			// Retrieve permissions
+			// Retrieve permission
 			userPermission, errPerm := permissionRepo.GetByRoleIDTableNameAll(jwtToken.RoleID, tableName, "*")
 			if errPerm != nil {
 				tempErr := constants.Http500ErrorMessage("get permission from database")

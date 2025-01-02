@@ -13,11 +13,14 @@ type Contact struct {
 }
 
 func (item *Contact) ToResponse() *data.ContactResponse {
-	resp := &data.ContactResponse{
-		Subject: item.Subject,
-		Email:   item.Email,
-		Message: item.Message,
+	if item == nil {
+		return nil
 	}
+	resp := &data.ContactResponse{}
+	resp.Subject = item.Subject
+	resp.Email = item.Email
+	resp.Message = item.Message
+
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt
 	resp.UpdatedAt = item.UpdatedAt

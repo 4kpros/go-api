@@ -32,6 +32,7 @@ func (repository *Repository) Update(yearID int64, year *model.Year) (*model.Yea
 			"name":       year.Name,
 			"start_date": year.StartDate,
 			"end_date":   year.EndDate,
+			"school_id":  year.SchoolID,
 		},
 	).Error
 }
@@ -55,9 +56,9 @@ func (repository *Repository) GetById(yearID int64) (*model.Year, error) {
 	return result, repository.Db.Preload(clause.Associations).Where("id = ?", yearID).Limit(1).Find(result).Error
 }
 
-func (repository *Repository) GetByName(name string) (*model.Year, error) {
+func (repository *Repository) GetByNameSchoolID(name string, schoolID int64) (*model.Year, error) {
 	result := &model.Year{}
-	return result, repository.Db.Preload(clause.Associations).Where("name = ?", name).Limit(1).Find(result).Error
+	return result, repository.Db.Preload(clause.Associations).Where("name = ?", name).Where("school_id = ?", schoolID).Limit(1).Find(result).Error
 }
 
 func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pagination) (result []model.Year, err error) {

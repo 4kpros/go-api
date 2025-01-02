@@ -7,6 +7,7 @@ type YearID struct {
 }
 
 type YearRequest struct {
+	SchoolID  int64      `json:"schoolID" required:"true" doc:"School id" example:"1"`
 	StartDate *time.Time `json:"startDate" required:"true" doc:"Academic year start date" example:""`
 	EndDate   *time.Time `json:"endDate" required:"true" doc:"Academic year end date" example:""`
 }

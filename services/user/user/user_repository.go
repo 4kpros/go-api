@@ -116,7 +116,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	}
 	if filter != nil && len(filter.Search) >= 1 {
 		tempWhere := fmt.Sprintf(
-			"CAST(users.id AS TEXT) = '%s' OR users.email ILIKE '%s' OR CAST(users.phone_number AS TEXT) ILIKE '%s' OR user_infos.first_name ILIKE '%s' OR user_infos.last_name ILIKE '%s' OR user_infos.username ILIKE '%s'",
+			"CAST(users.id AS TEXT) = '%s' OR users.email ILIKE '%s' OR CAST(users.phone_number AS TEXT) ILIKE '%s' OR infos.first_name ILIKE '%s' OR infos.last_name ILIKE '%s' OR infos.username ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -125,7 +125,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"%"+filter.Search+"%",
 		)
 		if strings.HasPrefix(where, "WHERE") {
-			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+			where = fmt.Sprintf("%s AND (%s)", where, tempWhere)
 		} else {
 			where = fmt.Sprintf("WHERE %s", tempWhere)
 		}
@@ -138,7 +138,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 			"SELECT users.id, users.email, users.phone_number, users.login_method, users.provider, users.provider_user_id"+
 				", users.is_activated, users.activated_at, users.role_id, users.user_info_id, users.user_mfa_id"+
 				", users.created_at, users.updated_at FROM users "+
-				"LEFT JOIN user_infos ON users.user_info_id = user_infos.id "+
+				"LEFT JOIN user_infos AS infos ON users.user_info_id = infos.id "+
 				"LEFT JOIN roles ON users.role_id = roles.id",
 			where,
 			pagination,

@@ -13,17 +13,19 @@ type History struct {
 	RowID  int64  `gorm:"default:null"`
 }
 
-func (history *History) ToResponse() *data.HistoryResponse {
-	resp := &data.HistoryResponse{
-		Action: history.Action,
-		UserID: history.UserID,
-		Table:  history.Table,
-		RowID:  history.RowID,
+func (item *History) ToResponse() *data.HistoryResponse {
+	if item == nil {
+		return nil
 	}
+	resp := &data.HistoryResponse{}
+	resp.Action = item.Action
+	resp.UserID = item.UserID
+	resp.Table = item.Table
+	resp.RowID = item.RowID
 
-	resp.ID = history.ID
-	resp.CreatedAt = history.CreatedAt
-	resp.UpdatedAt = history.UpdatedAt
+	resp.ID = item.ID
+	resp.CreatedAt = item.CreatedAt
+	resp.UpdatedAt = item.UpdatedAt
 	return resp
 }
 

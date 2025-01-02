@@ -32,9 +32,11 @@ func RegisterEndpoints(
 			Method:      http.MethodPut,
 			Path:        fmt.Sprintf("%s/role/{roleID}", endpointConfig.Group),
 			Tags:        endpointConfig.Tag,
+
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -78,6 +80,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -114,6 +117,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -150,6 +154,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,   // Feature scope
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},

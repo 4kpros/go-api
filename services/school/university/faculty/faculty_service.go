@@ -5,21 +5,37 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
+	"api/services/school/common/school"
 	"api/services/school/university/faculty/model"
 )
 
 type Service struct {
-	Repository *Repository
+	Repository       *Repository
+	SchoolRepository *school.Repository
 }
 
-func NewService(repository *Repository) *Service {
+func NewService(repository *Repository, SchoolRepository *school.Repository) *Service {
 	return &Service{
-		Repository: repository,
+		Repository:       repository,
+		SchoolRepository: SchoolRepository,
 	}
 }
 
 // Create new faculty
 func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.UniversityFaculty) (result *model.UniversityFaculty, errCode int, err error) {
+	// Check if the school type is university
+	foundSchool, err := service.SchoolRepository.GetByID(item.SchoolID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get school by id from database")
+		return
+	}
+	if foundSchool.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
+		return
+	}
+
 	// Check if the new one exists
 	foundNewFaculty, err := service.Repository.GetBySchoolIDName(item.SchoolID, item.Name)
 	if err != nil {
@@ -45,6 +61,19 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.Univer
 
 // Update faculty
 func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *model.UniversityFaculty) (result *model.UniversityFaculty, errCode int, err error) {
+	// Check if the school type is university
+	foundSchool, err := service.SchoolRepository.GetByID(item.SchoolID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get school by id from database")
+		return
+	}
+	if foundSchool.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
+		return
+	}
+
 	// Check if faculty exists
 	foundFaculty, err := service.Repository.GetById(id)
 	if err != nil {
@@ -55,6 +84,12 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, id int64, item *mo
 	if foundFaculty == nil || foundFaculty.ID != id {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("Faculty")
+		return
+	}
+	// Check if the school type is university
+	if foundFaculty.School.Type != constants.SCHOOL_TYPE_UNIVERSITY {
+		errCode = http.StatusBadRequest
+		err = constants.Http400BadRequestErrorMessage()
 		return
 	}
 
@@ -109,7 +144,7 @@ func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Role selection")
+		err = constants.Http404ErrorMessage("Faculty selection")
 		return
 	}
 	return

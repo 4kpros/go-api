@@ -2,25 +2,30 @@ package model
 
 import (
 	"api/common/types"
+	schoolModel "api/services/school/common/school/model"
 	"api/services/school/common/year/data"
 	"time"
 )
 
 type Year struct {
 	types.BaseGormModel
-	Name      string     `gorm:"unique;not null"`
-	StartDate *time.Time `gorm:"not null"`
-	EndDate   *time.Time `gorm:"not null"`
+	Name      string     `gorm:"default:null"`
+	StartDate *time.Time `gorm:"default:null"`
+	EndDate   *time.Time `gorm:"default:null"`
+
+	SchoolID int64               `gorm:"default:null"`
+	School   *schoolModel.School `gorm:"default:null;foreignKey:SchoolID;references:ID;constraint:onDelete:SET NULL,onUpdate:CASCADE;"`
 }
 
 func (item *Year) ToResponse() *data.YearResponse {
-	resp := &data.YearResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.YearResponse{}
 	resp.Name = item.Name
 	resp.StartDate = item.StartDate
 	resp.EndDate = item.EndDate
+	resp.School = item.School.ToResponse()
 
 	resp.ID = item.ID
 	resp.CreatedAt = item.CreatedAt

@@ -28,9 +28,11 @@ func (repository *Repository) Create(item *model.UniversityDepartment) (*model.U
 
 func (repository *Repository) Update(id int64, item *model.UniversityDepartment) (*model.UniversityDepartment, error) {
 	result := &model.UniversityDepartment{}
+	fmt.Println(item)
 	return result, repository.Db.Preload(clause.Associations).Model(result).Where("id = ?", id).Updates(
 		map[string]interface{}{
 			"school_id":   item.SchoolID,
+			"faculty_id":  item.FacultyID,
 			"name":        item.Name,
 			"description": item.Description,
 		},
@@ -65,11 +67,11 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	result = make([]model.UniversityDepartment, 0)
 	var where string = ""
 	if schoolID > 0 {
-		where = fmt.Sprintf("WHERE dps.school_id = '%d'", schoolID)
+		where = fmt.Sprintf("WHERE departments.school_id = %d", schoolID)
 	}
 	if filter != nil && len(filter.Search) >= 1 {
 		tempWhere := fmt.Sprintf(
-			"CAST(dps.id AS TEXT) = '%s' OR dps.name ILIKE '%s' OR dps.description ILIKE '%s' OR schools.name ILIKE '%s' OR schools.type ILIKE '%s' OR fcs.name ILIKE '%s' OR fcs.description ILIKE '%s'",
+			"CAST(departments.id AS TEXT) = '%s' OR departments.name ILIKE '%s' OR departments.description ILIKE '%s' OR schools.name ILIKE '%s' OR schools.type ILIKE '%s' OR faculties.name ILIKE '%s' OR faculties.description ILIKE '%s'",
 			filter.Search,
 			"%"+filter.Search+"%",
 			"%"+filter.Search+"%",
@@ -80,7 +82,7 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 		)
 
 		if strings.HasPrefix(where, "WHERE") {
-			where = fmt.Sprintf("%s AND %s", where, tempWhere)
+			where = fmt.Sprintf("%s AND (%s)", where, tempWhere)
 		} else {
 			where = fmt.Sprintf("WHERE %s", tempWhere)
 		}
@@ -88,10 +90,10 @@ func (repository *Repository) GetAll(filter *types.Filter, pagination *types.Pag
 	tmpErr := repository.Db.Preload(clause.Associations).Scopes(
 		helpers.PaginationScope(
 			repository.Db,
-			"SELECT dps.id, dps.name, dps.description, dps.school_id, dps.faculty_id"+
-				", dps.created_at, dps.updated_at FROM university_departments dps "+
-				"LEFT JOIN schools ON dps.school_id = schools.id "+
-				"LEFT JOIN university_faculties AS fcs ON dps.faculty_id = fcs.id",
+			"SELECT departments.id, departments.name, departments.description, departments.school_id, departments.faculty_id"+
+				", departments.created_at, departments.updated_at FROM university_departments departments "+
+				"LEFT JOIN schools ON departments.school_id = schools.id "+
+				"LEFT JOIN university_faculties AS faculties ON departments.faculty_id = faculties.id",
 			where,
 			pagination,
 			filter,

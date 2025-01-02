@@ -17,8 +17,8 @@ func RegisterEndpoints(
 	controller *Controller,
 ) {
 	var endpointConfig = types.ApiEndpointConfig{
-		Group: "/teaching-units",
-		Tag:   []string{"Teaching units"},
+		Group: "/schools/university/teaching-units",
+		Tag:   []string{"University - Teaching units"},
 	}
 	const tableName = "teaching_units"
 
@@ -35,6 +35,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -71,6 +72,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionCreate, // Operation
 					},
@@ -112,6 +114,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionUpdate, // Operation
 					},
@@ -149,6 +152,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -185,6 +189,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,     // Feature scope
 						tableName,                  // Table name
 						constants.PermissionDelete, // Operation
 					},
@@ -222,6 +227,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,   // Feature scope
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},
@@ -258,6 +264,7 @@ func RegisterEndpoints(
 			Security: []map[string][]string{
 				{
 					constants.SecurityAuthName: { // Authentication
+						constants.FeatureAdmin,   // Feature scope
 						tableName,                // Table name
 						constants.PermissionRead, // Operation
 					},

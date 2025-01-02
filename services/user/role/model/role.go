@@ -13,10 +13,10 @@ type Role struct {
 }
 
 func (item *Role) ToResponse() *data.RoleResponse {
-	resp := &data.RoleResponse{}
 	if item == nil {
-		return resp
+		return nil
 	}
+	resp := &data.RoleResponse{}
 	resp.Name = item.Name
 	resp.Feature = item.Feature
 	resp.Description = item.Description

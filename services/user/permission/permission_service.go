@@ -61,7 +61,7 @@ func (service *Service) Delete(inputJwtToken *types.JwtToken, roleID int64) (aff
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Role")
+		err = constants.Http404ErrorMessage("Permission")
 		return
 	}
 	return
@@ -77,7 +77,7 @@ func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int
 	}
 	if affectedRows <= 0 {
 		errCode = http.StatusNotFound
-		err = constants.Http404ErrorMessage("Role selection")
+		err = constants.Http404ErrorMessage("Permission selection")
 		return
 	}
 	return
