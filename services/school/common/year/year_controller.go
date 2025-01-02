@@ -26,6 +26,7 @@ func (controller *Controller) Create(
 	result, errCode, err = controller.Service.Create(
 		helpers.GetJwtContext(ctx),
 		&model.Year{
+			SchoolID:  input.Body.SchoolID,
 			StartDate: input.Body.StartDate,
 			EndDate:   input.Body.EndDate,
 		},
@@ -43,6 +44,7 @@ func (controller *Controller) Update(
 	result, errCode, err = controller.Service.Update(
 		helpers.GetJwtContext(ctx), input.ID,
 		&model.Year{
+			SchoolID:  input.Body.SchoolID,
 			StartDate: input.Body.StartDate,
 			EndDate:   input.Body.EndDate,
 		},

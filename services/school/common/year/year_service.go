@@ -6,7 +6,6 @@ import (
 
 	"api/common/constants"
 	"api/common/types"
-	"api/common/utils"
 	"api/services/school/common/year/model"
 )
 
@@ -19,20 +18,26 @@ func NewService(repository *Repository) *Service {
 }
 
 // Create new year
-func (service *Service) Create(inputJwtToken *types.JwtToken, year *model.Year) (result *model.Year, errCode int, err error) {
-	yearName := fmt.Sprintf("%d-%d", year.StartDate.Year(), year.EndDate.Year())
-	year.Name = yearName
-	result, err = service.Repository.Create(year)
-	if err != nil {
-		pgState, errPgState := utils.ExtractSQLState(err.Error())
-		if errPgState == nil {
-			if pgState == constants.PG_ERROR_UNIQUE_COLUMN {
-				errCode = http.StatusFound
-				err = constants.Http302ErrorMessage("year")
-				return
-			}
-		}
+func (service *Service) Create(inputJwtToken *types.JwtToken, item *model.Year) (result *model.Year, errCode int, err error) {
+	yearName := fmt.Sprintf("%d-%d", item.StartDate.Year(), item.EndDate.Year())
+	item.Name = yearName
 
+	// Check if the year exists
+	foundYear, err := service.Repository.GetByNameSchoolID(yearName, item.SchoolID)
+	if err != nil {
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get year by name from database")
+		return
+	}
+	if foundYear != nil && foundYear.Name == yearName && foundYear.SchoolID == item.SchoolID {
+		errCode = http.StatusFound
+		err = constants.Http302ErrorMessage("year")
+		return
+	}
+
+	// Create
+	result, err = service.Repository.Create(item)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("create year from database")
 		return
@@ -41,7 +46,7 @@ func (service *Service) Create(inputJwtToken *types.JwtToken, year *model.Year) 
 }
 
 // Update year
-func (service *Service) Update(inputJwtToken *types.JwtToken, yearID int64, year *model.Year) (result *model.Year, errCode int, err error) {
+func (service *Service) Update(inputJwtToken *types.JwtToken, yearID int64, item *model.Year) (result *model.Year, errCode int, err error) {
 	// Check if year exists
 	foundYear, err := service.Repository.GetById(yearID)
 	if err != nil {
@@ -55,20 +60,26 @@ func (service *Service) Update(inputJwtToken *types.JwtToken, yearID int64, year
 		return
 	}
 
-	// Update year
-	yearName := fmt.Sprintf("%d-%d", year.StartDate.Year(), year.EndDate.Year())
-	year.Name = yearName
-	result, err = service.Repository.Update(yearID, year)
+	yearName := fmt.Sprintf("%d-%d", item.StartDate.Year(), item.EndDate.Year())
+	item.Name = yearName
+	// Check if the year exists
+	foundNewYear, err := service.Repository.GetByNameSchoolID(yearName, item.SchoolID)
 	if err != nil {
-		pgState, errPgState := utils.ExtractSQLState(err.Error())
-		if errPgState == nil {
-			if pgState == constants.PG_ERROR_UNIQUE_COLUMN {
-				errCode = http.StatusFound
-				err = constants.Http302ErrorMessage("year")
-				return
-			}
+		errCode = http.StatusInternalServerError
+		err = constants.Http500ErrorMessage("get year by name from database")
+		return
+	}
+	if foundNewYear != nil && foundNewYear.SchoolID == item.SchoolID && foundNewYear.Name == yearName {
+		if !(foundYear.SchoolID == foundNewYear.SchoolID && foundYear.Name == foundNewYear.Name) {
+			errCode = http.StatusFound
+			err = constants.Http302ErrorMessage("year")
+			return
 		}
+	}
 
+	// Update year
+	result, err = service.Repository.Update(yearID, item)
+	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("update year from database")
 		return
@@ -109,14 +120,14 @@ func (service *Service) DeleteMultiple(inputJwtToken *types.JwtToken, list []int
 }
 
 // Get Returns year with matching id
-func (service *Service) Get(inputJwtToken *types.JwtToken, yearID int64) (year *model.Year, errCode int, err error) {
-	year, err = service.Repository.GetById(yearID)
+func (service *Service) Get(inputJwtToken *types.JwtToken, yearID int64) (result *model.Year, errCode int, err error) {
+	result, err = service.Repository.GetById(yearID)
 	if err != nil {
 		errCode = http.StatusInternalServerError
 		err = constants.Http500ErrorMessage("get year by id from database")
 		return
 	}
-	if year == nil {
+	if result == nil {
 		errCode = http.StatusNotFound
 		err = constants.Http404ErrorMessage("Year")
 		return
